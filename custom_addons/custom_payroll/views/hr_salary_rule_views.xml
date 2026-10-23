@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hr_salary_rule_list" model="ir.ui.view">
+        <field name="name">hr.salary.rule.list</field>
+        <field name="model">hr.salary.rule</field>
+        <field name="arch" type="xml">
+            <list string="Salary Rules">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category_id"/>
+                <field name="amount_select"/>
+                <field name="appears_on_payslip" widget="boolean_toggle"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hr_salary_rule_form" model="ir.ui.view">
+        <field name="name">hr.salary.rule.form</field>
+        <field name="model">hr.salary.rule</field>
+        <field name="arch" type="xml">
+            <form string="Salary Rule">
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name" string="Rule Name"/>
+                        <h1><field name="name" placeholder="e.g. Basic Salary, HRA, Provident Fund"/></h1>
+                    </div>
+                    <group>
+                        <group string="General Configuration">
+                            <field name="code" placeholder="e.g. BASIC, HRA, PF, NET"/>
+                            <field name="category_id"/>
+                            <field name="sequence"/>
+                            <field name="active" invisible="1"/>
+                            <field name="appears_on_payslip"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Conditions &amp; Triggers">
+                            <field name="condition_select"/>
+                            <field name="condition_python" invisible="condition_select != 'python'" placeholder="result = ('UNPAID' in worked_days)"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Computation" name="computation">
+                            <group>
+                                <field name="amount_select"/>
+                            </group>
+                            <group invisible="amount_select != 'percentage'">
+                                <field name="amount_percentage"/>
+                                <field name="amount_percentage_base" placeholder="contract.wage"/>
+                            </group>
+                            <group invisible="amount_select != 'fix'">
+                                <field name="amount_fix"/>
+                            </group>
+                            <group invisible="amount_select != 'code'">
+                                <div class="alert alert-info" role="alert">
+                                    <strong>Available Context:</strong>
+                                    <code>payslip</code>, <code>employee</code>, <code>contract</code> (e.g. <code>contract.wage</code>),
+                                    <code>categories</code> (e.g. <code>categories.BASIC</code>, <code>categories.ALW</code>, <code>categories.GROSS</code>, <code>categories.DED</code>),
+                                    <code>rules</code> (e.g. <code>rules.BASIC</code>), <code>worked_days</code> (e.g. <code>worked_days['WORK100'].number_of_days</code>).
+                                    <br/><strong>Output:</strong> Set <code>result = ...</code>
+                                </div>
+                                <field name="amount_python_compute" widget="ace" options="{'mode': 'python'}" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Description &amp; Notes" name="description">
+                            <field name="note" placeholder="Explanation of statutory or internal calculation policy..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_salary_rule_search" model="ir.ui.view">
+        <field name="name">hr.salary.rule.search</field>
+        <field name="model">hr.salary.rule</field>
+        <field name="arch" type="xml">
+            <search string="Search Salary Rules">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category_id"/>
+                <group>
+                    <filter string="Category" name="group_by_category" context="{'group_by': 'category_id'}"/>
+                    <filter string="Computation Type" name="group_by_amount_select" context="{'group_by': 'amount_select'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_salary_rule" model="ir.actions.act_window">
+        <field name="name">Salary Rules</field>
+        <field name="res_model">hr.salary.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hr_salary_rule_search"/>
+    </record>
+</odoo>

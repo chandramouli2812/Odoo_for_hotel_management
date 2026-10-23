@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Server Action: Generate / Sync Today's Breakfast List -->
+    <record id="action_server_generate_breakfast_list" model="ir.actions.server">
+        <field name="name">Generate / Sync Today's Breakfast List</field>
+        <field name="model_id" ref="model_hotel_breakfast_service"/>
+        <field name="binding_model_id" ref="model_hotel_breakfast_service"/>
+        <field name="binding_view_types">list,kanban</field>
+        <field name="state">code</field>
+        <field name="code">
+action = model.action_generate_today_breakfast_list()
+        </field>
+    </record>
+
+    <!-- Breakfast Service Kanban View -->
+    <record id="view_hotel_breakfast_service_kanban" model="ir.ui.view">
+        <field name="name">hotel.breakfast.service.kanban</field>
+        <field name="model">hotel.breakfast.service</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="service_status" sample="1" quick_create="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="reservation_id"/>
+                <field name="room_id"/>
+                <field name="guest_id"/>
+                <field name="guest_phone"/>
+                <field name="adults"/>
+                <field name="children"/>
+                <field name="total_covers"/>
+                <field name="meal_plan"/>
+                <field name="breakfast_entitlement"/>
+                <field name="service_status"/>
+                <field name="outlet"/>
+                <field name="served_time"/>
+                <field name="dietary_notes"/>
+                <field name="vip_status"/>
+                <field name="is_vip"/>
+                <field name="items_summary"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click p-2 mb-2 rounded shadow-sm border">
+                            <!-- Top Header: Reference & VIP Badge -->
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge text-bg-dark text-white font-monospace px-2 py-1 shadow-sm" style="background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important;">
+                                    <span style="color: #ffffff !important; font-weight: 700;">
+                                        <field name="name" class="text-white"/>
+                                    </span>
+                                </span>
+                                <div>
+                                    <span t-if="record.is_vip.raw_value" class="badge bg-danger text-white">
+                                        <field name="vip_status"/>
+                                    </span>
+                                    <span t-if="record.breakfast_entitlement.raw_value == 'included'" class="badge bg-success-subtle text-success border border-success ms-1">
+                                        Included
+                                    </span>
+                                    <span t-else="" class="badge bg-warning-subtle text-warning border border-warning ms-1">
+                                        Chargeable
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Room & Guest -->
+                            <div class="mb-2">
+                                <div t-if="record.room_id.raw_value" class="mb-1">
+                                    <span class="badge bg-primary text-white fs-6 px-2 py-1 shadow-sm d-inline-block text-truncate" style="color: #ffffff !important; max-width: 100%;">
+                                        Room <field name="room_id"/>
+                                    </span>
+                                </div>
+                                <div class="fs-6 fw-bold text-dark">
+                                    <field name="guest_id"/>
+                                </div>
+                            </div>
+
+                            <!-- Covers & Meal Plan -->
+                            <div class="text-muted small mb-2">
+                                <span class="fw-bold text-dark">
+                                    <field name="total_covers"/> Covers (<field name="adults"/>A, <field name="children"/>C)
+                                </span>
+                                • <span><field name="meal_plan"/></span>
+                            </div>
+
+                            <!-- Dietary Notes -->
+                            <div t-if="record.dietary_notes.raw_value" class="alert alert-info py-1 px-2 mb-2 small" role="status">
+                                <strong>Diet:</strong> <field name="dietary_notes"/>
+                            </div>
+
+                            <!-- Chosen Breakfast Items -->
+                            <div t-if="record.items_summary.raw_value" class="mb-2 p-1 rounded bg-light border" style="font-size: 11px;">
+                                <strong class="text-dark">Items:</strong> <span class="text-dark"><field name="items_summary"/></span>
+                            </div>
+
+                            <!-- Footer: Outlet & 1-Click Operational Actions -->
+                            <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-1">
+                                <div class="small text-muted">
+                                    <span><field name="outlet"/></span>
+                                    <span t-if="record.served_time.raw_value" class="d-block text-success fw-bold">
+                                        <field name="served_time"/>
+                                    </span>
+                                </div>
+                                <div class="text-end">
+                                    <button t-if="record.service_status.raw_value == 'pending'" name="action_mark_served" type="object" class="btn btn-sm btn-success me-1">
+                                        Served
+                                    </button>
+                                    <button t-if="record.service_status.raw_value == 'pending'" name="action_mark_room_service" type="object" class="btn btn-sm btn-outline-primary">
+                                        In-Room
+                                    </button>
+                                    <button t-if="record.service_status.raw_value == 'served' || record.service_status.raw_value == 'room_service'" name="action_reset" type="object" class="btn btn-sm btn-link text-muted p-0">
+                                        Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Breakfast Service List View (Exact Operational Tabular Layout) -->
+    <record id="view_hotel_breakfast_service_list" model="ir.ui.view">
+        <field name="name">hotel.breakfast.service.list</field>
+        <field name="model">hotel.breakfast.service</field>
+        <field name="arch" type="xml">
+            <list string="Daily Breakfast Attendance &amp; Covers Sheet"
+                  decoration-success="service_status == 'served'"
+                  decoration-primary="service_status == 'room_service'"
+                  decoration-warning="service_status == 'pending'"
+                  decoration-muted="service_status in ('no_show', 'cancelled')">
+                <header>
+                    <button name="action_generate_today_breakfast_list" string="Sync Today's Breakfast List" icon="fa-refresh" type="object" class="btn-primary"/>
+                </header>
+                <field name="date"/>
+                <field name="room_id" decoration-bf="1"/>
+                <field name="guest_id"/>
+                <field name="vip_status" widget="badge" decoration-danger="vip_status in ('gold', 'platinum')" decoration-warning="vip_status == 'silver'"/>
+                <field name="adults"/>
+                <field name="children"/>
+                <field name="total_covers" decoration-bf="1"/>
+                <field name="meal_plan" widget="badge"/>
+                <field name="breakfast_entitlement" widget="badge"
+                       decoration-success="breakfast_entitlement == 'included'"
+                       decoration-warning="breakfast_entitlement == 'chargeable'"/>
+                <field name="outlet"/>
+                <field name="items_summary" optional="show" string="Chosen Items"/>
+                <field name="dietary_notes"/>
+                <field name="served_time"/>
+                <field name="served_by_id" optional="hide"/>
+                <field name="service_status" widget="badge"
+                       decoration-warning="service_status == 'pending'"
+                       decoration-success="service_status == 'served'"
+                       decoration-primary="service_status == 'room_service'"
+                       decoration-danger="service_status == 'no_show'"/>
+                <button name="action_mark_served" string="Serve" type="object" icon="fa-check" class="btn-success" invisible="service_status != 'pending'"/>
+                <button name="action_mark_room_service" string="Room Tray" type="object" icon="fa-cutlery" class="btn-outline-primary" invisible="service_status != 'pending'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Breakfast Service Form View -->
+    <record id="view_hotel_breakfast_service_form" model="ir.ui.view">
+        <field name="name">hotel.breakfast.service.form</field>
+        <field name="model">hotel.breakfast.service</field>
+        <field name="arch" type="xml">
+            <form string="Breakfast &amp; Meal Attendance Record">
+                <header>
+                    <button name="action_mark_served" string="Mark Served" icon="fa-check" type="object" class="btn-success" invisible="service_status == 'served'"/>
+                    <button name="action_mark_room_service" string="Deliver to Room" icon="fa-cutlery" type="object" class="btn-primary" invisible="service_status == 'room_service'"/>
+                    <button name="action_mark_no_show" string="No-Show / Skipped" type="object" class="btn-warning" invisible="service_status in ('no_show', 'cancelled')"/>
+                    <button name="action_reset" string="Reset to Pending" type="object" invisible="service_status == 'pending'"/>
+                    <field name="service_status" widget="statusbar" statusbar_visible="pending,served,room_service"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <span class="o_form_label text-muted">Daily Breakfast Attendance Log</span>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Guest &amp; Room Details">
+                            <field name="date"/>
+                            <field name="reservation_id"/>
+                            <field name="room_id"/>
+                            <field name="room_type_id"/>
+                            <field name="guest_id"/>
+                            <field name="guest_phone" widget="phone"/>
+                            <field name="vip_status" widget="badge"/>
+                        </group>
+                        <group string="Meal Entitlement &amp; Covers">
+                            <div class="o_row">
+                                <label for="adults" string="Adults / Children"/>
+                                <field name="adults"/> Adults,
+                                <field name="children"/> Children
+                            </div>
+                            <field name="total_covers" class="fw-bold"/>
+                            <field name="meal_plan"/>
+                            <field name="breakfast_entitlement" widget="badge"/>
+                            <field name="outlet"/>
+                        </group>
+                    </group>
+                    <group string="Choosable Breakfast Items (Quick Multi-Select)">
+                        <field name="item_ids" widget="many2many_tags" placeholder="Pick items (e.g. Masala Dosa, Omelette, Croissant, Filter Coffee)..." options="{'no_create_edit': False}"/>
+                    </group>
+                    <notebook>
+                        <page string="Chosen Items &amp; Portions" name="items_lines">
+                            <field name="item_line_ids">
+                                <list editable="bottom">
+                                    <field name="item_id"/>
+                                    <field name="category"/>
+                                    <field name="dietary_type" widget="badge" 
+                                           decoration-success="dietary_type in ('veg', 'vegan', 'jain')" 
+                                           decoration-warning="dietary_type == 'egg'" 
+                                           decoration-danger="dietary_type == 'non_veg'"/>
+                                    <field name="quantity"/>
+                                    <field name="notes" placeholder="e.g. Well done, Egg white only, Almond milk, Less spicy..."/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Special Dietary &amp; Chef Requests" name="dietary_notes_page">
+                            <group>
+                                <field name="dietary_notes" placeholder="e.g. Vegetarian buffet only, Jain meal, Gluten intolerance, Nut allergy, Baby high chair..."/>
+                                <field name="notes" placeholder="Additional guest requests or billing instructions..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                    <group string="Service Timestamp &amp; Attendant" invisible="service_status == 'pending'">
+                        <group>
+                            <field name="served_time"/>
+                            <field name="served_by_id"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Breakfast Service Search View -->
+    <record id="view_hotel_breakfast_service_search" model="ir.ui.view">
+        <field name="name">hotel.breakfast.service.search</field>
+        <field name="model">hotel.breakfast.service</field>
+        <field name="arch" type="xml">
+            <search string="Search Breakfast Attendance">
+                <field name="name"/>
+                <field name="room_id"/>
+                <field name="guest_id"/>
+                <field name="dietary_notes"/>
+                <filter string="Today's Breakfast" name="filter_today" domain="[('date', '=', context_today())]"/>
+                <separator/>
+                <filter string="Pending Service" name="filter_pending" domain="[('service_status', '=', 'pending')]"/>
+                <filter string="Served" name="filter_served" domain="[('service_status', '=', 'served')]"/>
+                <filter string="In-Room Delivery" name="filter_room_service" domain="[('service_status', '=', 'room_service')]"/>
+                <filter string="No-Show / Skipped" name="filter_no_show" domain="[('service_status', '=', 'no_show')]"/>
+                <separator/>
+                <filter string="Included / Complimentary" name="filter_included" domain="[('breakfast_entitlement', '=', 'included')]"/>
+                <filter string="Chargeable Breakfast" name="filter_chargeable" domain="[('breakfast_entitlement', '=', 'chargeable')]"/>
+                <separator/>
+                <filter string="VIP Guests" name="filter_vip" domain="[('is_vip', '=', True)]"/>
+                <group>
+                    <filter string="Service Status" name="group_by_status" context="{'group_by': 'service_status'}"/>
+                    <filter string="Meal Plan" name="group_by_meal_plan" context="{'group_by': 'meal_plan'}"/>
+                    <filter string="Breakfast Entitlement" name="group_by_entitlement" context="{'group_by': 'breakfast_entitlement'}"/>
+                    <filter string="Dining Outlet" name="group_by_outlet" context="{'group_by': 'outlet'}"/>
+                    <filter string="Room" name="group_by_room" context="{'group_by': 'room_id'}"/>
+                    <filter string="Date" name="group_by_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Breakfast Service Pivot / Analytics -->
+    <record id="view_hotel_breakfast_service_pivot" model="ir.ui.view">
+        <field name="name">hotel.breakfast.service.pivot</field>
+        <field name="model">hotel.breakfast.service</field>
+        <field name="arch" type="xml">
+            <pivot string="Breakfast Covers Analytics" sample="1">
+                <field name="date" interval="day" type="row"/>
+                <field name="outlet" type="col"/>
+                <field name="total_covers" type="measure"/>
+                <field name="adults" type="measure"/>
+                <field name="children" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Breakfast Service Action -->
+    <record id="action_hotel_breakfast_service" model="ir.actions.act_window">
+        <field name="name">Daily Breakfast &amp; Meal Attendance List</field>
+        <field name="res_model">hotel.breakfast.service</field>
+        <field name="view_mode">kanban,list,pivot,form</field>
+        <field name="context">{'search_default_filter_today': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No breakfast attendance records for today.</p>
+            <p>Click <strong>Sync Today's Breakfast List</strong> to automatically load expected covers from all in-house guests and arrivals.</p>
+        </field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- BREAKFAST MENU ITEMS MASTER VIEWS & ACTION                     -->
+    <!-- ============================================================== -->
+
+    <!-- Breakfast Item List View -->
+    <record id="view_hotel_breakfast_item_list" model="ir.ui.view">
+        <field name="name">hotel.breakfast.item.list</field>
+        <field name="model">hotel.breakfast.item</field>
+        <field name="arch" type="xml">
+            <list string="Resort Breakfast Menu Items" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category" widget="badge"/>
+                <field name="dietary_type" widget="badge"
+                       decoration-success="dietary_type in ('veg', 'vegan', 'jain')"
+                       decoration-warning="dietary_type == 'egg'"
+                       decoration-danger="dietary_type == 'non_veg'"/>
+                <field name="is_buffet_standard"/>
+                <field name="description"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Breakfast Item Form View -->
+    <record id="view_hotel_breakfast_item_form" model="ir.ui.view">
+        <field name="name">hotel.breakfast.item.form</field>
+        <field name="model">hotel.breakfast.item</field>
+        <field name="arch" type="xml">
+            <form string="Breakfast Menu Item">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Menu Item Name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Traditional Masala Dosa, Eggs Benedict..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Categorization &amp; Dietary">
+                            <field name="code" placeholder="e.g. IND-01, BKR-02"/>
+                            <field name="category"/>
+                            <field name="dietary_type" widget="badge"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Buffet Inclusion &amp; Status">
+                            <field name="is_buffet_standard"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group string="Description &amp; Ingredients">
+                        <field name="description" placeholder="Served with sambar &amp; coconut chutney..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Breakfast Item Search View -->
+    <record id="view_hotel_breakfast_item_search" model="ir.ui.view">
+        <field name="name">hotel.breakfast.item.search</field>
+        <field name="model">hotel.breakfast.item</field>
+        <field name="arch" type="xml">
+            <search string="Search Breakfast Items">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category"/>
+                <field name="dietary_type"/>
+                <filter string="Bakery &amp; Breads" name="cat_bakery" domain="[('category', '=', 'bakery')]"/>
+                <filter string="Eggs &amp; Hot Kitchen" name="cat_eggs" domain="[('category', '=', 'eggs_hot')]"/>
+                <filter string="Indian Specialties" name="cat_indian" domain="[('category', '=', 'indian')]"/>
+                <filter string="Fruits &amp; Cereals" name="cat_fruits" domain="[('category', '=', 'healthy_fruits')]"/>
+                <filter string="Juices &amp; Beverages" name="cat_beverages" domain="[('category', '=', 'beverages')]"/>
+                <separator/>
+                <filter string="Vegetarian" name="diet_veg" domain="[('dietary_type', 'in', ['veg', 'jain', 'vegan'])]"/>
+                <filter string="Egg" name="diet_egg" domain="[('dietary_type', '=', 'egg')]"/>
+                <filter string="Non-Veg" name="diet_nonveg" domain="[('dietary_type', '=', 'non_veg')]"/>
+                <separator/>
+                <filter string="Standard Buffet" name="filter_buffet" domain="[('is_buffet_standard', '=', True)]"/>
+                <group>
+                    <filter string="Category" name="group_by_category" context="{'group_by': 'category'}"/>
+                    <filter string="Dietary Type" name="group_by_dietary" context="{'group_by': 'dietary_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Breakfast Item Action -->
+    <record id="action_hotel_breakfast_item" model="ir.actions.act_window">
+        <field name="name">Resort Breakfast Menu Items</field>
+        <field name="res_model">hotel.breakfast.item</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hotel_breakfast_item_search"/>
+        <field name="context">{'search_default_group_by_category': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No breakfast menu items created yet.</p>
+            <p>Define choosable breakfast dishes, bakery selections, live kitchen items, and beverages for guests and kitchen preparation.</p>
+        </field>
+    </record>
+</odoo>
+

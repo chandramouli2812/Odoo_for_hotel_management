@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hotel_quick_checkout_wizard_form" model="ir.ui.view">
+        <field name="name">hotel.quick.checkout.wizard.form</field>
+        <field name="model">hotel.quick.checkout.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Quick Settle &amp; Check Out">
+                <sheet>
+                    <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                        <div>
+                            <strong>Guest Checkout Settlement:</strong> Settle the outstanding balance and complete the room checkout in one click.
+                        </div>
+                    </div>
+                    <group>
+                        <group string="Stay Details">
+                            <field name="reservation_id"/>
+                            <field name="guest_id"/>
+                            <field name="room_id"/>
+                            <field name="folio_id"/>
+                        </group>
+                        <group string="Folio Accounting Summary">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount_total" widget="monetary"/>
+                            <field name="amount_paid" widget="monetary" class="text-success"/>
+                            <field name="amount_due" widget="monetary" class="fw-bold fs-4 text-danger"/>
+                        </group>
+                    </group>
+                    <group string="Payment Collection &amp; Receipt">
+                        <group>
+                            <field name="payment_amount" widget="monetary" class="fw-bold fs-3 text-success"/>
+                            <field name="payment_method" widget="radio" options="{'horizontal': true}"/>
+                        </group>
+                        <group>
+                            <field name="reference"/>
+                            <field name="print_bill" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_settle_and_checkout" string="Settle Payment &amp; Check Out" type="object" class="btn-success btn-lg"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hotel_quick_checkout_wizard" model="ir.actions.act_window">
+        <field name="name">Quick Settle &amp; Check Out</field>
+        <field name="res_model">hotel.quick.checkout.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

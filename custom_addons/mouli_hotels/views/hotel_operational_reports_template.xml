@@ -1,0 +1,821 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================== -->
+    <!-- 1. DAILY BREAKFAST LIST & COVERS REPORT TEMPLATE               -->
+    <!-- ============================================================== -->
+    <template id="report_hotel_breakfast_list_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; color: #333;">
+                    <!-- Executive Header Banner -->
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; background-color: #0f172a; color: #ffffff; border-radius: 6px;">
+                        <tr>
+                            <td style="padding: 12px 16px; vertical-align: middle;">
+                                <div style="text-transform: uppercase; font-size: 9px; letter-spacing: 1.5px; color: #93c5fd; font-weight: 700;">
+                                    Mouli Hotels &amp; Resorts • Food &amp; Beverage Operations
+                                </div>
+                                <h2 style="margin: 3px 0 0 0; font-size: 18px; font-weight: 800; color: #ffffff;">
+                                    DAILY RESORT BREAKFAST &amp; MEAL MANIFEST
+                                </h2>
+                                <div style="font-size: 10px; color: #cbd5e1; margin-top: 2px;">
+                                    Morning Shift Covers Roster, Dietary Manifest &amp; Live Kitchen Preparation Sheet
+                                </div>
+                            </td>
+                            <td style="padding: 12px 16px; vertical-align: middle; text-align: right; width: 220px;">
+                                <div style="background-color: #1e293b; padding: 6px 12px; border-radius: 4px; display: inline-block; text-align: right; border: 1px solid #334155;">
+                                    <div style="font-size: 9px; text-transform: uppercase; color: #94a3b8; font-weight: 600;">Service Date</div>
+                                    <div style="font-size: 13px; font-weight: 700; color: #ffffff;"><span t-out="context_timestamp(datetime.datetime.now()).strftime('%d-%b-%Y')"/></div>
+                                    <div style="font-size: 9px; color: #38bdf8; font-weight: 600;">Morning Shift (07:00 - 11:00)</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Covers Summary Cards (HTML Table for flawless wkhtmltopdf layout) -->
+                    <style>
+                        .op-table thead th {
+                            background-color: #0f172a !important;
+                            color: #ffffff !important;
+                            border: 1px solid #334155 !important;
+                            padding: 5px 3px !important;
+                            text-align: center !important;
+                        }
+                        .op-table tbody td {
+                            padding: 5px 4px !important;
+                            border: 1px solid #cbd5e1 !important;
+                            vertical-align: middle !important;
+                        }
+                    </style>
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 5px; margin-bottom: 12px; text-align: center;">
+                        <tr>
+                            <td style="width: 16.6%; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 5px; padding: 6px 3px;">
+                                <div style="font-size: 8.5px; font-weight: 700; text-transform: uppercase; color: #64748b;">Total Records</div>
+                                <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 2px 0;"><span t-out="len(docs)"/></div>
+                                <div style="font-size: 8px; color: #94a3b8;">Rooms/Tables</div>
+                            </td>
+                            <td style="width: 16.6%; background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 5px; padding: 6px 3px;">
+                                <div style="font-size: 8.5px; font-weight: 700; text-transform: uppercase; color: #1e40af;">Total Covers</div>
+                                <div style="font-size: 16px; font-weight: 800; color: #1d4ed8; margin: 2px 0;"><span t-out="sum(docs.mapped('total_covers'))"/></div>
+                                <div style="font-size: 8px; color: #3b82f6;">Adults &amp; Children</div>
+                            </td>
+                            <td style="width: 16.6%; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 5px; padding: 6px 3px;">
+                                <div style="font-size: 8.5px; font-weight: 700; text-transform: uppercase; color: #166534;">Included / CP</div>
+                                <div style="font-size: 16px; font-weight: 800; color: #15803d; margin: 2px 0;"><span t-out="sum([d.total_covers for d in docs if d.breakfast_entitlement == 'included'])"/></div>
+                                <div style="font-size: 8px; color: #16a34a;">Complimentary</div>
+                            </td>
+                            <td style="width: 16.6%; background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 5px; padding: 6px 3px;">
+                                <div style="font-size: 8.5px; font-weight: 700; text-transform: uppercase; color: #92400e;">Chargeable</div>
+                                <div style="font-size: 16px; font-weight: 800; color: #b45309; margin: 2px 0;"><span t-out="sum([d.total_covers for d in docs if d.breakfast_entitlement == 'chargeable'])"/></div>
+                                <div style="font-size: 8px; color: #d97706;">Room Only / EP</div>
+                            </td>
+                            <td style="width: 16.6%; background-color: #ecfeff; border: 1px solid #a5f3fc; border-radius: 5px; padding: 6px 3px;">
+                                <div style="font-size: 8.5px; font-weight: 700; text-transform: uppercase; color: #155e75;">Served / Delivered</div>
+                                <div style="font-size: 16px; font-weight: 800; color: #0e7490; margin: 2px 0;"><span t-out="sum([d.total_covers for d in docs if d.service_status in ('served', 'room_service')])"/></div>
+                                <div style="font-size: 8px; color: #0891b2;">Completed</div>
+                            </td>
+                            <td style="width: 16.6%; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 5px; padding: 6px 3px;">
+                                <div style="font-size: 8.5px; font-weight: 700; text-transform: uppercase; color: #991b1b;">Pending</div>
+                                <div style="font-size: 16px; font-weight: 800; color: #b91c1c; margin: 2px 0;"><span t-out="sum([d.total_covers for d in docs if d.service_status == 'pending'])"/></div>
+                                <div style="font-size: 8px; color: #ef4444;">Awaiting Guest</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Kitchen Preparation Summary Board -->
+                    <t t-set="items_tally" t-value="docs.get_daily_items_tally()"/>
+                    <t t-if="items_tally">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; border: 1px solid #fde68a; border-radius: 5px; overflow: hidden; background-color: #fffdf5;">
+                            <thead>
+                                <tr style="background-color: #fef3c7;">
+                                    <th style="padding: 6px 12px; font-size: 11px; font-weight: 700; color: #92400e; text-align: left; border-bottom: 1px solid #fde68a;">
+                                        Kitchen Preparation Board — Pre-Ordered / Chosen Items Tally (<span t-out="len(items_tally)"/> items requested)
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 8px 10px;">
+                                        <table style="width: 100%; border-collapse: separate; border-spacing: 5px;">
+                                            <t t-foreach="[items_tally[i:i+3] for i in range(0, len(items_tally), 3)]" t-as="row_items">
+                                                <tr>
+                                                    <t t-foreach="row_items" t-as="item">
+                                                        <td style="width: 33.3%; background-color: #ffffff; border: 1px solid #fcd34d; border-radius: 4px; padding: 5px 8px; font-size: 10px;">
+                                                            <table style="width: 100%; border-collapse: collapse;">
+                                                                <tr>
+                                                                    <td style="font-weight: 600; color: #1e293b; padding: 0;">
+                                                                        <span t-out="item['name']"/>
+                                                                    </td>
+                                                                    <td style="text-align: right; width: 65px; padding: 0;">
+                                                                        <span style="background-color: #0284c7; color: #ffffff; font-weight: 700; font-size: 9.5px; padding: 2px 6px; border-radius: 10px; display: inline-block;">
+                                                                            <span t-out="item['quantity']"/> portions
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </t>
+                                                    <t t-if="len(row_items) &lt; 3">
+                                                        <t t-foreach="range(3 - len(row_items))" t-as="dummy">
+                                                            <td style="width: 33.3%; border: none;"></td>
+                                                        </t>
+                                                    </t>
+                                                </tr>
+                                            </t>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <!-- Breakfast Tabular Sheet -->
+                    <table class="table table-bordered table-sm align-middle op-table" style="font-size: 10px; width: 100%; border-collapse: collapse;">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th style="width: 7%;">Room</th>
+                                <th style="width: 14%;">Guest Name</th>
+                                <th style="width: 5%;">Pax</th>
+                                <th style="width: 5%;">Covers</th>
+                                <th style="width: 8%;">Plan</th>
+                                <th style="width: 8%;">Status</th>
+                                <th style="width: 9%;">Outlet</th>
+                                <th style="width: 27%;">Pre-Ordered Breakfast Items &amp; Portions</th>
+                                <th style="width: 17%;">Dietary &amp; Special Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="line">
+                                <tr>
+                                    <td class="text-center fw-bold bg-light">
+                                        <span t-out="line.room_id.name or 'Unassigned'"/>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold" style="color: #0f172a;" t-out="line.guest_id.name"/>
+                                        <t t-if="line.is_vip">
+                                            <span style="background-color: #dc2626; color: #ffffff; font-weight: 700; font-size: 7.5px; padding: 1px 4px; border-radius: 3px; display: inline-block; margin-left: 3px;">VIP</span>
+                                        </t>
+                                    </td>
+                                    <td class="text-center small"><span t-out="line.adults"/>A<t t-if="line.children">/<span t-out="line.children"/>C</t></td>
+                                    <td class="text-center fw-bold text-primary"><span t-out="line.total_covers"/></td>
+                                    <td class="text-center" style="font-size: 9px;">
+                                        <div style="font-weight: 600; color: #0f172a;"><span t-out="dict(line._fields['meal_plan'].selection).get(line.meal_plan)"/></div>
+                                        <div style="margin-top: 2px;">
+                                            <t t-if="line.breakfast_entitlement == 'included'">
+                                                <span style="color: #16a34a; font-weight: 700; font-size: 8.5px;">Included</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span style="color: #d97706; font-weight: 700; font-size: 8.5px;">Chargeable</span>
+                                            </t>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-if="line.service_status == 'served'">
+                                            <span style="background-color: #16a34a; color: #ffffff; font-weight: 700; font-size: 8.5px; padding: 2px 6px; border-radius: 4px; display: inline-block;">Served</span>
+                                        </t>
+                                        <t t-elif="line.service_status == 'room_service'">
+                                            <span style="background-color: #0284c7; color: #ffffff; font-weight: 700; font-size: 8.5px; padding: 2px 6px; border-radius: 4px; display: inline-block;">Room Tray</span>
+                                        </t>
+                                        <t t-elif="line.service_status == 'pending'">
+                                            <span style="background-color: #d97706; color: #ffffff; font-weight: 700; font-size: 8.5px; padding: 2px 6px; border-radius: 4px; display: inline-block;">Pending</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span style="background-color: #64748b; color: #ffffff; font-weight: 700; font-size: 8.5px; padding: 2px 6px; border-radius: 4px; display: inline-block;"><span t-out="line.service_status"/></span>
+                                        </t>
+                                    </td>
+                                    <td class="text-center small"><span t-out="dict(line._fields['outlet'].selection).get(line.outlet)"/></td>
+                                    <td>
+                                        <t t-if="line.item_line_ids">
+                                            <ul class="list-unstyled mb-0" style="padding-left: 0; list-style: none;">
+                                                <t t-foreach="line.item_line_ids" t-as="item_line">
+                                                    <li style="margin-bottom: 2px;">
+                                                        <span style="background-color: #0f172a; color: #ffffff; font-weight: 700; font-size: 8.5px; padding: 1px 4px; border-radius: 3px; display: inline-block;"><t t-out="item_line.quantity"/>x</span>
+                                                        <strong style="color: #0f172a;"><span t-out="item_line.item_id.name"/></strong>
+                                                        <t t-if="item_line.notes">
+                                                            <div style="color: #64748b; font-size: 9px; margin-left: 14px; font-style: italic;">• Note: <t t-out="item_line.notes"/></div>
+                                                        </t>
+                                                    </li>
+                                                </t>
+                                            </ul>
+                                        </t>
+                                        <t t-elif="line.item_ids">
+                                            <span style="font-weight: 600; color: #0f172a;"><span t-out="line.items_summary"/></span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="text-muted fst-italic" style="color: #94a3b8; font-size: 9px;">Standard Buffet Selection</span>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <t t-if="line.dietary_notes">
+                                            <span style="color: #b91c1c; font-weight: 600; display: block;"><span t-out="line.dietary_notes"/></span>
+                                        </t>
+                                        <t t-if="line.notes">
+                                            <span style="color: #64748b; font-size: 9px; display: block;"><span t-out="line.notes"/></span>
+                                        </t>
+                                        <t t-if="not line.dietary_notes and not line.notes">
+                                            <span style="color: #94a3b8;">-</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <!-- Operational Sign-off Block (Clean Table Layout) -->
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 30px; text-align: center; font-size: 10px;">
+                        <tr>
+                            <td style="width: 33.3%; padding: 8px;">
+                                <div style="color: #94a3b8;">_________________________________</div>
+                                <div style="font-weight: 700; color: #0f172a; margin-top: 4px;">Executive Chef / Sous Chef</div>
+                                <div style="font-size: 9px; color: #64748b;">Kitchen Preparation Sign-off</div>
+                            </td>
+                            <td style="width: 33.3%; padding: 8px;">
+                                <div style="color: #94a3b8;">_________________________________</div>
+                                <div style="font-weight: 700; color: #0f172a; margin-top: 4px;">F&amp;B Restaurant Captain</div>
+                                <div style="font-size: 9px; color: #64748b;">Service &amp; Covers Verification</div>
+                            </td>
+                            <td style="width: 33.3%; padding: 8px;">
+                                <div style="color: #94a3b8;">_________________________________</div>
+                                <div style="font-weight: 700; color: #0f172a; margin-top: 4px;">Front Office Duty Manager</div>
+                                <div style="font-size: 9px; color: #64748b;">Guest Roster Reconciliation</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- ============================================================== -->
+    <!-- 2. DAILY ARRIVAL LIST REPORT TEMPLATE                          -->
+    <!-- ============================================================== -->
+    <template id="report_hotel_arrival_list_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; color: #333;">
+                    <style>
+                        .op-table thead th {
+                            background-color: #0f172a !important;
+                            color: #ffffff !important;
+                            border: 1px solid #334155 !important;
+                            padding: 5px 3px !important;
+                            text-align: center !important;
+                        }
+                        .op-table tbody td {
+                            padding: 5px 4px !important;
+                            border: 1px solid #cbd5e1 !important;
+                            vertical-align: middle !important;
+                        }
+                    </style>
+                    <div class="row border-bottom pb-2 mb-3">
+                        <div class="col-8">
+                            <h3 class="text-primary fw-bold mb-1" style="color: #0f172a !important;">DAILY ARRIVAL ROSTER</h3>
+                            <p class="text-muted mb-0 small">Front Desk Shift Operations • Expected Guest Check-Ins</p>
+                        </div>
+                        <div class="col-4 text-end">
+                            <p class="mb-0"><strong>Arrival Date:</strong> <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d-%b-%Y')"/></p>
+                            <p class="mb-0 text-muted small"><strong>Total Arrivals:</strong> <span t-out="len(docs)"/></p>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-sm align-middle op-table" style="font-size: 11px;">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th style="width: 12%;">Booking Ref</th>
+                                <th style="width: 8%;">Room</th>
+                                <th style="width: 14%;">Room Type</th>
+                                <th style="width: 18%;">Guest Name</th>
+                                <th style="width: 10%;">Phone</th>
+                                <th style="width: 6%;">Pax</th>
+                                <th style="width: 8%;">Meal Plan</th>
+                                <th style="width: 8%;">VIP Level</th>
+                                <th style="width: 8%;">Advance</th>
+                                <th style="width: 8%;">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="res">
+                                <tr>
+                                    <td class="fw-bold text-center"><span t-field="res.name"/></td>
+                                    <td class="text-center fw-bold bg-light"><span t-out="res.room_id.name or 'TBA'"/></td>
+                                    <td><span t-field="res.room_type_id.name"/></td>
+                                    <td>
+                                        <span class="fw-bold" t-field="res.guest_id.name"/>
+                                    </td>
+                                    <td><span t-out="res.guest_id.phone or '-'"/></td>
+                                    <td class="text-center"><span t-out="res.adults"/>A, <span t-out="res.children"/>C</td>
+                                    <td class="text-center"><span t-field="res.meal_plan"/></td>
+                                    <td class="text-center">
+                                        <t t-if="res.is_vip">
+                                            <span class="badge bg-danger text-white"><span t-field="res.vip_status"/></span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="text-muted">Standard</span>
+                                        </t>
+                                    </td>
+                                    <td class="text-end"><span t-field="res.advance_payment"/></td>
+                                    <td class="text-end fw-bold text-danger"><span t-field="res.amount_due"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <div class="row mt-4 pt-4 border-top text-center" style="font-size: 11px;">
+                        <div class="col-6">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Duty Front Office Supervisor</strong>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Front Office Manager</strong>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- ============================================================== -->
+    <!-- 3. DAILY DEPARTURE LIST REPORT TEMPLATE                        -->
+    <!-- ============================================================== -->
+    <template id="report_hotel_departure_list_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; color: #333;">
+                    <style>
+                        .op-table thead th {
+                            background-color: #0f172a !important;
+                            color: #ffffff !important;
+                            border: 1px solid #334155 !important;
+                            padding: 5px 3px !important;
+                            text-align: center !important;
+                        }
+                        .op-table tbody td {
+                            padding: 5px 4px !important;
+                            border: 1px solid #cbd5e1 !important;
+                            vertical-align: middle !important;
+                        }
+                    </style>
+                    <div class="row border-bottom pb-2 mb-3">
+                        <div class="col-8">
+                            <h3 class="text-primary fw-bold mb-1" style="color: #0f172a !important;">DAILY DEPARTURE ROSTER (DUE OUT)</h3>
+                            <p class="text-muted mb-0 small">Front Desk Operations • Expected Check-outs &amp; Folio Settlements</p>
+                        </div>
+                        <div class="col-4 text-end">
+                            <p class="mb-0"><strong>Departure Date:</strong> <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d-%b-%Y')"/></p>
+                            <p class="mb-0 text-muted small"><strong>Total Due Out:</strong> <span t-out="len(docs)"/></p>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-sm align-middle op-table" style="font-size: 11px;">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th style="width: 8%;">Room</th>
+                                <th style="width: 12%;">Booking Ref</th>
+                                <th style="width: 20%;">Guest Name</th>
+                                <th style="width: 8%;">Nights</th>
+                                <th style="width: 14%;">Check-Out Time</th>
+                                <th style="width: 12%;">Folio #</th>
+                                <th style="width: 10%;">Charges</th>
+                                <th style="width: 10%;">Paid</th>
+                                <th style="width: 10%;">Balance Due</th>
+                                <th style="width: 10%;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="res">
+                                <tr>
+                                    <td class="text-center fw-bold bg-light"><span t-out="res.room_id.name or '-'"/></td>
+                                    <td class="text-center"><span t-field="res.name"/></td>
+                                    <td><span class="fw-bold" t-field="res.guest_id.name"/></td>
+                                    <td class="text-center"><span t-field="res.nights"/></td>
+                                    <td class="text-center"><span t-field="res.check_out" t-options='{"widget": "datetime"}'/></td>
+                                    <td class="text-center"><span t-out="res.folio_id.name or '-'"/></td>
+                                    <td class="text-end"><span t-field="res.amount_total"/></td>
+                                    <td class="text-end"><span t-field="res.amount_paid"/></td>
+                                    <td class="text-end fw-bold text-danger"><span t-field="res.amount_due"/></td>
+                                    <td class="text-center">
+                                        <t t-if="res.amount_due &lt;= 0.01">
+                                            <span class="badge bg-success text-white">Settled</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge bg-danger text-white">Due</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <div class="row mt-4 pt-4 border-top text-center" style="font-size: 11px;">
+                        <div class="col-6">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Cashier / Front Desk Agent</strong>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Duty Manager</strong>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- ============================================================== -->
+    <!-- 4. DAILY IN-HOUSE GUEST LIST REPORT TEMPLATE                   -->
+    <!-- ============================================================== -->
+    <template id="report_hotel_inhouse_list_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; color: #333;">
+                    <style>
+                        .op-table thead th {
+                            background-color: #0f172a !important;
+                            color: #ffffff !important;
+                            border: 1px solid #334155 !important;
+                            padding: 5px 3px !important;
+                            text-align: center !important;
+                        }
+                        .op-table tbody td {
+                            padding: 5px 4px !important;
+                            border: 1px solid #cbd5e1 !important;
+                            vertical-align: middle !important;
+                        }
+                    </style>
+                    <div class="row border-bottom pb-2 mb-3">
+                        <div class="col-8">
+                            <h3 class="text-primary fw-bold mb-1" style="color: #0f172a !important;">DAILY IN-HOUSE GUEST CENSUS</h3>
+                            <p class="text-muted mb-0 small">Resident Guests Census • Security &amp; Operations Roster</p>
+                        </div>
+                        <div class="col-4 text-end">
+                            <p class="mb-0"><strong>Audit Date:</strong> <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d-%b-%Y')"/></p>
+                            <p class="mb-0 text-muted small"><strong>Occupied Rooms:</strong> <span t-out="len(docs)"/></p>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-sm align-middle op-table" style="font-size: 11px;">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th style="width: 8%;">Room</th>
+                                <th style="width: 20%;">Guest Name</th>
+                                <th style="width: 12%;">Nationality</th>
+                                <th style="width: 12%;">Check-In</th>
+                                <th style="width: 12%;">Check-Out</th>
+                                <th style="width: 6%;">Nights</th>
+                                <th style="width: 8%;">Pax</th>
+                                <th style="width: 8%;">Meal Plan</th>
+                                <th style="width: 8%;">VIP Level</th>
+                                <th style="width: 10%;">Balance Due</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="res">
+                                <tr>
+                                    <td class="text-center fw-bold bg-light"><span t-out="res.room_id.name or '-'"/></td>
+                                    <td><span class="fw-bold" t-field="res.guest_id.name"/></td>
+                                    <td><span t-out="res.guest_id.nationality_id.name or '-'"/></td>
+                                    <td class="text-center"><span t-field="res.check_in" t-options='{"widget": "date"}'/></td>
+                                    <td class="text-center"><span t-field="res.check_out" t-options='{"widget": "date"}'/></td>
+                                    <td class="text-center"><span t-field="res.nights"/></td>
+                                    <td class="text-center"><span t-out="res.adults"/>A, <span t-out="res.children"/>C</td>
+                                    <td class="text-center"><span t-field="res.meal_plan"/></td>
+                                    <td class="text-center">
+                                        <t t-if="res.is_vip">
+                                            <span class="badge bg-danger text-white"><span t-field="res.vip_status"/></span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="text-muted">-</span>
+                                        </t>
+                                    </td>
+                                    <td class="text-end fw-bold"><span t-field="res.amount_due"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <div class="row mt-4 pt-4 border-top text-center" style="font-size: 11px;">
+                        <div class="col-4">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Front Office Manager</strong>
+                        </div>
+                        <div class="col-4">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Executive Housekeeper</strong>
+                        </div>
+                        <div class="col-4">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Resort General Manager</strong>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- ============================================================== -->
+    <!-- 5. DAILY VIP GUEST REGISTER REPORT TEMPLATE                    -->
+    <!-- ============================================================== -->
+    <template id="report_hotel_vip_list_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; color: #333;">
+                    <style>
+                        .op-table thead th {
+                            background-color: #0f172a !important;
+                            color: #ffffff !important;
+                            border: 1px solid #334155 !important;
+                            padding: 5px 3px !important;
+                            text-align: center !important;
+                        }
+                        .op-table tbody td {
+                            padding: 5px 4px !important;
+                            border: 1px solid #cbd5e1 !important;
+                            vertical-align: middle !important;
+                        }
+                    </style>
+                    <div class="row border-bottom pb-2 mb-3">
+                        <div class="col-8">
+                            <h3 class="text-danger fw-bold mb-1" style="color: #991b1b !important;">EXECUTIVE VIP GUEST REGISTER</h3>
+                            <p class="text-muted mb-0 small">Special Attention Roster • Silver, Gold &amp; Platinum Guests</p>
+                        </div>
+                        <div class="col-4 text-end">
+                            <p class="mb-0"><strong>Date:</strong> <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d-%b-%Y')"/></p>
+                            <p class="mb-0 text-muted small"><strong>VIP Guests Count:</strong> <span t-out="len(docs)"/></p>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-sm align-middle op-table" style="font-size: 11px;">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th style="width: 10%;">VIP Level</th>
+                                <th style="width: 8%;">Room</th>
+                                <th style="width: 20%;">Guest Name</th>
+                                <th style="width: 10%;">Booking Status</th>
+                                <th style="width: 12%;">Stay Dates</th>
+                                <th style="width: 10%;">Meal Plan</th>
+                                <th style="width: 30%;">Preferences &amp; Special Requests</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="res">
+                                <tr>
+                                    <td class="text-center fw-bold">
+                                        <span class="badge bg-danger text-white fs-6"><span t-field="res.vip_status"/></span>
+                                    </td>
+                                    <td class="text-center fw-bold bg-light fs-6"><span t-out="res.room_id.name or 'TBA'"/></td>
+                                    <td>
+                                        <strong class="fs-6 text-primary"><span t-field="res.guest_id.name"/></strong>
+                                        <div class="text-muted small">Phone: <span t-out="res.guest_id.phone or '-'"/></div>
+                                    </td>
+                                    <td class="text-center"><span t-field="res.state"/></td>
+                                    <td class="text-center small">
+                                        <span t-field="res.check_in" t-options='{"widget": "date"}'/> to <span t-field="res.check_out" t-options='{"widget": "date"}'/>
+                                    </td>
+                                    <td class="text-center"><span t-field="res.meal_plan"/></td>
+                                    <td class="small">
+                                        <span t-out="res.dietary_notes or res.notes or res.guest_id.guest_notes or 'Standard VIP Amenities Setup'"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <div class="row mt-4 pt-4 border-top text-center" style="font-size: 11px;">
+                        <div class="col-4">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Guest Relations Manager</strong>
+                        </div>
+                        <div class="col-4">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Executive Housekeeper</strong>
+                        </div>
+                        <div class="col-4">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>General Manager</strong>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- ============================================================== -->
+    <!-- 6. DAILY CASHIER & PAYMENT SUMMARY REPORT TEMPLATE             -->
+    <!-- ============================================================== -->
+    <template id="report_hotel_cashier_summary_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; color: #333;">
+                    <style>
+                        .op-table thead th {
+                            background-color: #0f172a !important;
+                            color: #ffffff !important;
+                            border: 1px solid #334155 !important;
+                            padding: 5px 3px !important;
+                            text-align: center !important;
+                        }
+                        .op-table tbody td {
+                            padding: 5px 4px !important;
+                            border: 1px solid #cbd5e1 !important;
+                            vertical-align: middle !important;
+                        }
+                    </style>
+                    <div class="row border-bottom pb-2 mb-3">
+                        <div class="col-8">
+                            <h3 class="text-primary fw-bold mb-1" style="color: #0f172a !important;">DAILY CASHIER &amp; PAYMENT SETTLEMENT SUMMARY</h3>
+                            <p class="text-muted mb-0 small">Shift Settlement &amp; Payment Method Reconciliation</p>
+                        </div>
+                        <div class="col-4 text-end">
+                            <p class="mb-0"><strong>Shift Date:</strong> <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d-%b-%Y')"/></p>
+                            <p class="mb-0 text-muted small"><strong>Transactions:</strong> <span t-out="len(docs)"/></p>
+                        </div>
+                    </div>
+
+                    <!-- Payment Mode Breakdown -->
+                    <div class="row g-2 mb-4 text-center">
+                        <div class="col-3">
+                            <div class="p-2 border rounded bg-success-subtle border-success">
+                                <span class="d-block text-success small text-uppercase">Cash</span>
+                                <strong class="fs-5 text-success">
+                                    <span t-out="'%.2f' % sum([d.amount for d in docs if d.payment_method == 'cash'])"/>
+                                </strong>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="p-2 border rounded bg-info-subtle border-info">
+                                <span class="d-block text-info small text-uppercase">Credit / Debit Card</span>
+                                <strong class="fs-5 text-info">
+                                    <span t-out="'%.2f' % sum([d.amount for d in docs if d.payment_method == 'card'])"/>
+                                </strong>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="p-2 border rounded bg-primary-subtle border-primary">
+                                <span class="d-block text-primary small text-uppercase">UPI / Digital QR</span>
+                                <strong class="fs-5 text-primary">
+                                    <span t-out="'%.2f' % sum([d.amount for d in docs if d.payment_method == 'upi'])"/>
+                                </strong>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="p-2 border rounded bg-warning-subtle border-warning">
+                                <span class="d-block text-warning small text-uppercase">Bank Wire / Transfer</span>
+                                <strong class="fs-5 text-warning">
+                                    <span t-out="'%.2f' % sum([d.amount for d in docs if d.payment_method == 'bank'])"/>
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Transactions List -->
+                    <table class="table table-bordered table-sm align-middle op-table" style="font-size: 11px;">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th style="width: 14%;">Date &amp; Time</th>
+                                <th style="width: 14%;">Receipt Title</th>
+                                <th style="width: 14%;">Folio #</th>
+                                <th style="width: 20%;">Guest Name</th>
+                                <th style="width: 12%;">Mode</th>
+                                <th style="width: 14%;">Reference / Txn ID</th>
+                                <th style="width: 12%;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="p">
+                                <tr>
+                                    <td class="text-center"><span t-field="p.payment_date" t-options='{"widget": "datetime"}'/></td>
+                                    <td><span t-field="p.name"/></td>
+                                    <td class="text-center fw-bold"><span t-out="p.folio_id.name or '-'"/></td>
+                                    <td><span t-field="p.guest_id.name"/></td>
+                                    <td class="text-center fw-bold">
+                                        <span t-field="p.payment_method"/>
+                                    </td>
+                                    <td class="text-center font-monospace small"><span t-out="p.reference or '-'"/></td>
+                                    <td class="text-end fw-bold text-success"><span t-field="p.amount"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-light fw-bold">
+                                <td colspan="6" class="text-end">TOTAL CASHIER COLLECTIONS:</td>
+                                <td class="text-end fs-6 text-success">
+                                    <span t-out="'%.2f' % sum(docs.mapped('amount'))"/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div class="row mt-4 pt-4 border-top text-center" style="font-size: 11px;">
+                        <div class="col-6">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Duty Front Office Cashier</strong>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Chief Accountant / Financial Controller</strong>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- ============================================================== -->
+    <!-- 7. ROOM STATUS & HOUSEKEEPING SHEET REPORT TEMPLATE            -->
+    <!-- ============================================================== -->
+    <template id="report_hotel_room_status_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; color: #333;">
+                    <style>
+                        .op-table thead th {
+                            background-color: #0f172a !important;
+                            color: #ffffff !important;
+                            border: 1px solid #334155 !important;
+                            padding: 5px 3px !important;
+                            text-align: center !important;
+                        }
+                        .op-table tbody td {
+                            padding: 5px 4px !important;
+                            border: 1px solid #cbd5e1 !important;
+                            vertical-align: middle !important;
+                        }
+                    </style>
+                    <div class="row border-bottom pb-2 mb-3">
+                        <div class="col-8">
+                            <h3 class="text-primary fw-bold mb-1" style="color: #0f172a !important;">MORNING ROOM STATUS &amp; HOUSEKEEPING SHEET</h3>
+                            <p class="text-muted mb-0 small">Housekeeping Shift Assignment &amp; Room Physical Status</p>
+                        </div>
+                        <div class="col-4 text-end">
+                            <p class="mb-0"><strong>Date:</strong> <span t-out="context_timestamp(datetime.datetime.now()).strftime('%d-%b-%Y')"/></p>
+                            <p class="mb-0 text-muted small"><strong>Total Rooms:</strong> <span t-out="len(docs)"/></p>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-sm align-middle op-table" style="font-size: 11px;">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th style="width: 8%;">Room</th>
+                                <th style="width: 14%;">Room Type</th>
+                                <th style="width: 10%;">Floor / Wing</th>
+                                <th style="width: 12%;">Occupancy</th>
+                                <th style="width: 12%;">Housekeeping</th>
+                                <th style="width: 12%;">Maintenance</th>
+                                <th style="width: 20%;">Current Guest</th>
+                                <th style="width: 12%;">Attendant Sign</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="rm">
+                                <tr>
+                                    <td class="text-center fw-bold bg-light fs-6"><span t-field="rm.name"/></td>
+                                    <td><span t-field="rm.room_type_id.name"/></td>
+                                    <td class="text-center"><span t-out="rm.floor_id.name or '-'"/></td>
+                                    <td class="text-center">
+                                        <t t-if="rm.occupancy_status == 'occupied'">
+                                            <span class="badge bg-danger text-white">Occupied</span>
+                                        </t>
+                                        <t t-elif="rm.occupancy_status == 'reserved'">
+                                            <span class="badge bg-warning text-dark">Reserved</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge bg-success text-white">Vacant</span>
+                                        </t>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-if="rm.housekeeping_status in ('clean', 'inspected')">
+                                            <span class="badge bg-success text-white"><span t-field="rm.housekeeping_status"/></span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge bg-warning text-dark"><span t-field="rm.housekeeping_status"/></span>
+                                        </t>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="rm.maintenance_status"/>
+                                    </td>
+                                    <td>
+                                        <span t-out="rm.current_reservation_id.guest_id.name or '-'"/>
+                                    </td>
+                                    <td class="text-center text-muted">
+                                        [ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; ]
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <div class="row mt-4 pt-4 border-top text-center" style="font-size: 11px;">
+                        <div class="col-6">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Housekeeping Supervisor</strong>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-0 text-muted">_________________________________</p>
+                            <strong>Executive Housekeeper</strong>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

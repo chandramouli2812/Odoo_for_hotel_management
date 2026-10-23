@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Kanban View: Visual Law Enforcement Visit Register -->
+    <record id="view_compliance_police_visit_kanban" model="ir.ui.view">
+        <field name="name">compliance.police.visit.kanban</field>
+        <field name="model">compliance.police.visit</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1" quick_create="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="visit_datetime"/>
+                <field name="departure_datetime"/>
+                <field name="police_station"/>
+                <field name="officer_name"/>
+                <field name="officer_rank"/>
+                <field name="officer_badge_no"/>
+                <field name="officer_phone"/>
+                <field name="purpose"/>
+                <field name="met_with_id"/>
+                <field name="incident_id"/>
+                <field name="follow_up_required"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click p-2 mb-2 rounded shadow-sm border">
+                            <!-- Card Header: Record ID & Follow-up Alert -->
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge text-bg-dark text-white font-monospace px-2 py-1 shadow-sm" style="background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important;">
+                                    <span style="color: #ffffff !important; font-weight: 700;">
+                                        <field name="name" class="text-white"/>
+                                    </span>
+                                </span>
+                                <div>
+                                    <span t-if="record.follow_up_required.raw_value" class="badge bg-danger text-white">
+                                        Action Required
+                                    </span>
+                                    <span t-elif="record.state.raw_value == 'completed'" class="badge bg-success">
+                                        Verified
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Officer & Police Station -->
+                            <div class="mb-2">
+                                <div class="fs-6 fw-bold text-dark">
+                                    <field name="officer_name"/>
+                                </div>
+                                <div class="text-primary small fw-semibold">
+                                    <field name="officer_rank"/>
+                                    <span t-if="record.officer_badge_no.raw_value" class="text-muted">
+                                        (Badge: <field name="officer_badge_no"/>)
+                                    </span>
+                                </div>
+                                <div class="text-muted small mt-1">
+                                    Station: <strong><field name="police_station"/></strong>
+                                </div>
+                            </div>
+
+                            <!-- Timing & Met With -->
+                            <div class="bg-light p-2 rounded mb-2 border small">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-muted">Visit Time:</span>
+                                    <strong class="text-dark"><field name="visit_datetime"/></strong>
+                                </div>
+                                <div t-if="record.met_with_id.raw_value" class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">Resort Contact:</span>
+                                    <span class="text-dark"><field name="met_with_id"/></span>
+                                </div>
+                            </div>
+
+                            <!-- Purpose Badge -->
+                            <div class="mb-2">
+                                <field name="purpose" widget="badge"/>
+                            </div>
+
+                            <!-- Card Footer: Quick Actions -->
+                            <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-1">
+                                <div>
+                                    <field name="state" widget="badge"
+                                           decoration-info="state == 'draft'"
+                                           decoration-warning="state == 'in_progress'"
+                                           decoration-success="state == 'completed'"/>
+                                </div>
+                                <div class="text-end">
+                                    <button t-if="record.state.raw_value != 'completed'" name="action_complete" type="object" class="btn btn-sm btn-outline-success">
+                                        Mark Verified
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Pivot View: Police Visits Analytics -->
+    <record id="view_compliance_police_visit_pivot" model="ir.ui.view">
+        <field name="name">compliance.police.visit.pivot</field>
+        <field name="model">compliance.police.visit</field>
+        <field name="arch" type="xml">
+            <pivot string="Police Visits Analysis" sample="1">
+                <field name="police_station" type="row"/>
+                <field name="purpose" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph View: Police Visits by Station & Purpose -->
+    <record id="view_compliance_police_visit_graph" model="ir.ui.view">
+        <field name="name">compliance.police.visit.graph</field>
+        <field name="model">compliance.police.visit</field>
+        <field name="arch" type="xml">
+            <graph string="Police Visits by Month" type="bar" sample="1">
+                <field name="visit_datetime" interval="month"/>
+                <field name="purpose"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- List / Tree View -->
+    <record id="view_compliance_police_visit_tree" model="ir.ui.view">
+        <field name="name">compliance.police.visit.tree</field>
+        <field name="model">compliance.police.visit</field>
+        <field name="arch" type="xml">
+            <list string="Police Visit Register"
+                  decoration-danger="follow_up_required"
+                  decoration-warning="state == 'in_progress'"
+                  decoration-success="state == 'completed'">
+                <field name="name" decoration-bf="1"/>
+                <field name="visit_datetime"/>
+                <field name="police_station" decoration-bf="1"/>
+                <field name="officer_name"/>
+                <field name="officer_rank" widget="badge"/>
+                <field name="officer_badge_no"/>
+                <field name="officer_phone"/>
+                <field name="purpose" widget="badge"/>
+                <field name="met_with_id"/>
+                <field name="incident_id" optional="show"/>
+                <field name="follow_up_required" widget="boolean_toggle"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'in_progress'"
+                       decoration-success="state == 'completed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_compliance_police_visit_form" model="ir.ui.view">
+        <field name="name">compliance.police.visit.form</field>
+        <field name="model">compliance.police.visit</field>
+        <field name="arch" type="xml">
+            <form string="Police &amp; Law Enforcement Official Visit">
+                <header>
+                    <button name="action_start_action" string="Action Required" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_complete" string="Mark Completed &amp; Verified" type="object" class="btn-success" invisible="state == 'completed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Completed &amp; Verified" bg_color="text-bg-success" invisible="state != 'completed'"/>
+                    <widget name="web_ribbon" title="Action Pending" bg_color="text-bg-warning" invisible="state != 'in_progress'"/>
+                    <div class="oe_title">
+                        <span class="o_form_label text-muted">Police Official Visit Log</span>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Visiting Police Officer Details">
+                            <field name="officer_name" placeholder="Full name of police officer..."/>
+                            <field name="officer_rank"/>
+                            <field name="police_station" placeholder="e.g. North Goa PS, Calangute Police Station"/>
+                            <field name="officer_badge_no" placeholder="Badge / Belt / ID number"/>
+                            <field name="officer_phone" widget="phone" placeholder="Official mobile number..."/>
+                            <field name="general_diary_entry" placeholder="Station General Diary Entry No."/>
+                        </group>
+                        <group string="Visit Timing &amp; Resort Representative">
+                            <field name="visit_datetime"/>
+                            <field name="departure_datetime"/>
+                            <field name="purpose"/>
+                            <field name="met_with_id"/>
+                            <field name="incident_id" placeholder="Associated incident if any..."/>
+                            <field name="property_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Instructions &amp; Discussion Summary" name="observations">
+                            <field name="observations" placeholder="Record the queries asked, documents reviewed, or specific directives given by the officer..."/>
+                        </page>
+                        <page string="Follow-Up &amp; Action Plan" name="follow_up">
+                            <group>
+                                <field name="follow_up_required" widget="boolean_toggle"/>
+                            </group>
+                            <field name="follow_up_notes" invisible="not follow_up_required" placeholder="Action items, documents to be delivered to station, or compliance deadline..."/>
+                        </page>
+                        <page string="Notices &amp; Summons Documents" name="attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_compliance_police_visit_search" model="ir.ui.view">
+        <field name="name">compliance.police.visit.search</field>
+        <field name="model">compliance.police.visit</field>
+        <field name="arch" type="xml">
+            <search string="Search Police Visits">
+                <field name="name"/>
+                <field name="officer_name"/>
+                <field name="police_station"/>
+                <field name="officer_badge_no"/>
+                <field name="incident_id"/>
+                <separator/>
+                <filter string="Follow-Up Required" name="filter_follow_up" domain="[('follow_up_required', '=', True)]"/>
+                <filter string="Today's Visits" name="filter_today" domain="[('visit_datetime', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('visit_datetime', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <separator/>
+                <filter string="Pending Action" name="filter_pending" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Completed &amp; Verified" name="filter_completed" domain="[('state', '=', 'completed')]"/>
+                <group>
+                    <filter string="Police Station" name="group_station" context="{'group_by': 'police_station'}"/>
+                    <filter string="Purpose" name="group_purpose" context="{'group_by': 'purpose'}"/>
+                    <filter string="Officer Rank" name="group_rank" context="{'group_by': 'officer_rank'}"/>
+                    <filter string="Resort Representative" name="group_met" context="{'group_by': 'met_with_id'}"/>
+                    <filter string="Status" name="group_status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_compliance_police_visit_all" model="ir.actions.act_window">
+        <field name="name">Police Visit Register</field>
+        <field name="res_model">compliance.police.visit</field>
+        <field name="view_mode">kanban,list,pivot,graph,form</field>
+        <field name="search_view_id" ref="view_compliance_police_visit_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Record a Visit by Law Enforcement Personnel
+            </p>
+            <p>
+                Log routine patrols, document checks, and investigative inquiries made by police officers at the property.
+            </p>
+        </field>
+    </record>
+</odoo>

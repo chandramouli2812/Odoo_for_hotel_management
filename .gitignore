@@ -1,0 +1,53 @@
+# ==========================================
+# Core Odoo Source & Bundled Addons
+# (Base engine installed via package/docker)
+# ==========================================
+/odoo/
+/addons/
+/debian/
+/doc/
+/setup/
+/skills/
+/.github/
+odoo-bin
+setup.py
+setup.cfg
+MANIFEST.in
+ruff.toml
+CONTRIBUTING.md
+COPYRIGHT
+SECURITY.md
+.weblate.json
+.git-blame-ignore-revs
+
+# ==========================================
+# Local Configuration & Secrets (DO NOT COMMIT)
+# ==========================================
+/odoo.conf
+*.conf.local
+.env
+.env.local
+
+# ==========================================
+# Logs & Database Filestores
+# ==========================================
+*.log
+odoo.log
+odoo/filestore/
+*.sqlite
+*.db
+
+# ==========================================
+# Python, OS & Editor Artifacts
+# ==========================================
+*.py[co]
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.coverage
+.vscode/
+.idea/
+*~
+*.orig
+.DS_Store
+Thumbs.db

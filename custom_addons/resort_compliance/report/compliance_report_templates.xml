@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template 1: Police Guest Intimation Form -->
+    <template id="report_police_guest_intimation_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family: Arial, sans-serif; font-size: 11px; color: #1e293b; line-height: 1.4;">
+                        
+                        <!-- Header Banner -->
+                        <div style="background-color: #0f172a !important; color: #ffffff !important; padding: 10px 15px; border-radius: 4px; margin-bottom: 12px;">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #93c5fd; font-weight: bold;">
+                                        State Police &amp; Local Law Enforcement Intimation
+                                    </div>
+                                    <h3 style="margin: 2px 0 0 0; font-size: 16px; font-weight: bold; color: #ffffff;">
+                                        HOTEL GUEST ARRIVAL INTIMATION FORM
+                                    </h3>
+                                    <div style="font-size: 9px; color: #cbd5e1;">
+                                        Mandatory Intimation under Police Regulations / Sarai Act
+                                    </div>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <div style="background-color: #1e293b; padding: 5px 8px; border-radius: 4px; display: inline-block; border: 1px solid #334155; text-align: right;">
+                                        <div style="font-size: 8px; color: #94a3b8; text-transform: uppercase;">Intimation Ref</div>
+                                        <div style="font-size: 11px; font-weight: bold; color: #ffffff;"><t t-out="doc.name"/></div>
+                                        <div style="font-size: 8px; color: #38bdf8;">Status: <t t-out="dict(doc._fields['state'].selection).get(doc.state)"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Addressed To Police Authority -->
+                        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 8px 12px; margin-bottom: 12px;">
+                            <div class="row">
+                                <div class="col-7">
+                                    <strong>To:</strong><br/>
+                                    The Station House Officer / Police Sub-Inspector,<br/>
+                                    <strong><t t-out="doc.authority_name or 'Local Police Station'"/></strong><br/>
+                                    Jurisdiction / Beat: <t t-out="doc.police_station_jurisdiction or 'Resort Beat Area'"/>
+                                </div>
+                                <div class="col-5 text-end">
+                                    <strong>Intimation Date:</strong> <t t-out="doc.submission_date or context_today().strftime('%Y-%m-%d')"/><br/>
+                                    <strong>Police Ack Ref:</strong> <t t-out="doc.submission_ref or 'Pending Inward'"/><br/>
+                                    <strong>Mode:</strong> <t t-out="dict(doc._fields['submission_mode'].selection).get(doc.submission_mode)"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guest & Identification Table -->
+                        <table class="table table-bordered mb-2" style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                            <thead>
+                                <tr>
+                                    <th colspan="4" style="background-color: #1e293b !important; color: #ffffff !important; padding: 5px 8px; font-weight: bold; text-transform: uppercase;">
+                                        1. Guest Identity &amp; Residential Details
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width: 25%; font-weight: bold; background-color: #f1f5f9;">Full Guest Name:</td>
+                                    <td style="width: 25%; font-weight: bold;"><t t-out="doc.guest_id.name"/></td>
+                                    <td style="width: 25%; font-weight: bold; background-color: #f1f5f9;">Nationality:</td>
+                                    <td style="width: 25%;"><t t-out="doc.nationality_id.name or 'Indian'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">ID Document Type:</td>
+                                    <td><t t-out="dict(doc._fields['id_type'].selection).get(doc.id_type)"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">ID Number:</td>
+                                    <td style="font-weight: bold; color: #0f172a;"><t t-out="doc.id_number"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Contact Mobile / Phone:</td>
+                                    <td><t t-out="doc.guest_phone or 'N/A'"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Email Address:</td>
+                                    <td><t t-out="doc.guest_email or 'N/A'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Permanent Address:</td>
+                                    <td colspan="3"><t t-out="doc.permanent_address or 'As per ID Proof on file'"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Stay Details Table -->
+                        <table class="table table-bordered mb-2" style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                            <thead>
+                                <tr>
+                                    <th colspan="4" style="background-color: #1e293b !important; color: #ffffff !important; padding: 5px 8px; font-weight: bold; text-transform: uppercase;">
+                                        2. Stay Particulars &amp; Resort Room Allocation
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width: 25%; font-weight: bold; background-color: #f1f5f9;">Allocated Room / Villa:</td>
+                                    <td style="width: 25%; font-weight: bold;"><t t-out="doc.room_id.name or 'Assigned on Arrival'"/></td>
+                                    <td style="width: 25%; font-weight: bold; background-color: #f1f5f9;">Booking / Folio Ref:</td>
+                                    <td style="width: 25%;"><t t-out="doc.reservation_id.name or 'Direct Walk-in'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Arrival Date &amp; Time:</td>
+                                    <td><t t-out="doc.arrival_date"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Expected Departure:</td>
+                                    <td><t t-out="doc.departure_date"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Stay Duration:</td>
+                                    <td><t t-out="doc.duration_days"/> Days</td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Purpose of Stay:</td>
+                                    <td><t t-out="dict(doc._fields['purpose_of_stay'].selection).get(doc.purpose_of_stay)"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Accompanying Persons:</td>
+                                    <td colspan="3">
+                                        <t t-out="doc.accompanying_adults"/> Adults, <t t-out="doc.accompanying_children"/> Children.
+                                        <t t-if="doc.accompanying_details">
+                                            <br/><em>Details: <t t-out="doc.accompanying_details"/></em>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Verification & Remarks -->
+                        <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 8px 12px; margin-bottom: 10px; background-color: #f8fafc;">
+                            <strong>Verification &amp; Compliance Notes:</strong>
+                            <p style="margin: 4px 0 0 0; font-size: 9.5px; color: #475569;">
+                                <t t-out="doc.remarks or 'Original Photo Identity Card verified and retained in digital archives. No adverse remarks recorded at check-in.'"/>
+                            </p>
+                        </div>
+
+                        <!-- Digital Paperless Verification Badge & Seal -->
+                        <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px; padding: 6px 10px; margin-bottom: 15px; font-size: 8.5px; color: #166534;">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <strong>DIGITAL COMPLIANCE RECORD:</strong> Electronically verified under statutory hotel regulations. Digital record archived for law enforcement audit.
+                                </div>
+                                <div class="col-4 text-end">
+                                    <strong>SEAL: <t t-out="doc.digital_verification_seal or 'DIGI-VERIFIED'"/></strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Undertaking & Signatures -->
+                        <div style="margin-top: 35px; border-top: 1px dashed #94a3b8; padding-top: 12px;">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div style="height: 45px;"></div>
+                                    <div style="border-top: 1px solid #334155; font-weight: bold; padding-top: 3px;">Signature of Guest</div>
+                                    <div style="font-size: 8px; color: #64748b;">(Certified true &amp; correct)</div>
+                                </div>
+                                <div class="col-4">
+                                    <div style="height: 45px;"></div>
+                                    <div style="border-top: 1px solid #334155; font-weight: bold; padding-top: 3px;">Resort Front Office / Duty Manager</div>
+                                    <div style="font-size: 8px; color: #64748b;">(Identity verified by hotel staff)</div>
+                                </div>
+                                <div class="col-4">
+                                    <div style="height: 45px;"></div>
+                                    <div style="border-top: 1px solid #334155; font-weight: bold; padding-top: 3px;">Police Station Inward Seal &amp; Sign</div>
+                                    <div style="font-size: 8px; color: #64748b;">(Receiving Law Enforcement Officer)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Template 2: Foreign Guest Form C Registration -->
+    <template id="report_foreign_guest_form_c_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family: Arial, sans-serif; font-size: 11px; color: #1e293b; line-height: 1.4;">
+                        
+                        <!-- Header Banner -->
+                        <div style="background-color: #1e3a8a !important; color: #ffffff !important; padding: 10px 15px; border-radius: 4px; margin-bottom: 12px;">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #93c5fd; font-weight: bold;">
+                                        Bureau of Immigration (BoI) • Ministry of Home Affairs • Govt. of India
+                                    </div>
+                                    <h3 style="margin: 2px 0 0 0; font-size: 16px; font-weight: bold; color: #ffffff;">
+                                        FORM C - HOTEL ARRIVAL REPORT OF FOREIGN NATIONAL
+                                    </h3>
+                                    <div style="font-size: 9px; color: #cbd5e1;">
+                                        (Rule 14 of the Registration of Foreigners Rules, 1992)
+                                    </div>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <div style="background-color: #0f172a; padding: 5px 8px; border-radius: 4px; display: inline-block; border: 1px solid #334155; text-align: right;">
+                                        <div style="font-size: 8px; color: #94a3b8; text-transform: uppercase;">Form C Ref</div>
+                                        <div style="font-size: 11px; font-weight: bold; color: #ffffff;"><t t-out="doc.name"/></div>
+                                        <div style="font-size: 8px; color: #38bdf8;">BoI Ack: <t t-out="doc.frro_ack_number or 'Pending'"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form C Table -->
+                        <table class="table table-bordered mb-2" style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                            <thead>
+                                <tr>
+                                    <th colspan="4" style="background-color: #0f172a !important; color: #ffffff !important; padding: 5px 8px; font-weight: bold; text-transform: uppercase;">
+                                        Particulars of Foreign National
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width: 25%; font-weight: bold; background-color: #f1f5f9;">1. Name of Guest:</td>
+                                    <td style="width: 25%; font-weight: bold;"><t t-out="doc.guest_id.name"/></td>
+                                    <td style="width: 25%; font-weight: bold; background-color: #f1f5f9;">2. Nationality:</td>
+                                    <td style="width: 25%; font-weight: bold;"><t t-out="doc.nationality_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">3. Passport Number:</td>
+                                    <td style="font-weight: bold;"><t t-out="doc.passport_number"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">4. Passport Country &amp; Expiry:</td>
+                                    <td><t t-out="doc.passport_country_id.name or doc.nationality_id.name"/> / <t t-out="doc.passport_expiry_date or 'N/A'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">5. Visa Number &amp; Category:</td>
+                                    <td><t t-out="doc.visa_number or 'N/A'"/> (<t t-out="dict(doc._fields['visa_type'].selection).get(doc.visa_type)"/>)</td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">6. Visa Valid Until:</td>
+                                    <td style="font-weight: bold; color: #1e3a8a;"><t t-out="doc.visa_valid_until or 'N/A'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">7. Date of Arrival in India:</td>
+                                    <td><t t-out="doc.arrival_in_india_date or 'N/A'"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">8. Port of Entry into India:</td>
+                                    <td><t t-out="doc.port_of_entry or 'N/A'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">9. Arrival at Resort:</td>
+                                    <td><t t-out="doc.arrival_at_hotel"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">10. Expected Departure:</td>
+                                    <td><t t-out="doc.expected_departure or 'N/A'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">11. Purpose of Visit:</td>
+                                    <td><t t-out="dict(doc._fields['purpose_of_visit'].selection).get(doc.purpose_of_visit)"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">12. Next Destination:</td>
+                                    <td><t t-out="doc.next_destination or 'N/A'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">13. Contact Number in India:</td>
+                                    <td><t t-out="doc.phone_in_india or 'N/A'"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">14. Emergency Contact:</td>
+                                    <td><t t-out="doc.emergency_contact or 'N/A'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">15. Permanent Address:</td>
+                                    <td colspan="3"><t t-out="doc.home_country_address or 'As per passport credentials'"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Checklist Verification -->
+                        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 6px 12px; margin-bottom: 10px;">
+                            <strong>Immigration Document Verification Status:</strong>
+                            <div class="row mt-1" style="font-size: 9px;">
+                                <div class="col-3">Passport Copy: <strong t-out="doc.doc_passport_copy and 'VERIFIED' or 'Pending'"/></div>
+                                <div class="col-3">Visa Copy: <strong t-out="doc.doc_visa_copy and 'VERIFIED' or 'Pending'"/></div>
+                                <div class="col-3">Entry Stamp: <strong t-out="doc.doc_entry_stamp and 'VERIFIED' or 'Pending'"/></div>
+                                <div class="col-3">Guest Photograph: <strong t-out="doc.doc_photo and 'VERIFIED' or 'Pending'"/></div>
+                            </div>
+                        </div>
+
+                        <!-- Official Digital Submission Badge -->
+                        <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px; padding: 6px 10px; margin-bottom: 15px; font-size: 8.5px; color: #166534;">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <strong>ELECTRONIC IMMIGRATION COMPLIANCE:</strong> Certified electronic submission filed on Bureau of Immigration C-Form portal.
+                                </div>
+                                <div class="col-4 text-end">
+                                    <strong>TOKEN: <t t-out="doc.digital_form_c_token or 'BOI-DIGI-TOKEN'"/></strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Signatures -->
+                        <div style="margin-top: 30px; border-top: 1px dashed #94a3b8; padding-top: 12px;">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div style="height: 45px;"></div>
+                                    <div style="border-top: 1px solid #334155; font-weight: bold; padding-top: 3px;">Signature of Foreign Guest</div>
+                                </div>
+                                <div class="col-6">
+                                    <div style="height: 45px;"></div>
+                                    <div style="border-top: 1px solid #334155; font-weight: bold; padding-top: 3px;">Hotel Manager / Compliance Officer</div>
+                                    <div style="font-size: 8px; color: #64748b;">(Certified submission to BoI C-Form Portal)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Template 3: Incident & FIR Case Summary Report -->
+    <template id="report_incident_police_summary_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family: Arial, sans-serif; font-size: 11px; color: #1e293b; line-height: 1.4;">
+                        
+                        <!-- Header Banner -->
+                        <div style="background-color: #991b1b !important; color: #ffffff !important; padding: 10px 15px; border-radius: 4px; margin-bottom: 12px;">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #fecaca; font-weight: bold;">
+                                        Confidential Legal &amp; Security Briefing
+                                    </div>
+                                    <h3 style="margin: 2px 0 0 0; font-size: 16px; font-weight: bold; color: #ffffff;">
+                                        INCIDENT &amp; POLICE CASE REPORT
+                                    </h3>
+                                    <div style="font-size: 9px; color: #f8fafc;">
+                                        Strictly Confidential • Property &amp; Legal Protection Record
+                                    </div>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <div style="background-color: #7f1d1d; padding: 5px 8px; border-radius: 4px; display: inline-block; border: 1px solid #b91c1c; text-align: right;">
+                                        <div style="font-size: 8px; color: #fca5a5; text-transform: uppercase;">Incident ID</div>
+                                        <div style="font-size: 11px; font-weight: bold; color: #ffffff;"><t t-out="doc.name"/></div>
+                                        <div style="font-size: 8px; color: #ffffff;">Severity: <strong t-out="doc.severity.upper()"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Incident Particulars Table -->
+                        <table class="table table-bordered mb-2" style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 25%; font-weight: bold; background-color: #f1f5f9;">Incident Category:</td>
+                                    <td style="width: 25%;"><t t-out="dict(doc._fields['incident_type'].selection).get(doc.incident_type)"/></td>
+                                    <td style="width: 25%; font-weight: bold; background-color: #f1f5f9;">Severity:</td>
+                                    <td style="width: 25%; font-weight: bold; color: #991b1b;"><t t-out="dict(doc._fields['severity'].selection).get(doc.severity)"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Date &amp; Time:</td>
+                                    <td><t t-out="doc.incident_date"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Location:</td>
+                                    <td><t t-out="doc.location"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Reported By:</td>
+                                    <td><t t-out="doc.reported_by_id.name"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Involved Guest:</td>
+                                    <td><t t-out="doc.guest_id.name or 'N/A'"/> (Room <t t-out="doc.room_id.name or 'N/A'"/>)</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Headline / Summary:</td>
+                                    <td colspan="3" style="font-weight: bold;"><t t-out="doc.summary"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Police & FIR Information -->
+                        <table class="table table-bordered mb-2" style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                            <thead>
+                                <tr>
+                                    <th colspan="4" style="background-color: #1e293b !important; color: #ffffff !important; padding: 5px 8px; font-weight: bold; text-transform: uppercase;">
+                                        Police &amp; FIR Case Information
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width: 25%; font-weight: bold; background-color: #f1f5f9;">Police Station:</td>
+                                    <td style="width: 25%;"><t t-out="doc.police_station_name or 'N/A'"/></td>
+                                    <td style="width: 25%; font-weight: bold; background-color: #f1f5f9;">Station GD No.:</td>
+                                    <td style="width: 25%;"><t t-out="doc.police_diary_gd_no or 'N/A'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">FIR Registered:</td>
+                                    <td><t t-out="doc.fir_registered and 'YES' or 'NO'"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">FIR / Case Number:</td>
+                                    <td style="font-weight: bold; color: #991b1b;"><t t-out="doc.fir_number or 'N/A'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">Investigating Officer (IO):</td>
+                                    <td><t t-out="doc.investigating_officer or 'N/A'"/></td>
+                                    <td style="font-weight: bold; background-color: #f1f5f9;">IO Contact Number:</td>
+                                    <td><t t-out="doc.io_contact or 'N/A'"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Incident Narrative -->
+                        <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 8px 12px; margin-bottom: 10px;">
+                            <strong>Chronological Statement of Incident:</strong>
+                            <p style="margin: 4px 0 0 0; font-size: 9.5px;">
+                                <t t-out="doc.description or 'Statements recorded on file.'"/>
+                            </p>
+                        </div>
+
+                        <!-- Action Taken & Evidence -->
+                        <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 8px 12px; margin-bottom: 10px;">
+                            <strong>Immediate Actions Taken &amp; Evidence Preserved:</strong>
+                            <p style="margin: 4px 0 0 0; font-size: 9.5px;">
+                                <t t-out="doc.action_taken or 'Security and front office responded immediately.'"/>
+                                <t t-if="doc.evidence_notes"><br/><em>Evidence Notes: <t t-out="doc.evidence_notes"/></em></t>
+                            </p>
+                        </div>
+
+                        <!-- Signatures -->
+                        <div style="margin-top: 30px; border-top: 1px dashed #94a3b8; padding-top: 12px;">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div style="height: 45px;"></div>
+                                    <div style="border-top: 1px solid #334155; font-weight: bold; padding-top: 3px;">Resort Security Manager</div>
+                                </div>
+                                <div class="col-6">
+                                    <div style="height: 45px;"></div>
+                                    <div style="border-top: 1px solid #334155; font-weight: bold; padding-top: 3px;">General Manager / Managing Director</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

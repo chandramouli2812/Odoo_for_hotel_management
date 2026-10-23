@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Salary Rule Categories -->
+        <record id="cat_basic" model="hr.salary.rule.category">
+            <field name="name">Basic</field>
+            <field name="code">BASIC</field>
+            <field name="note">Basic Salary</field>
+        </record>
+
+        <record id="cat_alw" model="hr.salary.rule.category">
+            <field name="name">Allowance</field>
+            <field name="code">ALW</field>
+            <field name="note">Allowances</field>
+        </record>
+
+        <record id="cat_gross" model="hr.salary.rule.category">
+            <field name="name">Gross</field>
+            <field name="code">GROSS</field>
+            <field name="note">Gross Salary</field>
+        </record>
+
+        <record id="cat_ded" model="hr.salary.rule.category">
+            <field name="name">Deduction</field>
+            <field name="code">DED</field>
+            <field name="note">Salary Deductions</field>
+        </record>
+
+        <record id="cat_net" model="hr.salary.rule.category">
+            <field name="name">Net</field>
+            <field name="code">NET</field>
+            <field name="note">Net Take Home Pay</field>
+        </record>
+
+        <!-- Salary Rules -->
+        <record id="rule_basic" model="hr.salary.rule">
+            <field name="name">Basic Salary</field>
+            <field name="code">BASIC</field>
+            <field name="sequence">1</field>
+            <field name="category_id" ref="cat_basic"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.wage * 0.50</field>
+            <field name="appears_on_payslip">True</field>
+            <field name="note">50% of the Monthly Wage</field>
+        </record>
+
+        <record id="rule_hra" model="hr.salary.rule">
+            <field name="name">House Rent Allowance (HRA)</field>
+            <field name="code">HRA</field>
+            <field name="sequence">2</field>
+            <field name="category_id" ref="cat_alw"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.wage * 0.30</field>
+            <field name="appears_on_payslip">True</field>
+            <field name="note">30% of the Monthly Wage</field>
+        </record>
+
+        <record id="rule_conveyance" model="hr.salary.rule">
+            <field name="name">Conveyance Allowance</field>
+            <field name="code">CONV</field>
+            <field name="sequence">3</field>
+            <field name="category_id" ref="cat_alw"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">1600.00</field>
+            <field name="appears_on_payslip">True</field>
+            <field name="note">Fixed Monthly Conveyance Allowance</field>
+        </record>
+
+        <record id="rule_special" model="hr.salary.rule">
+            <field name="name">Special Allowance</field>
+            <field name="code">SPECIAL</field>
+            <field name="sequence">4</field>
+            <field name="category_id" ref="cat_alw"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = max(0.0, contract.wage * 0.20 - 1600.0)</field>
+            <field name="appears_on_payslip">True</field>
+            <field name="note">Balancing allowance for monthly wage</field>
+        </record>
+
+        <record id="rule_gross" model="hr.salary.rule">
+            <field name="name">Gross Salary</field>
+            <field name="code">GROSS</field>
+            <field name="sequence">10</field>
+            <field name="category_id" ref="cat_gross"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = categories.BASIC + categories.ALW</field>
+            <field name="appears_on_payslip">True</field>
+            <field name="note">Sum of Basic and all Allowances</field>
+        </record>
+
+        <record id="rule_pf" model="hr.salary.rule">
+            <field name="name">Provident Fund (PF)</field>
+            <field name="code">PF</field>
+            <field name="sequence">20</field>
+            <field name="category_id" ref="cat_ded"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = categories.BASIC * 0.12</field>
+            <field name="appears_on_payslip">True</field>
+            <field name="note">12% of Basic Salary</field>
+        </record>
+
+        <record id="rule_pt" model="hr.salary.rule">
+            <field name="name">Professional Tax (PT)</field>
+            <field name="code">PT</field>
+            <field name="sequence">21</field>
+            <field name="category_id" ref="cat_ded"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">200.00</field>
+            <field name="appears_on_payslip">True</field>
+            <field name="note">Fixed statutory professional tax deduction</field>
+        </record>
+
+        <record id="rule_unpaid" model="hr.salary.rule">
+            <field name="name">Unpaid Leave Deduction</field>
+            <field name="code">UNPAID</field>
+            <field name="sequence">25</field>
+            <field name="category_id" ref="cat_ded"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = ('UNPAID' in worked_days and worked_days['UNPAID'].number_of_days &gt; 0)</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = (contract.wage / 30.0) * worked_days['UNPAID'].number_of_days if 'UNPAID' in worked_days else 0.0</field>
+            <field name="appears_on_payslip">True</field>
+            <field name="note">Deduction based on unpaid absence days</field>
+        </record>
+
+        <record id="rule_net" model="hr.salary.rule">
+            <field name="name">Net Salary</field>
+            <field name="code">NET</field>
+            <field name="sequence">100</field>
+            <field name="category_id" ref="cat_net"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = categories.GROSS - categories.DED</field>
+            <field name="appears_on_payslip">True</field>
+            <field name="note">Total Take-Home Salary: Gross minus Deductions</field>
+        </record>
+
+        <!-- Standard Salary Structure -->
+        <record id="structure_base_monthly" model="hr.payroll.structure">
+            <field name="name">Standard Monthly Salary Structure</field>
+            <field name="code">BASE_MONTHLY</field>
+            <field name="note">Standard monthly salary structure with Basic, HRA, Conveyance, PF, and Professional Tax.</field>
+            <field name="rule_ids" eval="[(6, 0, [
+                ref('rule_basic'),
+                ref('rule_hra'),
+                ref('rule_conveyance'),
+                ref('rule_special'),
+                ref('rule_gross'),
+                ref('rule_pf'),
+                ref('rule_pt'),
+                ref('rule_unpaid'),
+                ref('rule_net'),
+            ])]"/>
+        </record>
+    </data>
+</odoo>

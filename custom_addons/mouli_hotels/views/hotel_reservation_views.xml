@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Client Action for Room Reservation Calendar Grid / Tape Chart -->
+    <record id="action_hotel_tape_chart" model="ir.actions.client">
+        <field name="name">Room Calendar Grid</field>
+        <field name="tag">hotel_tape_chart</field>
+    </record>
+
+    <!-- Hotel Reservation Calendar View -->
+    <record id="view_hotel_reservation_calendar" model="ir.ui.view">
+        <field name="name">hotel.reservation.calendar</field>
+        <field name="model">hotel.reservation</field>
+        <field name="arch" type="xml">
+            <calendar string="Hotel Reservations" date_start="check_in" date_stop="check_out" color="state" mode="month">
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="room_type_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Hotel Reservation Kanban View (Visual Front-Desk Pipeline) -->
+    <record id="view_hotel_reservation_kanban" model="ir.ui.view">
+        <field name="name">hotel.reservation.kanban</field>
+        <field name="model">hotel.reservation</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1" quick_create="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="vip_status"/>
+                <field name="is_vip"/>
+                <field name="room_id"/>
+                <field name="room_type_id"/>
+                <field name="property_id"/>
+                <field name="check_in"/>
+                <field name="check_out"/>
+                <field name="nights"/>
+                <field name="adults"/>
+                <field name="children"/>
+                <field name="total_guests"/>
+                <field name="meal_plan"/>
+                <field name="breakfast_entitlement"/>
+                <field name="amount_total"/>
+                <field name="amount_due"/>
+                <field name="payment_status"/>
+                <field name="currency_id"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click p-2 mb-2 rounded shadow-sm border">
+                            <!-- Card Header: Reservation Ref, VIP & Payment Status -->
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge text-bg-dark text-white font-monospace px-2 py-1 shadow-sm" style="background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important;">
+                                    <span style="color: #ffffff !important; font-weight: 700;">
+                                        <field name="name" class="text-white"/>
+                                    </span>
+                                </span>
+                                <div>
+                                    <span t-if="record.is_vip.raw_value" class="badge bg-danger text-white me-1">
+                                        ⭐ <field name="vip_status"/>
+                                    </span>
+                                    <span t-if="record.payment_status.raw_value == 'paid'" class="badge bg-success">
+                                        Paid
+                                    </span>
+                                    <span t-elif="record.payment_status.raw_value == 'partial'" class="badge bg-warning text-dark">
+                                        Partial
+                                    </span>
+                                    <span t-else="" class="badge bg-danger">
+                                        Unpaid
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Guest & Room Info -->
+                            <div class="mb-2">
+                                <div class="fs-6 fw-bold text-dark text-truncate">
+                                    <field name="guest_id"/>
+                                </div>
+                                <div class="d-flex align-items-center gap-1 mt-1">
+                                    <span t-if="record.room_id.raw_value" class="badge bg-primary text-white">
+                                        Room <field name="room_id"/>
+                                    </span>
+                                    <span t-else="" class="badge bg-secondary text-white">
+                                        Unassigned Room
+                                    </span>
+                                    <span class="text-muted small text-truncate">
+                                        • <field name="room_type_id"/>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Stay Dates & Occupancy -->
+                            <div class="text-muted small mb-2 d-flex justify-content-between align-items-center bg-light p-1 rounded">
+                                <span>
+                                    <field name="check_in" widget="date"/> → <field name="check_out" widget="date"/>
+                                </span>
+                                <span class="badge bg-info-subtle text-info border border-info">
+                                    <field name="nights"/>N • <field name="total_guests"/> Pax
+                                </span>
+                            </div>
+
+                            <!-- Meal Plan & Total Price -->
+                            <div class="d-flex justify-content-between align-items-center mb-2 small">
+                                <div>
+                                    <span t-if="record.breakfast_entitlement.raw_value == 'included'" class="badge bg-success-subtle text-success border border-success">
+                                        Breakfast Included
+                                    </span>
+                                    <span t-else="" class="badge bg-light text-muted border">
+                                        Room Only
+                                    </span>
+                                </div>
+                                <div class="text-end">
+                                    <strong class="fs-6 text-dark"><field name="amount_total" widget="monetary"/></strong>
+                                    <div t-if="record.amount_due.raw_value &gt; 0" class="text-danger small fw-semibold">
+                                        Due: <field name="amount_due" widget="monetary"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Operational Action Footer -->
+                            <div class="d-flex gap-2 border-top pt-2 mt-1">
+                                <button t-if="record.state.raw_value == 'draft'" name="action_confirm" type="object" class="btn btn-sm btn-primary flex-fill">
+                                    Confirm
+                                </button>
+                                <button t-if="record.state.raw_value == 'confirmed'" name="action_check_in" type="object" class="btn btn-sm btn-success flex-fill">
+                                    Check In
+                                </button>
+                                <button t-if="record.state.raw_value == 'check_in'" name="action_check_out" type="object" class="btn btn-sm btn-warning flex-fill text-dark">
+                                    Check Out
+                                </button>
+                                <button t-if="record.state.raw_value == 'confirmed' || record.state.raw_value == 'check_in'" name="action_print_bill" type="object" class="btn btn-sm btn-outline-secondary">
+                                    Print Bill
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Hotel Reservation Form View -->
+    <record id="view_hotel_reservation_form" model="ir.ui.view">
+        <field name="name">hotel.reservation.form</field>
+        <field name="model">hotel.reservation</field>
+        <field name="arch" type="xml">
+            <form string="Reservation">
+                <header>
+                    <button name="action_confirm" string="Confirm Booking" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_check_in" string="Check In Guest" type="object" class="oe_highlight" invisible="state != 'confirmed'"/>
+                    <button name="action_register_payment" string="Collect / Register Payment" type="object" class="btn-success" invisible="state not in ('confirmed', 'check_in')"/>
+                    <button name="action_check_out" string="Check Out &amp; Settle" type="object" class="oe_highlight" invisible="state != 'check_in'"/>
+                    <button name="action_print_bill" string="Print Guest Bill" type="object" class="btn-info" invisible="state == 'draft'"/>
+                    <button name="action_cancel" string="Cancel Booking" type="object" invisible="state in ('check_out', 'cancel')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,check_in,check_out"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="In-House" bg_color="text-bg-success" invisible="state != 'check_in'"/>
+                    <widget name="web_ribbon" title="Checked Out" bg_color="text-bg-secondary" invisible="state != 'check_out'"/>
+                    <widget name="web_ribbon" title="Cancelled" bg_color="text-bg-danger" invisible="state != 'cancel'"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="action" name="%(mouli_hotels.action_hotel_tape_chart)d" icon="fa-calendar">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Calendar Grid</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_folio" icon="fa-file-text-o" invisible="not folio_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Guest Folio</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_print_bill" icon="fa-print" invisible="not folio_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Print Bill</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Reservation No"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Guest &amp; Stay Details">
+                            <field name="guest_id" options="{'no_quick_create': False}" placeholder="Search or create guest..."/>
+                            <field name="vip_status" widget="badge" decoration-danger="vip_status in ('gold', 'platinum')" decoration-warning="vip_status == 'silver'"/>
+                            <field name="property_id"/>
+                            <field name="room_type_id"/>
+                            <field name="room_id" options="{'no_create': True}" placeholder="Assign available room..."/>
+                            <field name="booking_source"/>
+                        </group>
+                        <group string="Schedule &amp; Occupancy">
+                            <field name="check_in"/>
+                            <field name="check_out"/>
+                            <field name="nights"/>
+                            <div class="o_row">
+                                <label for="adults" string="Adults / Children"/>
+                                <field name="adults"/> Adults,
+                                <field name="children"/> Children
+                            </div>
+                            <field name="total_guests"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="rate_per_night" widget="monetary"/>
+                            <field name="amount_total" widget="monetary" class="oe_subtotal_footer_separator"/>
+                        </group>
+                        <group string="Meal Plan &amp; F&amp;B Entitlement">
+                            <field name="meal_plan"/>
+                            <field name="breakfast_entitlement" widget="badge" decoration-success="breakfast_entitlement == 'included'" decoration-warning="breakfast_entitlement == 'chargeable'"/>
+                            <field name="breakfast_item_ids" widget="many2many_tags" placeholder="Preferred breakfast items..."/>
+                            <field name="dietary_notes" placeholder="Vegetarian, Jain, Vegan, Food Allergies, Kids meal..."/>
+                        </group>
+                        <group string="Booking Advance Deposit (Mandatory)">
+                            <field name="advance_payment" widget="monetary"/>
+                            <field name="advance_payment_method"/>
+                            <field name="advance_payment_ref" placeholder="Txn Ref / Receipt No"/>
+                        </group>
+                        <group string="Stay Settlement Status" invisible="not folio_id">
+                            <field name="amount_paid" widget="monetary"/>
+                            <field name="amount_due" widget="monetary" class="fw-bold" decoration-danger="amount_due &gt; 0"/>
+                            <field name="payment_status" widget="badge" decoration-success="payment_status == 'paid'" decoration-warning="payment_status == 'partial'" decoration-danger="payment_status == 'unpaid'"/>
+                        </group>
+                        <group string="Channel &amp; Online Lead Tracking">
+                            <field name="booking_source" widget="badge" decoration-success="booking_source == 'website'" decoration-info="booking_source == 'direct'"/>
+                            <field name="crm_lead_id" readonly="1" invisible="not crm_lead_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Special Requests &amp; Notes" name="notes">
+                            <field name="notes" placeholder="e.g. Airport pickup required, Honeymoon setup, Extra bed request..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Hotel Reservation List View -->
+    <record id="view_hotel_reservation_list" model="ir.ui.view">
+        <field name="name">hotel.reservation.list</field>
+        <field name="model">hotel.reservation</field>
+        <field name="arch" type="xml">
+            <list string="Reservations" decoration-info="state == 'draft'" decoration-warning="state == 'confirmed'" decoration-success="state == 'check_in'" decoration-muted="state in ('check_out', 'cancel')">
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="vip_status" widget="badge" decoration-danger="vip_status in ('gold', 'platinum')" decoration-warning="vip_status == 'silver'" optional="show"/>
+                <field name="property_id"/>
+                <field name="room_type_id"/>
+                <field name="room_id"/>
+                <field name="booking_source" widget="badge" decoration-success="booking_source == 'website'" optional="show"/>
+                <field name="meal_plan" widget="badge" optional="show"/>
+                <field name="breakfast_entitlement" widget="badge" decoration-success="breakfast_entitlement == 'included'" decoration-warning="breakfast_entitlement == 'chargeable'" optional="show"/>
+                <field name="check_in"/>
+                <field name="check_out"/>
+                <field name="nights"/>
+                <field name="amount_total" widget="monetary"/>
+                <field name="advance_payment" widget="monetary"/>
+                <field name="amount_due" widget="monetary"/>
+                <field name="payment_status" widget="badge" decoration-success="payment_status == 'paid'" decoration-warning="payment_status == 'partial'" decoration-danger="payment_status == 'unpaid'"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'confirmed'" decoration-success="state == 'check_in'" decoration-muted="state in ('check_out', 'cancel')"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Hotel Reservation Search View -->
+    <record id="view_hotel_reservation_search" model="ir.ui.view">
+        <field name="name">hotel.reservation.search</field>
+        <field name="model">hotel.reservation</field>
+        <field name="arch" type="xml">
+            <search string="Search Bookings">
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="room_type_id"/>
+                <filter name="in_house" string="In-House Guests" domain="[('state', '=', 'check_in')]"/>
+                <filter name="confirmed" string="Confirmed Bookings" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="draft" string="Draft Enquiries" domain="[('state', '=', 'draft')]"/>
+                <filter name="website_leads" string="Website Online Leads" domain="[('booking_source', '=', 'website')]"/>
+                <separator/>
+                <filter name="today_arrivals" string="Today's Arrivals" domain="[('check_in', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('check_in', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <filter name="today_departures" string="Today's Departures" domain="[('check_out', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('check_out', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <separator/>
+                <filter name="vip_guests" string="VIP Guests" domain="[('is_vip', '=', True)]"/>
+                <filter name="breakfast_included" string="Breakfast Included" domain="[('breakfast_entitlement', '=', 'included')]"/>
+                <separator/>
+                <filter name="balance_due" string="Payment Due / Unpaid" domain="[('payment_status', 'in', ('unpaid', 'partial'))]"/>
+                <separator/>
+                <filter name="check_in_date" string="Check-in Date" date="check_in"/>
+                <filter name="check_out_date" string="Check-out Date" date="check_out"/>
+                <group>
+                    <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="VIP Level" name="group_by_vip" context="{'group_by': 'vip_status'}"/>
+                    <filter string="Meal Plan" name="group_by_meal_plan" context="{'group_by': 'meal_plan'}"/>
+                    <filter string="Payment Status" name="group_by_payment" context="{'group_by': 'payment_status'}"/>
+                    <filter string="Property" name="group_by_property" context="{'group_by': 'property_id'}"/>
+                    <filter string="Room Type" name="group_by_type" context="{'group_by': 'room_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Reservation Action -->
+    <record id="action_hotel_reservation" model="ir.actions.act_window">
+        <field name="name">Reservations</field>
+        <field name="res_model">hotel.reservation</field>
+        <field name="view_mode">kanban,list,calendar,form</field>
+        <field name="search_view_id" ref="view_hotel_reservation_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Hotel Booking or Reservation
+            </p>
+            <p>
+                Manage bookings, check-in guests, assign rooms, and track guest billing from here.
+            </p>
+        </field>
+    </record>
+</odoo>

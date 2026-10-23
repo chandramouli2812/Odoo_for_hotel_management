@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Privilege for Compliance & Security -->
+    <record model="res.groups.privilege" id="res_groups_privilege_resort_compliance">
+        <field name="name">Resort Compliance &amp; Security</field>
+        <field name="sequence">15</field>
+        <field name="category_id" ref="base.module_category_services"/>
+    </record>
+
+    <!-- 1. Security Officer -->
+    <record id="group_security_officer" model="res.groups">
+        <field name="name">Resort Security Officer</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_resort_compliance"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Can manage security logs, visitors, vehicles, security patrols and report incidents.</field>
+    </record>
+
+    <!-- 2. Compliance Officer -->
+    <record id="group_compliance_user" model="res.groups">
+        <field name="name">Resort Compliance Officer</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_resort_compliance"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Can create and manage guest police reports, foreign guest Form C records, and view incidents.</field>
+    </record>
+
+    <!-- 3. Compliance & Security Manager -->
+    <record id="group_compliance_manager" model="res.groups">
+        <field name="name">Compliance &amp; Security Manager / GM</field>
+        <field name="sequence">30</field>
+        <field name="privilege_id" ref="res_groups_privilege_resort_compliance"/>
+        <field name="implied_ids" eval="[(4, ref('group_compliance_user')), (4, ref('group_security_officer'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Full administrative access to police intimations, FRRO/Form C submissions, FIR tracking, police visits and audit registers.</field>
+    </record>
+
+    <!-- Grant Hotel Manager Compliance Manager privileges -->
+    <record id="mouli_hotels.group_hotel_manager" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_compliance_manager'))]"/>
+    </record>
+</odoo>

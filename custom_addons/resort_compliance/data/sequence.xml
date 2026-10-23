@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Guest Police Intimation Sequence -->
+        <record id="seq_compliance_guest_report" model="ir.sequence">
+            <field name="name">Police Guest Intimation</field>
+            <field name="code">compliance.guest.report</field>
+            <field name="prefix">POL/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Foreign National FRRO / Form C Sequence -->
+        <record id="seq_compliance_foreign_guest" model="ir.sequence">
+            <field name="name">FRRO Form C Record</field>
+            <field name="code">compliance.foreign.guest</field>
+            <field name="prefix">FRRO/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Incident & FIR Sequence -->
+        <record id="seq_compliance_incident" model="ir.sequence">
+            <field name="name">Resort Incident &amp; Police Case</field>
+            <field name="code">compliance.incident</field>
+            <field name="prefix">INC/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Police Visit Sequence -->
+        <record id="seq_compliance_police_visit" model="ir.sequence">
+            <field name="name">Police Official Visit</field>
+            <field name="code">compliance.police.visit</field>
+            <field name="prefix">VISIT/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Security & Visitor Log Sequence -->
+        <record id="seq_compliance_security_log" model="ir.sequence">
+            <field name="name">Security &amp; Visitor Log</field>
+            <field name="code">compliance.security.log</field>
+            <field name="prefix">SEC/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

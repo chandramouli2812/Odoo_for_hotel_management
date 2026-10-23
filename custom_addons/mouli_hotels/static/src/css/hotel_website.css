@@ -1,0 +1,848 @@
+/* ==========================================================================
+   MOULI HOTELS & RB RESORTS - WEBSITE LUXURY ROOMS SHOWCASE & LEADS CSS
+   ========================================================================== */
+
+:root {
+  --resort-primary: #0f172a;
+  --resort-primary-light: #1e293b;
+  --resort-accent: #d97706;
+  --resort-accent-hover: #b45309;
+  --resort-gold: #f59e0b;
+  --resort-gold-light: #fef3c7;
+  --resort-emerald: #059669;
+  --resort-emerald-light: #d1fae5;
+  --resort-bg: #f8fafc;
+  --resort-card-bg: #ffffff;
+  --resort-text-main: #1e293b;
+  --resort-text-muted: #64748b;
+  --resort-border: #e2e8f0;
+  --resort-radius: 14px;
+  --resort-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --resort-shadow-hover: 0 20px 35px -5px rgba(15, 23, 42, 0.14), 0 10px 12px -5px rgba(15, 23, 42, 0.06);
+}
+
+/* --- Hero Banner --- */
+.resort-hero-section {
+  background: linear-gradient(135deg, #091222 0%, #0f172a 50%, #1e293b 100%);
+  color: #ffffff;
+  padding: 60px 0 50px 0;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 2px solid rgba(217, 119, 6, 0.25);
+}
+
+.resort-hero-section::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.resort-badge-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.resort-hero-title {
+  font-size: 2.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.resort-hero-subtitle {
+  font-size: 1.15rem;
+  color: #94a3b8;
+  max-width: 680px;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+/* --- Quick Search Bar --- */
+.resort-filter-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--resort-border);
+  margin-top: -30px;
+  position: relative;
+  z-index: 10;
+}
+
+.resort-filter-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--resort-text-muted);
+  margin-bottom: 4px;
+}
+
+.resort-filter-input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  color: var(--resort-text-main);
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.resort-filter-input:focus {
+  background: #ffffff;
+  border-color: var(--resort-accent);
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+  outline: none;
+}
+
+/* --- Room Cards Grid --- */
+.room-card-luxury {
+  background: var(--resort-card-bg);
+  border-radius: var(--resort-radius);
+  border: 1px solid var(--resort-border);
+  box-shadow: var(--resort-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+  position: relative;
+  height: 100%;
+}
+
+.room-card-luxury:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--resort-shadow-hover);
+  border-color: rgba(217, 119, 6, 0.4);
+}
+
+.room-card-image-wrap {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.room-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.room-card-luxury:hover .room-card-img {
+  transform: scale(1.06);
+}
+
+.room-ribbon-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 12px;
+  border-radius: 20px;
+  z-index: 2;
+}
+
+.room-price-floating {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  z-index: 2;
+}
+
+.room-price-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fef08a;
+}
+
+.room-price-period {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+}
+
+.room-card-body {
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.room-card-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--resort-text-main);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.room-card-tagline {
+  font-size: 0.88rem;
+  color: var(--resort-text-muted);
+  line-height: 1.5;
+  margin-bottom: 14px;
+  min-height: 40px;
+}
+
+.room-capacity-specs {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px dashed var(--resort-border);
+  border-bottom: 1px dashed var(--resort-border);
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.room-spec-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.room-feature-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.room-pill {
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.room-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.btn-resort-gold {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-resort-gold:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.35);
+}
+
+.btn-resort-outline {
+  background: transparent;
+  color: var(--resort-primary);
+  border: 1.5px solid #cbd5e1;
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 10px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-resort-outline:hover {
+  background: #f8fafc;
+  border-color: var(--resort-primary);
+  color: var(--resort-primary);
+}
+
+/* --- Detail Page Sticky Booking Widget --- */
+.resort-booking-widget {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid var(--resort-border);
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.1);
+  padding: 26px 28px;
+  position: sticky;
+  top: 90px;
+}
+
+.widget-header-rate {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--resort-border);
+  margin-bottom: 18px;
+}
+
+.widget-rate-amount {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--resort-primary);
+}
+
+.widget-rate-tax {
+  font-size: 0.78rem;
+  color: var(--resort-text-muted);
+}
+
+.resort-est-price-box {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin: 16px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.resort-est-nights {
+  font-size: 0.85rem;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.resort-est-total {
+  font-size: 1.25rem;
+  color: #78350f;
+  font-weight: 800;
+}
+
+/* --- WhatsApp Action Button --- */
+.btn-whatsapp-direct {
+  background: #25D366;
+  color: #ffffff !important;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none !important;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-whatsapp-direct:hover {
+  background: #1eb956;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.4);
+}
+
+/* --- Success Banner --- */
+.resort-success-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  padding: 40px;
+  max-width: 680px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.resort-success-icon {
+  width: 72px;
+  height: 72px;
+  background: #dcfce7;
+  color: #16a34a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  margin: 0 auto 20px auto;
+}
+
+/* --- Trust Badges Section --- */
+.resort-trust-bar {
+  background: #ffffff;
+  border-top: 1px solid var(--resort-border);
+  border-bottom: 1px solid var(--resort-border);
+  padding: 30px 0;
+  margin: 50px 0 0 0;
+}
+
+.resort-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.resort-trust-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #fef3c7;
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.resort-trust-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--resort-text-main);
+  margin-bottom: 2px;
+}
+
+.resort-trust-sub {
+  font-size: 0.82rem;
+  color: var(--resort-text-muted);
+}
+
+/* ==========================================================================
+   OMNI-DEVICE RESPONSIVENESS: MOBILES, TABLETS, DESKTOPS, TVS & PROJECTORS
+   ========================================================================== */
+
+/* --- Mobile Sticky Bottom Booking Bar --- */
+.resort-mobile-sticky-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1.5px solid rgba(245, 158, 11, 0.45);
+  padding: 10px 16px;
+  z-index: 1030;
+  box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.28);
+}
+
+.resort-sticky-rate {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fbbf24;
+  line-height: 1.2;
+}
+
+.resort-sticky-sub {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+/* --- 1. MOBILE PHONES (Portrait & Landscape: 320px - 575.98px) --- */
+@media screen and (max-width: 575.98px) {
+  /* Prevent iOS Safari zoom on input focus */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  .resort-hero-section {
+    padding: 36px 0 24px 0;
+  }
+
+  .resort-hero-title {
+    font-size: clamp(1.65rem, 7.5vw, 2.15rem) !important;
+    line-height: 1.25;
+  }
+
+  .resort-hero-subtitle {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+
+  .resort-badge-gold {
+    font-size: 0.72rem;
+    padding: 4px 10px;
+  }
+
+  .resort-filter-card {
+    margin-top: -15px;
+    padding: 16px 14px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.1);
+  }
+
+  .resort-filter-input {
+    min-height: 44px;
+    padding: 8px 10px;
+  }
+
+  /* Room Cards single-column touch experience */
+  .room-card-image-wrap {
+    height: 195px;
+  }
+
+  .room-card-body {
+    padding: 16px;
+  }
+
+  .room-card-title {
+    font-size: 1.2rem;
+  }
+
+  .room-card-tagline {
+    font-size: 0.82rem;
+    min-height: auto;
+    margin-bottom: 10px;
+  }
+
+  .room-price-floating {
+    bottom: 8px;
+    right: 8px;
+    padding: 4px 10px;
+  }
+
+  .room-price-val {
+    font-size: 1.1rem;
+  }
+
+  .room-capacity-specs {
+    font-size: 0.78rem;
+    gap: 8px;
+    padding: 8px 0;
+    margin-bottom: 12px;
+  }
+
+  .room-card-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-resort-gold,
+  .btn-resort-outline,
+  .btn-whatsapp-direct {
+    width: 100%;
+    min-height: 44px;
+    font-size: 0.9rem;
+    padding: 10px 14px;
+    justify-content: center;
+  }
+
+  /* Room Detail Page */
+  .resort-booking-widget {
+    position: relative;
+    top: auto;
+    margin-top: 24px;
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+
+  .widget-rate-amount {
+    font-size: 1.5rem;
+  }
+
+  /* Safe Area Inset for iPhone home bar */
+  #wrap {
+    padding-bottom: 85px !important;
+  }
+
+  /* Success Card on mobile */
+  .resort-success-card {
+    padding: 24px 16px;
+    margin: 20px 0;
+  }
+
+  .resort-success-icon {
+    width: 58px;
+    height: 58px;
+    font-size: 1.75rem;
+  }
+}
+
+/* --- 2. TABLETS & PHABLETS (576px - 991.98px) --- */
+@media screen and (min-width: 576px) and (max-width: 991.98px) {
+  .resort-hero-section {
+    padding: 48px 0 35px 0;
+  }
+
+  .resort-hero-title {
+    font-size: 2.35rem;
+  }
+
+  .resort-filter-card {
+    margin-top: -24px;
+    padding: 20px 22px;
+  }
+
+  .room-card-image-wrap {
+    height: 220px;
+  }
+
+  .btn-resort-gold,
+  .btn-resort-outline {
+    min-height: 44px;
+  }
+
+  .resort-booking-widget {
+    position: relative;
+    top: auto;
+    margin-top: 30px;
+  }
+
+  #wrap {
+    padding-bottom: 80px !important;
+  }
+}
+
+/* --- 3. DESKTOPS & LAPTOPS (992px - 1599.98px) --- */
+@media screen and (min-width: 992px) {
+  .resort-mobile-sticky-bar {
+    display: none !important;
+  }
+
+  .resort-booking-widget {
+    position: sticky;
+    top: 90px;
+  }
+}
+
+/* --- 4. ULTRA-WIDE SCREENS, 4K DISPLAYS & SMART TVS (1600px - 3840px+) --- */
+@media screen and (min-width: 1600px) {
+  .container, .container-lg, .container-xl, .container-xxl {
+    max-width: 1540px !important;
+  }
+
+  .resort-hero-section {
+    padding: 85px 0 70px 0;
+  }
+
+  .resort-hero-title {
+    font-size: clamp(3.2rem, 3.2vw, 4.25rem) !important;
+    letter-spacing: -0.03em;
+  }
+
+  .resort-hero-subtitle {
+    font-size: 1.35rem;
+    max-width: 820px;
+    line-height: 1.7;
+  }
+
+  .resort-filter-card {
+    padding: 28px 32px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+  }
+
+  .resort-filter-label {
+    font-size: 0.9rem;
+  }
+
+  .resort-filter-input {
+    font-size: 1.05rem;
+    padding: 12px 16px;
+    min-height: 50px;
+  }
+
+  /* 4-column cards scaling on big screen */
+  .room-card-image-wrap {
+    height: 270px;
+  }
+
+  .room-card-title {
+    font-size: 1.55rem;
+  }
+
+  .room-card-tagline {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .room-price-val {
+    font-size: 1.5rem;
+  }
+
+  .room-price-period {
+    font-size: 0.85rem;
+  }
+
+  .room-pill {
+    font-size: 0.88rem;
+    padding: 6px 12px;
+  }
+
+  .btn-resort-gold,
+  .btn-resort-outline {
+    font-size: 1.05rem;
+    padding: 12px 22px;
+    border-radius: 10px;
+  }
+
+  .widget-rate-amount {
+    font-size: 2.25rem;
+  }
+
+  .resort-trust-bar {
+    padding: 45px 0;
+  }
+
+  .resort-trust-title {
+    font-size: 1.15rem;
+  }
+
+  .resort-trust-sub {
+    font-size: 0.95rem;
+  }
+}
+
+/* Extra Large 4K Monitors & Giant Wall Displays (2560px and beyond) */
+@media screen and (min-width: 2560px) {
+  .container, .container-lg, .container-xl, .container-xxl {
+    max-width: 2100px !important;
+  }
+
+  .resort-hero-title {
+    font-size: 4.8rem !important;
+  }
+
+  .resort-hero-subtitle {
+    font-size: 1.6rem;
+    max-width: 1100px;
+  }
+
+  .room-card-image-wrap {
+    height: 340px;
+  }
+
+  .room-card-title {
+    font-size: 1.85rem;
+  }
+}
+
+/* --- 5. BOARDROOM PROJECTORS & PRESENTATION TV HIGH-CONTRAST MODE --- */
+@media screen and (min-width: 1400px), screen and (display-mode: fullscreen) {
+  :root {
+    --resort-text-main: #020617; /* Slate-950 for deep contrast under ambient projector light */
+    --resort-text-muted: #334155; /* Slate-700 instead of washed out grey */
+    --resort-border: #cbd5e1; /* Sharp, crisp border definition */
+  }
+
+  .room-card-luxury {
+    border-width: 1.5px;
+    border-color: #cbd5e1;
+  }
+
+  .room-spec-item,
+  .room-pill,
+  .resort-trust-title {
+    font-weight: 700;
+  }
+
+  .badge {
+    font-weight: 700 !important;
+  }
+}
+
+/* --- 6. TOUCH DEVICES (Smartphones, iPads, POS Tablets, Touch Kiosks) --- */
+@media (hover: none) and (pointer: coarse) {
+  /* Prevent jarring hover movement on tap */
+  .room-card-luxury:hover {
+    transform: none !important;
+  }
+
+  .btn-resort-gold:hover,
+  .btn-resort-outline:hover,
+  .btn-whatsapp-direct:hover {
+    transform: none !important;
+  }
+
+  /* Tactile feedback on touch tap */
+  .btn:active,
+  .room-card-luxury:active {
+    transform: scale(0.985) !important;
+  }
+
+  /* Ensure touch target accessibility (min 44px) */
+  .btn,
+  .form-control,
+  .form-select,
+  .resort-filter-input {
+    min-height: 44px;
+  }
+}
+
+/* --- 7. ACCESSIBILITY: PREFERS REDUCED MOTION --- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- 8. PRINT MEDIA STYLESHEET --- */
+@media print {
+  .resort-hero-section,
+  .resort-filter-card,
+  .resort-mobile-sticky-bar,
+  .btn-whatsapp-direct,
+  .modal,
+  .btn {
+    display: none !important;
+  }
+
+  body, #wrap {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+  }
+
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .room-card-luxury,
+  .resort-booking-widget {
+    box-shadow: none !important;
+    border: 1px solid #000000 !important;
+    page-break-inside: avoid;
+  }
+}

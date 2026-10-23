@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Kanban View: Visual Form C Tracking -->
+    <record id="view_compliance_foreign_guest_kanban" model="ir.ui.view">
+        <field name="name">compliance.foreign.guest.kanban</field>
+        <field name="model">compliance.foreign.guest</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1" quick_create="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="nationality_id"/>
+                <field name="passport_number"/>
+                <field name="visa_type"/>
+                <field name="visa_valid_until"/>
+                <field name="is_visa_expiring_soon"/>
+                <field name="submission_deadline"/>
+                <field name="is_overdue"/>
+                <field name="frro_portal_status"/>
+                <field name="frro_ack_number"/>
+                <field name="is_paperless"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click p-2 mb-2 rounded shadow-sm border">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge text-bg-dark text-white font-monospace px-2 py-1 shadow-sm" style="background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important;">
+                                    <span style="color: #ffffff !important; font-weight: 700;">
+                                        <field name="name" class="text-white"/>
+                                    </span>
+                                </span>
+                                <span t-if="record.is_paperless.raw_value" class="badge bg-success-subtle text-success border border-success">
+                                    <i class="fa fa-leaf text-success me-1"/> Paperless
+                                </span>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <strong class="fs-6 text-primary"><field name="guest_id"/></strong>
+                            </div>
+
+                            <div class="text-muted small mb-2">
+                                <span t-if="record.room_id.raw_value" class="badge bg-primary text-white me-1">
+                                    Room <field name="room_id"/>
+                                </span>
+                                <span>Passport: <field name="passport_number"/></span> • 
+                                <span><field name="nationality_id"/></span>
+                            </div>
+
+                            <div t-if="record.is_overdue.raw_value" class="badge bg-danger mb-2 text-white">
+                                Overdue (&gt;24 Hours Deadline)
+                            </div>
+                            <div t-elif="record.is_visa_expiring_soon.raw_value" class="badge bg-warning mb-2 text-dark">
+                                Visa Expiring Soon
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
+                                <div>
+                                    <span t-if="record.frro_portal_status.raw_value == 'acknowledged' || record.frro_portal_status.raw_value == 'verified'" class="badge bg-success">
+                                        C-Form Done
+                                    </span>
+                                    <span t-elif="record.frro_portal_status.raw_value == 'submitted'" class="badge bg-info">
+                                        Submitted
+                                    </span>
+                                    <span t-else="" class="badge bg-secondary">
+                                        Pending
+                                    </span>
+                                </div>
+                                <div class="text-end">
+                                    <button t-if="record.frro_portal_status.raw_value == 'not_submitted' || record.frro_portal_status.raw_value == 'rejected'" name="action_quick_portal_submit" type="object" class="btn btn-sm btn-primary">
+                                        e-Submit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- List / Tree View -->
+    <record id="view_compliance_foreign_guest_tree" model="ir.ui.view">
+        <field name="name">compliance.foreign.guest.tree</field>
+        <field name="model">compliance.foreign.guest</field>
+        <field name="arch" type="xml">
+            <list string="Foreign Guest Register &amp; FRRO Form C"
+                  decoration-danger="is_overdue or is_visa_expiring_soon"
+                  decoration-info="state == 'submitted'"
+                  decoration-success="state == 'completed'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name" decoration-bf="1"/>
+                <field name="is_paperless" widget="badge" string="Eco Mode"
+                       decoration-success="is_paperless == True"/>
+                <field name="guest_id"/>
+                <field name="nationality_id"/>
+                <field name="room_id"/>
+                <field name="passport_number"/>
+                <field name="passport_expiry_date"/>
+                <field name="visa_type"/>
+                <field name="visa_number"/>
+                <field name="visa_valid_until"/>
+                <field name="is_visa_expiring_soon" invisible="1"/>
+                <field name="arrival_at_hotel"/>
+                <field name="submission_deadline"/>
+                <field name="is_overdue" invisible="1"/>
+                <field name="frro_portal_status" widget="badge"
+                       decoration-success="frro_portal_status in ('acknowledged', 'verified')"
+                       decoration-warning="frro_portal_status == 'submitted'"
+                       decoration-danger="frro_portal_status in ('not_submitted', 'rejected')"/>
+                <field name="frro_ack_number"/>
+                <field name="documents_complete" widget="boolean_toggle"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_compliance_foreign_guest_form" model="ir.ui.view">
+        <field name="name">compliance.foreign.guest.form</field>
+        <field name="model">compliance.foreign.guest</field>
+        <field name="arch" type="xml">
+            <form string="Foreign Guest FRRO / Form C">
+                <header>
+                    <button name="action_auto_fill_foreign_details" string="Auto-Fill from Check-in" icon="fa-magic" type="object" class="btn-outline-primary" invisible="state != 'draft'"/>
+                    <button name="action_verify_documents" string="Verify Documents" icon="fa-check" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_quick_portal_submit" string="1-Click BoI Submit" icon="fa-bolt" type="object" class="btn-primary" invisible="state not in ('draft', 'docs_verified')"/>
+                    <button name="action_mark_frro_completed" string="Complete Form C" type="object" class="btn-success" invisible="state != 'submitted'"/>
+                    <button name="action_reset_draft" string="Reset to Draft" type="object" invisible="state in ('draft', 'completed')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,docs_verified,submitted,completed"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Form C Done" bg_color="text-bg-success" invisible="state != 'completed'"/>
+                    <widget name="web_ribbon" title="Submitted" bg_color="text-bg-info" invisible="state != 'submitted'"/>
+                    <!-- Eco-Friendly & Guidance Ribbons -->
+                    <div class="alert alert-success d-flex align-items-center justify-content-between mb-2 py-2" role="alert">
+                        <div>
+                            <i class="fa fa-leaf text-success fs-5 me-2"/>
+                            <strong>100% Paperless Bureau of Immigration (BoI) Filing:</strong>
+                            <span class="badge bg-success ms-2"><field name="paper_sheets_saved" readonly="1"/> Sheets of Paper Saved</span>
+                        </div>
+                        <div invisible="not digital_form_c_token">
+                            <span class="badge text-bg-dark text-white font-monospace px-2 py-1 shadow-sm" style="background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important;" title="Digital BoI Token">
+                                <span style="color: #ffffff !important; font-weight: 700;">
+                                    <field name="digital_form_c_token" readonly="1" class="text-white"/>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info py-2 mb-3" role="alert">
+                        <strong>Quick Form C Guide (Mandatory within 24h of arrival):</strong>
+                        <strong>1.</strong> Click <em>"Auto-Fill from Check-in"</em> ➔
+                        <strong>2.</strong> Attach Passport Photo page &amp; Visa copy in checklist below ➔
+                        <strong>3.</strong> Click <em>"1-Click BoI Submit"</em> or enter official C-Form Application ID.
+                    </div>
+
+                    <!-- Alerts -->
+                    <div invisible="not is_overdue" class="alert alert-danger" role="alert">
+                        <strong>Mandatory 24h Deadline Exceeded:</strong> Under the Indian Foreigners Act, Form C must be lodged with the FRRO/BoI within 24 hours of arrival!
+                    </div>
+                    <div invisible="not is_visa_expiring_soon" class="alert alert-warning" role="alert">
+                        <strong>Visa Expiry Alert:</strong> This guest's Indian Visa is expiring during their resort stay or within 7 days. Verify extension validity with immigration authorities.
+                    </div>
+
+                    <div class="oe_title">
+                        <span class="o_form_label text-muted">Bureau of Immigration (BoI) Form C Compliance</span>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Guest &amp; Stay Information">
+                            <field name="guest_id" placeholder="Select registered guest..."/>
+                            <field name="nationality_id"/>
+                            <field name="reservation_id"/>
+                            <field name="room_id"/>
+                            <field name="property_id"/>
+                            <field name="arrival_at_hotel"/>
+                            <field name="expected_departure"/>
+                        </group>
+                        <group string="FRRO Portal Submission Tracker">
+                            <field name="frro_portal_status" widget="radio" options="{'horizontal': true}"/>
+                            <field name="frro_ack_number" placeholder="e.g. CFORM-2026-GOA-98124"/>
+                            <field name="submission_time"/>
+                            <field name="submission_deadline" readonly="1"/>
+                            <field name="is_paperless" widget="boolean_toggle"/>
+                            <field name="is_overdue" invisible="1"/>
+                            <field name="is_visa_expiring_soon" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Passport Credentials">
+                            <field name="passport_number" placeholder="Passport number from photo page"/>
+                            <field name="passport_country_id"/>
+                            <field name="passport_issue_date"/>
+                            <field name="passport_expiry_date"/>
+                        </group>
+                        <group string="Indian Visa / Entry Clearance">
+                            <field name="visa_type"/>
+                            <field name="visa_number" placeholder="Visa or e-Visa number"/>
+                            <field name="visa_issue_place" placeholder="Embassy / Consulate / e-Visa"/>
+                            <field name="visa_valid_until"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Entry &amp; Travel Route">
+                            <field name="arrival_in_india_date"/>
+                            <field name="port_of_entry" placeholder="e.g. Mumbai (BOM), Delhi (DEL), Goa (GOI/GOX)"/>
+                            <field name="purpose_of_visit"/>
+                            <field name="next_destination" placeholder="Next City / Hotel / Country"/>
+                        </group>
+                        <group string="Contact &amp; Emergency">
+                            <field name="phone_in_india" widget="phone"/>
+                            <field name="emergency_contact"/>
+                            <field name="home_country_address" placeholder="Permanent residence in home country..."/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Mandatory Document Verification Checklist" name="checklist">
+                            <group>
+                                <group>
+                                    <field name="doc_passport_copy"/>
+                                    <field name="doc_visa_copy"/>
+                                </group>
+                                <group>
+                                    <field name="doc_entry_stamp"/>
+                                    <field name="doc_photo"/>
+                                </group>
+                            </group>
+                            <div class="alert alert-info" role="alert">
+                                <strong>Required for Form C filing:</strong> Clear scanned copy of Passport Front &amp; Back, Valid Visa/e-Visa, Airport Entry Immigration Stamp, and Passport-size photo.
+                            </div>
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                        <page string="Remarks &amp; Notes" name="remarks">
+                            <field name="remarks" placeholder="Enter special visa remarks, FRRO correspondence or officer instructions..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_compliance_foreign_guest_search" model="ir.ui.view">
+        <field name="name">compliance.foreign.guest.search</field>
+        <field name="model">compliance.foreign.guest</field>
+        <field name="arch" type="xml">
+            <search string="Search Foreign Guests">
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="passport_number"/>
+                <field name="visa_number"/>
+                <field name="frro_ack_number"/>
+                <field name="nationality_id"/>
+                <separator/>
+                <filter string="Paperless Digital" name="filter_paperless" domain="[('is_paperless', '=', True)]"/>
+                <filter string="Pending FRRO Submission" name="filter_pending_frro" domain="[('frro_portal_status', 'in', ('not_submitted', 'rejected'))]"/>
+                <filter string="Overdue (&gt;24h)" name="filter_overdue" domain="[('is_overdue', '=', True)]"/>
+                <filter string="Visa Expiring Soon" name="filter_visa_expiring" domain="[('is_visa_expiring_soon', '=', True)]"/>
+                <filter string="Form C Completed" name="filter_completed" domain="[('state', '=', 'completed')]"/>
+                <group>
+                    <filter string="Nationality" name="group_nationality" context="{'group_by': 'nationality_id'}"/>
+                    <filter string="Visa Category" name="group_visa_type" context="{'group_by': 'visa_type'}"/>
+                    <filter string="FRRO Status" name="group_frro_status" context="{'group_by': 'frro_portal_status'}"/>
+                    <filter string="Port of Entry" name="group_port" context="{'group_by': 'port_of_entry'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Foreign Guest FRRO Pivot View -->
+    <record id="view_compliance_foreign_guest_pivot" model="ir.ui.view">
+        <field name="name">compliance.foreign.guest.pivot</field>
+        <field name="model">compliance.foreign.guest</field>
+        <field name="arch" type="xml">
+            <pivot string="Foreign Guests FRRO Analysis" sample="1">
+                <field name="nationality_id" type="row"/>
+                <field name="frro_portal_status" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Foreign Guest FRRO Graph View -->
+    <record id="view_compliance_foreign_guest_graph" model="ir.ui.view">
+        <field name="name">compliance.foreign.guest.graph</field>
+        <field name="model">compliance.foreign.guest</field>
+        <field name="arch" type="xml">
+            <graph string="Foreign Guests by Nationality" type="bar" sample="1">
+                <field name="nationality_id"/>
+                <field name="visa_type"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Window Actions -->
+    <record id="action_compliance_foreign_guest_all" model="ir.actions.act_window">
+        <field name="name">Foreign Guest Register (FRRO Form C)</field>
+        <field name="res_model">compliance.foreign.guest</field>
+        <field name="view_mode">kanban,list,pivot,graph,form</field>
+        <field name="search_view_id" ref="view_compliance_foreign_guest_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register a Foreign Guest for Form C / FRRO Compliance
+            </p>
+            <p>
+                Track passport, visa, port of entry, and mandatory 24-hour Bureau of Immigration (BoI) Form C submissions.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_compliance_foreign_guest_pending" model="ir.actions.act_window">
+        <field name="name">Pending Form C Submissions</field>
+        <field name="res_model">compliance.foreign.guest</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('frro_portal_status', 'in', ('not_submitted', 'rejected'))]</field>
+    </record>
+
+    <record id="action_compliance_foreign_guest_expiring_visa" model="ir.actions.act_window">
+        <field name="name">Expiring Visa Tracker</field>
+        <field name="res_model">compliance.foreign.guest</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('is_visa_expiring_soon', '=', True)]</field>
+    </record>
+</odoo>

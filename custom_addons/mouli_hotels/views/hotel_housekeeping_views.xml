@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Housekeeping Kanban View -->
+    <record id="view_hotel_housekeeping_kanban" model="ir.ui.view">
+        <field name="name">hotel.housekeeping.task.kanban</field>
+        <field name="model">hotel.housekeeping.task</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1" quick_create="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="room_id"/>
+                <field name="property_id"/>
+                <field name="task_type"/>
+                <field name="assigned_to_id"/>
+                <field name="scheduled_date"/>
+                <field name="priority"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click p-2 mb-2 rounded shadow-sm border">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge text-bg-dark text-white font-monospace px-2 py-1 shadow-sm" style="background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important;">
+                                    <span style="color: #ffffff !important; font-weight: 700;">
+                                        <field name="name" class="text-white"/>
+                                    </span>
+                                </span>
+                                <field name="priority" widget="priority"/>
+                            </div>
+                            
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge bg-primary text-white fs-6 px-2 py-1">
+                                    Room <field name="room_id"/>
+                                </span>
+                                <span class="text-muted small">
+                                    <field name="property_id"/>
+                                </span>
+                            </div>
+
+                            <div class="text-dark small fw-semibold mb-2">
+                                <field name="task_type"/>
+                            </div>
+
+                            <div class="text-muted small mb-2 d-flex justify-content-between align-items-center bg-light p-1 rounded">
+                                <span>Date: <field name="scheduled_date"/></span>
+                                <span t-if="record.assigned_to_id.raw_value">
+                                    <field name="assigned_to_id"/>
+                                </span>
+                                <span t-else="" class="text-warning fw-semibold">
+                                    Unassigned
+                                </span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-1">
+                                <div>
+                                    <field name="state" widget="badge"
+                                           decoration-info="state == 'draft'"
+                                           decoration-warning="state == 'in_progress'"
+                                           decoration-success="state in ('done', 'inspected')"
+                                           decoration-muted="state == 'cancel'"/>
+                                </div>
+                                <div class="text-end">
+                                    <button t-if="record.state.raw_value == 'draft'" name="action_start" type="object" class="btn btn-sm btn-outline-primary">
+                                        Start
+                                    </button>
+                                    <button t-if="record.state.raw_value == 'in_progress'" name="action_done" type="object" class="btn btn-sm btn-success">
+                                        Cleaned
+                                    </button>
+                                    <button t-if="record.state.raw_value == 'done'" name="action_inspect" type="object" class="btn btn-sm btn-primary">
+                                        Approve
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Housekeeping Form View -->
+    <record id="view_hotel_housekeeping_form" model="ir.ui.view">
+        <field name="name">hotel.housekeeping.task.form</field>
+        <field name="model">hotel.housekeeping.task</field>
+        <field name="arch" type="xml">
+            <form string="Housekeeping Task">
+                <header>
+                    <button name="action_start" string="Start Cleaning" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_done" string="Mark Cleaned" type="object" class="btn-success" invisible="state != 'in_progress'"/>
+                    <button name="action_inspect" string="Approve Inspection" type="object" class="btn-primary" invisible="state != 'done'"/>
+                    <button name="action_cancel" string="Cancel Task" type="object" invisible="state in ('inspected', 'cancel')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done,inspected"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Inspected &amp; Ready" bg_color="text-bg-success" invisible="state != 'inspected'"/>
+                    <widget name="web_ribbon" title="In Progress" bg_color="text-bg-warning" invisible="state != 'in_progress'"/>
+                    <div class="oe_title">
+                        <label for="name" string="Task No"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Room &amp; Task Info">
+                            <field name="room_id" placeholder="Select room to clean..."/>
+                            <field name="property_id"/>
+                            <field name="task_type"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                        <group string="Assignment &amp; Schedule">
+                            <field name="assigned_to_id" placeholder="Assign housekeeper..."/>
+                            <field name="scheduled_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Instructions / Checklist Notes" name="notes">
+                            <field name="notes" placeholder="e.g. Change bedsheets, restock mini-fridge, replace towels, mop balcony, sanitize bathroom..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Housekeeping List View -->
+    <record id="view_hotel_housekeeping_list" model="ir.ui.view">
+        <field name="name">hotel.housekeeping.task.list</field>
+        <field name="model">hotel.housekeeping.task</field>
+        <field name="arch" type="xml">
+            <list string="Housekeeping Tasks"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'in_progress'"
+                  decoration-success="state in ('done', 'inspected')"
+                  decoration-muted="state == 'cancel'">
+                <field name="name" decoration-bf="1"/>
+                <field name="room_id" decoration-bf="1"/>
+                <field name="property_id"/>
+                <field name="task_type"/>
+                <field name="assigned_to_id"/>
+                <field name="scheduled_date"/>
+                <field name="priority" widget="priority"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'in_progress'"
+                       decoration-success="state in ('done', 'inspected')"
+                       decoration-muted="state == 'cancel'"/>
+                <button name="action_start" string="Start" type="object" icon="fa-play" class="btn-outline-primary" invisible="state != 'draft'"/>
+                <button name="action_done" string="Cleaned" type="object" icon="fa-check" class="btn-success" invisible="state != 'in_progress'"/>
+                <button name="action_inspect" string="Approve" type="object" icon="fa-thumbs-up" class="btn-primary" invisible="state != 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Housekeeping Search View -->
+    <record id="view_hotel_housekeeping_search" model="ir.ui.view">
+        <field name="name">hotel.housekeeping.task.search</field>
+        <field name="model">hotel.housekeeping.task</field>
+        <field name="arch" type="xml">
+            <search string="Search Housekeeping Tasks">
+                <field name="name"/>
+                <field name="room_id"/>
+                <field name="assigned_to_id"/>
+                <field name="task_type"/>
+                <filter string="Today's Tasks" name="filter_today" domain="[('scheduled_date', '=', context_today())]"/>
+                <separator/>
+                <filter string="Pending" name="filter_pending" domain="[('state', '=', 'draft')]"/>
+                <filter string="In Progress" name="filter_in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Cleaned (Needs Inspection)" name="filter_cleaned" domain="[('state', '=', 'done')]"/>
+                <filter string="Inspected &amp; Approved" name="filter_inspected" domain="[('state', '=', 'inspected')]"/>
+                <separator/>
+                <filter string="High &amp; Urgent Priority" name="filter_high_priority" domain="[('priority', 'in', ('2', '3'))]"/>
+                <separator/>
+                <filter string="Checkout Turnarounds" name="filter_checkout" domain="[('task_type', '=', 'checkout_clean')]"/>
+                <filter string="Daily Stayovers" name="filter_stayover" domain="[('task_type', '=', 'stayover_clean')]"/>
+                <group>
+                    <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Assigned Housekeeper" name="group_by_cleaner" context="{'group_by': 'assigned_to_id'}"/>
+                    <filter string="Room" name="group_by_room" context="{'group_by': 'room_id'}"/>
+                    <filter string="Task Type" name="group_by_type" context="{'group_by': 'task_type'}"/>
+                    <filter string="Scheduled Date" name="group_by_date" context="{'group_by': 'scheduled_date'}"/>
+                    <filter string="Property" name="group_by_property" context="{'group_by': 'property_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Housekeeping Action -->
+    <record id="action_hotel_housekeeping" model="ir.actions.act_window">
+        <field name="name">Housekeeping Operations</field>
+        <field name="res_model">hotel.housekeeping.task</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_hotel_housekeeping_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No Housekeeping Tasks Found</p>
+            <p>Assign room turnarounds, daily cleaning, and supervisor inspections to keep rooms pristine for arriving guests.</p>
+        </field>
+    </record>
+</odoo>

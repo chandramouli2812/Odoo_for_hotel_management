@@ -1,0 +1,9 @@
+name,email,phone,is_hotel_guest,id_type,id_number,vip_status,gender,nationality,notes
+"Alexander Wright",alex.wright@techventures.io,"+1 415-555-8921",True,passport,US982314562,platinum,male,"United States","Prefers quiet high floor rooms, foam pillows, sparkling water on arrival"
+"Priya Sharma",priya.sharma@consultingcorp.in,"+91 98200 45678",True,national_id,9823-4512-8871,gold,female,"India","Vegetarian breakfast, requires early check-in when available"
+"David Miller",david.miller@globalshipping.co.uk,"+44 7700 900123",True,passport,GB441209341,silver,male,"United Kingdom","Business traveler, requires airport transfer and daily dry cleaning"
+"Elena Rostova",elena.rostova@designstudio.fr,"+33 6 12 34 56 78",True,passport,FR667823412,gold,female,"France","Allergic to feather pillows. Enjoys sunset yoga and spa services"
+"Ananya Iyer",ananya.iyer@healthsciences.org,"+91 99401 23456",True,driving_license,DL-0420110023,standard,female,"India","Family vacation, requested extra baby crib and connecting room"
+"Liam O'Connor",liam.oconnor@dublintech.ie,"+353 87 123 4567",True,passport,IE882910345,silver,male,"Ireland","Honeymoon trip, requested champagne and fruit basket in room"
+"Marcus Aurelius Tan",marcus.tan@singaporefin.sg,"+65 9123 4567",True,passport,SG99018234E,platinum,male,"Singapore","Presidential Penthouse regular guest, prefers private butler check-in"
+"Carlos Rodriguez",carlos.rodriguez@madridtrade.es,"+34 600 123 456",True,national_id,48291034-K,standard,male,"Spain","Late checkout request at 2:00 PM approved"

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_compliance_police_submission_wizard_form" model="ir.ui.view">
+        <field name="name">compliance.police.submission.wizard.form</field>
+        <field name="model">compliance.police.submission.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Submit Police Reports / Intimations">
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Official Police Intimation:</strong> Record official submission of guest details to local law enforcement or immigration portals.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="authority_name"/>
+                            <field name="submission_date"/>
+                            <field name="submission_mode"/>
+                        </group>
+                        <group>
+                            <field name="submission_ref" placeholder="Station Inward No. / Portal Ack ID"/>
+                            <field name="mark_acknowledged"/>
+                            <field name="submission_slip" filename="submission_slip_filename"/>
+                            <field name="submission_slip_filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Selected Reports for Submission">
+                        <field name="report_ids" widget="many2many_tags" readonly="1"/>
+                    </group>
+                    <group string="Notes &amp; Remarks">
+                        <field name="remarks" placeholder="Add any special instructions or station inward remarks..."/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_confirm_submission" string="Confirm Police Submission" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_compliance_police_submission_wizard" model="ir.actions.act_window">
+        <field name="name">Submit to Police Authority</field>
+        <field name="res_model">compliance.police.submission.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_compliance_guest_report"/>
+        <field name="binding_view_types">list</field>
+    </record>
+</odoo>

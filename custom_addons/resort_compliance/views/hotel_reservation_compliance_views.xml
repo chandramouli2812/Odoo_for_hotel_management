@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hotel_reservation_form_inherit_compliance" model="ir.ui.view">
+        <field name="name">hotel.reservation.form.inherit.compliance</field>
+        <field name="model">hotel.reservation</field>
+        <field name="inherit_id" ref="mouli_hotels.view_hotel_reservation_form"/>
+        <field name="arch" type="xml">
+            <!-- Header Quick Action -->
+            <xpath expr="//header" position="inside">
+                <button name="action_quick_create_police_intimation"
+                        string="Police Intimation"
+                        type="object"
+                        class="btn-outline-primary"
+                        invisible="state not in ('confirmed', 'check_in', 'check_out')"
+                        groups="resort_compliance.group_compliance_user,resort_compliance.group_compliance_manager"/>
+            </xpath>
+
+            <!-- Stat Buttons -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_view_police_reports"
+                        icon="fa-shield"
+                        groups="resort_compliance.group_compliance_user,resort_compliance.group_compliance_manager">
+                    <field name="compliance_report_count" widget="statinfo" string="Police Intimations"/>
+                </button>
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_view_foreign_reports"
+                        icon="fa-globe"
+                        groups="resort_compliance.group_compliance_user,resort_compliance.group_compliance_manager">
+                    <field name="foreign_guest_count" widget="statinfo" string="Form C (FRRO)"/>
+                </button>
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_view_incidents"
+                        icon="fa-exclamation-triangle"
+                        groups="resort_compliance.group_compliance_user,resort_compliance.group_compliance_manager,resort_compliance.group_security_officer">
+                    <field name="incident_count" widget="statinfo" string="Incidents"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

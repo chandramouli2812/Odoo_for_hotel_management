@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================== -->
+    <!-- 1. DEDICATED OPERATIONAL WINDOW ACTIONS                        -->
+    <!-- ============================================================== -->
+
+    <!-- VIP Guests (In-House & Arriving) -->
+    <record id="action_hotel_vip_guests" model="ir.actions.act_window">
+        <field name="name">VIP Guest Register (Silver / Gold / Platinum)</field>
+        <field name="res_model">hotel.reservation</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="domain">[('is_vip', '=', True), ('state', 'in', ['confirmed', 'check_in'])]</field>
+        <field name="context">{'search_default_group_by_vip': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No active VIP guest reservations found.</p>
+            <p>Guests tagged with VIP Silver, Gold, or Platinum will automatically appear here with their preferences.</p>
+        </field>
+    </record>
+
+    <!-- Daily Cashier & Payments Register -->
+    <record id="action_hotel_cashier_payments" model="ir.actions.act_window">
+        <field name="name">Daily Cashier &amp; Payment Collections</field>
+        <field name="res_model">hotel.folio.payment</field>
+        <field name="view_mode">list,pivot,form</field>
+        <field name="domain">[
+            ('payment_date', '&gt;=', (context_today()).strftime('%Y-%m-%d 00:00:00')),
+            ('payment_date', '&lt;=', (context_today()).strftime('%Y-%m-%d 23:59:59'))
+        ]</field>
+        <field name="context">{'search_default_group_by_method': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No payments recorded for today.</p>
+            <p>Real-time collections across Cash, Credit Cards, UPI QR, and Bank Transfers will be logged here.</p>
+        </field>
+    </record>
+
+    <!-- Payment List Search & Grouping View -->
+    <record id="view_hotel_folio_payment_search" model="ir.ui.view">
+        <field name="name">hotel.folio.payment.search</field>
+        <field name="model">hotel.folio.payment</field>
+        <field name="arch" type="xml">
+            <search string="Search Cashier Payments">
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="reference"/>
+                <filter string="Today's Collections" name="filter_today" domain="[
+                    ('payment_date', '&gt;=', (context_today()).strftime('%Y-%m-%d 00:00:00')),
+                    ('payment_date', '&lt;=', (context_today()).strftime('%Y-%m-%d 23:59:59'))
+                ]"/>
+                <separator/>
+                <filter string="Cash" name="filter_cash" domain="[('payment_method', '=', 'cash')]"/>
+                <filter string="Card" name="filter_card" domain="[('payment_method', '=', 'card')]"/>
+                <filter string="UPI / QR" name="filter_upi" domain="[('payment_method', '=', 'upi')]"/>
+                <filter string="Bank Transfer" name="filter_bank" domain="[('payment_method', '=', 'bank')]"/>
+                <separator/>
+                <filter string="Advance Deposits" name="filter_advances" domain="[('is_advance', '=', True)]"/>
+                <group>
+                    <filter string="Payment Method" name="group_by_method" context="{'group_by': 'payment_method'}"/>
+                    <filter string="Guest" name="group_by_guest" context="{'group_by': 'guest_id'}"/>
+                    <filter string="Payment Date" name="group_by_date" context="{'group_by': 'payment_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Payment List View -->
+    <record id="view_hotel_folio_payment_list" model="ir.ui.view">
+        <field name="name">hotel.folio.payment.list</field>
+        <field name="model">hotel.folio.payment</field>
+        <field name="arch" type="xml">
+            <list string="Cashier Payments &amp; Receipts">
+                <field name="payment_date"/>
+                <field name="name"/>
+                <field name="folio_id"/>
+                <field name="guest_id"/>
+                <field name="payment_method" widget="badge"
+                       decoration-success="payment_method == 'cash'"
+                       decoration-info="payment_method == 'card'"
+                       decoration-primary="payment_method == 'upi'"
+                       decoration-warning="payment_method == 'bank'"/>
+                <field name="reference"/>
+                <field name="is_advance" widget="boolean_toggle"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="amount" widget="monetary" sum="Total Collections"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Payment Pivot View -->
+    <record id="view_hotel_folio_payment_pivot" model="ir.ui.view">
+        <field name="name">hotel.folio.payment.pivot</field>
+        <field name="model">hotel.folio.payment</field>
+        <field name="arch" type="xml">
+            <pivot string="Cashier Collections Summary" sample="1">
+                <field name="payment_method" type="row"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Room Status & Housekeeping Morning Sheet -->
+    <record id="action_hotel_room_status_sheet" model="ir.actions.act_window">
+        <field name="name">Morning Room Status &amp; Housekeeping Sheet</field>
+        <field name="res_model">hotel.room</field>
+        <field name="view_mode">list,kanban,pivot</field>
+        <field name="context">{'search_default_group_by_occupancy': 1, 'search_default_group_by_hk': 1}</field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- 2. OFFICIAL QWEB PDF REPORT ACTIONS                            -->
+    <!-- ============================================================== -->
+
+    <!-- Daily Breakfast List & Covers Sheet (PDF) -->
+    <record id="action_report_hotel_breakfast_list" model="ir.actions.report">
+        <field name="name">Daily Breakfast List &amp; Covers Sheet (PDF)</field>
+        <field name="model">hotel.breakfast.service</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mouli_hotels.report_hotel_breakfast_list_template</field>
+        <field name="print_report_name">'Breakfast_List_%s' % (fields.Date.today())</field>
+        <field name="binding_model_id" ref="model_hotel_breakfast_service"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Daily Arrival List (PDF) -->
+    <record id="action_report_hotel_arrival_list" model="ir.actions.report">
+        <field name="name">Daily Arrival List (PDF)</field>
+        <field name="model">hotel.reservation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mouli_hotels.report_hotel_arrival_list_template</field>
+        <field name="print_report_name">'Daily_Arrival_List_%s' % (fields.Date.today())</field>
+        <field name="binding_model_id" ref="model_hotel_reservation"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Daily Departure List (PDF) -->
+    <record id="action_report_hotel_departure_list" model="ir.actions.report">
+        <field name="name">Daily Departure List (PDF)</field>
+        <field name="model">hotel.reservation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mouli_hotels.report_hotel_departure_list_template</field>
+        <field name="print_report_name">'Daily_Departure_List_%s' % (fields.Date.today())</field>
+        <field name="binding_model_id" ref="model_hotel_reservation"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Daily In-House Guest List (PDF) -->
+    <record id="action_report_hotel_inhouse_list" model="ir.actions.report">
+        <field name="name">Daily In-House Guest List (PDF)</field>
+        <field name="model">hotel.reservation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mouli_hotels.report_hotel_inhouse_list_template</field>
+        <field name="print_report_name">'InHouse_Guest_List_%s' % (fields.Date.today())</field>
+        <field name="binding_model_id" ref="model_hotel_reservation"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Daily VIP Guest Register (PDF) -->
+    <record id="action_report_hotel_vip_list" model="ir.actions.report">
+        <field name="name">Daily VIP Guest Register (PDF)</field>
+        <field name="model">hotel.reservation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mouli_hotels.report_hotel_vip_list_template</field>
+        <field name="print_report_name">'VIP_Guest_Register_%s' % (fields.Date.today())</field>
+        <field name="binding_model_id" ref="model_hotel_reservation"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Daily Room Status & Housekeeping Sheet (PDF) -->
+    <record id="action_report_hotel_room_status" model="ir.actions.report">
+        <field name="name">Daily Room Status &amp; Housekeeping Sheet (PDF)</field>
+        <field name="model">hotel.room</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mouli_hotels.report_hotel_room_status_template</field>
+        <field name="print_report_name">'Room_Status_Sheet_%s' % (fields.Date.today())</field>
+        <field name="binding_model_id" ref="model_hotel_room"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Daily Cashier & Payment Summary (PDF) -->
+    <record id="action_report_hotel_cashier_summary" model="ir.actions.report">
+        <field name="name">Daily Cashier &amp; Payment Summary (PDF)</field>
+        <field name="model">hotel.folio.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mouli_hotels.report_hotel_cashier_summary_template</field>
+        <field name="print_report_name">'Cashier_Summary_%s' % (fields.Date.today())</field>
+        <field name="binding_model_id" ref="model_hotel_folio_payment"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

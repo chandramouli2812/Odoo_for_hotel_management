@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_inherit_payroll" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.payroll</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_contracts" class="oe_stat_button" icon="fa-file-text-o" type="object" groups="custom_payroll.group_hr_payroll_user">
+                    <field name="contract_count" widget="statinfo" string="Contracts"/>
+                </button>
+                <button name="action_view_payslips" class="oe_stat_button" icon="fa-money" type="object" groups="custom_payroll.group_hr_payroll_user">
+                    <field name="payslip_count" widget="statinfo" string="Payslips"/>
+                </button>
+            </div>
+            <xpath expr="//notebook" position="inside">
+                <page string="Payroll &amp; Contracts" name="payroll_contracts" groups="custom_payroll.group_hr_payroll_user">
+                    <group>
+                        <group string="Active Contracts">
+                            <field name="contract_ids" nolabel="1" colspan="2">
+                                <list string="Contracts" decoration-success="state == 'open'" decoration-muted="state == 'close'">
+                                    <field name="name"/>
+                                    <field name="date_start"/>
+                                    <field name="date_end"/>
+                                    <field name="wage" widget="monetary"/>
+                                    <field name="struct_id"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

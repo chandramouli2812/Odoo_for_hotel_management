@@ -1,0 +1,6 @@
+id,name,code,capacity,adult_capacity,child_capacity,list_price,description
+type_dlx_k,"Deluxe King Room",DLX_K,3,2,1,3500.00,"Spacious 42 sqm room featuring a plush king bed, marble en-suite bathroom, rain shower, and private balcony with city or garden views."
+type_exec_s,"Executive Business Suite",EXEC_S,4,3,1,6500.00,"Expansive 65 sqm suite with separate living parlor, ergonomic workstation, walk-in closet, executive lounge access, and evening cocktails."
+type_ocn_v,"Oceanfront Luxury Villa",OCN_V,5,4,2,12000.00,"Stand-alone 120 sqm private villa directly overlooking the ocean, featuring private plunge pool, sun terrace, and dedicated butler."
+type_pres_p,"Presidential Penthouse Suite",PRES_P,8,6,2,25000.00,"The pinnacle of luxury at 250 sqm. Features 3 en-suite bedrooms, private rooftop jacuzzi, dining salon for 8, grand piano, and 24/7 butler."
+type_std_t,"Standard Comfort Twin Room",STD_T,2,2,0,2200.00,"Contemporary 30 sqm room designed with two twin beds, premium acoustic insulation, work corner, and modern rainfall shower."

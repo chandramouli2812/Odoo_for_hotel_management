@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Hotel Folio Form View -->
+    <record id="view_hotel_folio_form" model="ir.ui.view">
+        <field name="name">hotel.folio.form</field>
+        <field name="model">hotel.folio</field>
+        <field name="arch" type="xml">
+            <form string="Guest Folio">
+                <header>
+                    <button name="action_register_payment" string="Register Payment" type="object" class="oe_highlight" invisible="payment_status == 'paid'"/>
+                    <button name="action_quick_settle_cash" string="Quick Cash Pay" type="object" class="btn-success" invisible="payment_status == 'paid'"/>
+                    <button name="action_quick_settle_upi" string="Quick UPI Pay" type="object" class="btn-success" invisible="payment_status == 'paid'"/>
+                    <button name="action_print_bill" string="Print Bill / Receipt" type="object" class="btn-info"/>
+                    <button name="action_create_invoice" string="Create Customer Invoice" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_view_invoice" string="View Invoice" type="object" class="btn-secondary" invisible="not invoice_id"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,invoiced,paid"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Paid" bg_color="text-bg-success" invisible="payment_status != 'paid'"/>
+                    <widget name="web_ribbon" title="Unpaid" bg_color="text-bg-danger" invisible="payment_status != 'unpaid'"/>
+                    <div class="oe_title">
+                        <label for="name" string="Folio Number"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Guest &amp; Stay">
+                            <field name="guest_id"/>
+                            <field name="room_id"/>
+                            <field name="reservation_id"/>
+                            <field name="property_id"/>
+                        </group>
+                        <group string="Financial Summary &amp; Settlement">
+                            <field name="date_order"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount_total" widget="monetary"/>
+                            <field name="amount_paid" widget="monetary" class="text-success fw-bold"/>
+                            <field name="amount_due" widget="monetary" class="oe_subtotal_footer_separator text-danger fw-bold fs-5"/>
+                            <field name="payment_status" widget="badge" decoration-success="payment_status == 'paid'" decoration-warning="payment_status == 'partial'" decoration-danger="payment_status == 'unpaid'"/>
+                            <field name="invoice_id" invisible="not invoice_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Itemized Charges" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="service_type"/>
+                                    <field name="name"/>
+                                    <field name="product_id" optional="hide"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit" widget="monetary"/>
+                                    <field name="price_subtotal" widget="monetary"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Payments &amp; Advances" name="payments">
+                            <field name="payment_ids">
+                                <list editable="bottom">
+                                    <field name="payment_date"/>
+                                    <field name="name"/>
+                                    <field name="payment_method"/>
+                                    <field name="amount" widget="monetary"/>
+                                    <field name="reference"/>
+                                    <field name="is_advance" widget="boolean_toggle"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Payment Quick Registration Popup Form -->
+    <record id="view_hotel_folio_payment_form" model="ir.ui.view">
+        <field name="name">hotel.folio.payment.form</field>
+        <field name="model">hotel.folio.payment</field>
+        <field name="arch" type="xml">
+            <form string="Record Guest Payment">
+                <group>
+                    <group>
+                        <field name="folio_id" readonly="1"/>
+                        <field name="guest_id"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="amount" widget="monetary" class="fw-bold fs-4 text-success"/>
+                    </group>
+                    <group>
+                        <field name="payment_method"/>
+                        <field name="payment_date"/>
+                        <field name="reference" placeholder="Txn ID / Cash Note"/>
+                        <field name="is_advance"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!-- Hotel Folio Kanban View -->
+    <record id="view_hotel_folio_kanban" model="ir.ui.view">
+        <field name="name">hotel.folio.kanban</field>
+        <field name="model">hotel.folio</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="payment_status" sample="1" quick_create="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="property_id"/>
+                <field name="date_order"/>
+                <field name="amount_total"/>
+                <field name="amount_paid"/>
+                <field name="amount_due"/>
+                <field name="payment_status"/>
+                <field name="currency_id"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click p-2 mb-2 rounded shadow-sm border">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge text-bg-dark text-white font-monospace px-2 py-1 shadow-sm" style="background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important;">
+                                    <span style="color: #ffffff !important; font-weight: 700;">
+                                        <field name="name" class="text-white"/>
+                                    </span>
+                                </span>
+                                <div>
+                                    <span t-if="record.payment_status.raw_value == 'paid'" class="badge bg-success">
+                                        Cleared
+                                    </span>
+                                    <span t-elif="record.payment_status.raw_value == 'partial'" class="badge bg-warning text-dark">
+                                        Partial
+                                    </span>
+                                    <span t-else="" class="badge bg-danger">
+                                        Unpaid
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <strong class="fs-6 text-primary"><field name="guest_id"/></strong>
+                                <div class="d-flex align-items-center gap-1 mt-1">
+                                    <span t-if="record.room_id.raw_value" class="badge bg-primary text-white">
+                                        Room <field name="room_id"/>
+                                    </span>
+                                    <span class="text-muted small">
+                                        • <field name="property_id"/>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Financial Box -->
+                            <div class="bg-light p-2 rounded mb-2 border">
+                                <div class="d-flex justify-content-between align-items-center small mb-1">
+                                    <span class="text-muted">Total Charges:</span>
+                                    <strong class="text-dark"><field name="amount_total" widget="monetary"/></strong>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center small mb-1">
+                                    <span class="text-muted">Paid:</span>
+                                    <span class="text-success fw-bold"><field name="amount_paid" widget="monetary"/></span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center border-top pt-1">
+                                    <span class="fw-bold text-dark">Balance Due:</span>
+                                    <strong class="text-danger fs-6"><field name="amount_due" widget="monetary"/></strong>
+                                </div>
+                            </div>
+
+                            <!-- Card Footer: Quick Actions -->
+                            <div class="d-flex gap-1 border-top pt-2">
+                                <button t-if="record.payment_status.raw_value != 'paid'" name="action_quick_settle_cash" type="object" class="btn btn-sm btn-outline-success flex-fill">
+                                    Cash Pay
+                                </button>
+                                <button t-if="record.payment_status.raw_value != 'paid'" name="action_quick_settle_upi" type="object" class="btn btn-sm btn-outline-primary flex-fill">
+                                    UPI Pay
+                                </button>
+                                <button name="action_print_bill" type="object" class="btn btn-sm btn-outline-secondary">
+                                    Bill
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Hotel Folio Pivot View -->
+    <record id="view_hotel_folio_pivot" model="ir.ui.view">
+        <field name="name">hotel.folio.pivot</field>
+        <field name="model">hotel.folio</field>
+        <field name="arch" type="xml">
+            <pivot string="Folio Revenue Analysis" sample="1">
+                <field name="property_id" type="row"/>
+                <field name="payment_status" type="col"/>
+                <field name="amount_total" type="measure"/>
+                <field name="amount_paid" type="measure"/>
+                <field name="amount_due" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Hotel Folio Graph View -->
+    <record id="view_hotel_folio_graph" model="ir.ui.view">
+        <field name="name">hotel.folio.graph</field>
+        <field name="model">hotel.folio</field>
+        <field name="arch" type="xml">
+            <graph string="Folio Revenue Analysis" type="bar" sample="1">
+                <field name="date_order" interval="month"/>
+                <field name="amount_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Hotel Folio List View -->
+    <record id="view_hotel_folio_list" model="ir.ui.view">
+        <field name="name">hotel.folio.list</field>
+        <field name="model">hotel.folio</field>
+        <field name="arch" type="xml">
+            <list string="Guest Folios" decoration-danger="payment_status == 'unpaid'" decoration-warning="payment_status == 'partial'" decoration-success="payment_status == 'paid'">
+                <field name="name" decoration-bf="1"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="property_id"/>
+                <field name="date_order"/>
+                <field name="amount_total" widget="monetary"/>
+                <field name="amount_paid" widget="monetary" decoration-success="amount_paid &gt; 0"/>
+                <field name="amount_due" widget="monetary" decoration-danger="amount_due &gt; 0" decoration-bf="1"/>
+                <field name="payment_status" widget="badge" decoration-success="payment_status == 'paid'" decoration-warning="payment_status == 'partial'" decoration-danger="payment_status == 'unpaid'"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state in ('invoiced', 'paid')"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Hotel Folio Search View -->
+    <record id="view_hotel_folio_search" model="ir.ui.view">
+        <field name="name">hotel.folio.search</field>
+        <field name="model">hotel.folio</field>
+        <field name="arch" type="xml">
+            <search string="Search Folios">
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="property_id"/>
+                <filter name="balance_due" string="Outstanding Balance" domain="[('amount_due', '&gt;', 0)]"/>
+                <filter name="state_cleared" string="Settled / Paid" domain="[('payment_status', '=', 'paid')]"/>
+                <separator/>
+                <filter name="state_open" string="Open Folios" domain="[('state', '=', 'draft')]"/>
+                <filter name="state_invoiced" string="Invoiced" domain="[('state', '=', 'invoiced')]"/>
+                <separator/>
+                <filter name="filter_today" string="Today's Folios" domain="[('date_order', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('date_order', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <group>
+                    <filter string="Property" name="group_by_property" context="{'group_by': 'property_id'}"/>
+                    <filter string="Payment Status" name="group_by_payment_status" context="{'group_by': 'payment_status'}"/>
+                    <filter string="Folio Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Order Date" name="group_by_date" context="{'group_by': 'date_order:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Folio Action -->
+    <record id="action_hotel_folio" model="ir.actions.act_window">
+        <field name="name">Guest Folios &amp; Billing</field>
+        <field name="res_model">hotel.folio</field>
+        <field name="view_mode">kanban,list,pivot,graph,form</field>
+        <field name="search_view_id" ref="view_hotel_folio_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No Guest Folios Found</p>
+            <p>Guest folios are automatically generated upon check-in and track room charges, F&amp;B meals, POS bills, and payments.</p>
+        </field>
+    </record>
+</odoo>

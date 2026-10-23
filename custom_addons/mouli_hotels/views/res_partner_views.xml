@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_hotel_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form.hotel.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button class="oe_stat_button" type="object" name="action_view_guest_reservations" icon="fa-bed" invisible="not is_hotel_guest">
+                    <field string="Stays" name="reservation_count" widget="statinfo"/>
+                </button>
+            </div>
+            <xpath expr="//notebook" position="inside">
+                <page string="Hotel Guest Profile" name="hotel_profile">
+                    <group>
+                        <group string="Identification &amp; VIP Status">
+                            <field name="is_hotel_guest"/>
+                            <field name="vip_status" widget="badge" decoration-danger="vip_status in ('gold', 'platinum')" decoration-warning="vip_status == 'silver'"/>
+                            <field name="id_type"/>
+                            <field name="id_number" placeholder="e.g. Passport or National ID No."/>
+                            <field name="nationality_id"/>
+                        </group>
+                        <group string="Personal Details &amp; Preferences">
+                            <field name="gender"/>
+                            <field name="birthdate"/>
+                            <field name="preferred_room_type_id"/>
+                        </group>
+                    </group>
+                    <group string="Guest Preferences &amp; Special Remarks">
+                        <field name="guest_notes" placeholder="e.g. Vegetarian breakfast, High floor preference, Feather pillow allergy, Late arrival..."/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Dedicated Hotel Guests Action -->
+    <record id="action_hotel_guests" model="ir.actions.act_window">
+        <field name="name">Hotel Guests</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('is_hotel_guest', '=', True)]</field>
+        <field name="context">{'default_is_hotel_guest': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Guest Directory</p>
+            <p>Profiles, stay history, VIP tiers, and stay preferences for all resort guests.</p>
+        </field>
+    </record>
+</odoo>

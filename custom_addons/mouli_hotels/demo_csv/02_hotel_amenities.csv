@@ -1,0 +1,12 @@
+id,name,code,description
+amenity_wifi,"High-Speed Wi-Fi 6",WIFI,"Ultra-fast 1 Gbps wireless internet in all rooms and common areas"
+amenity_king_bed,"King Size Plush Bed",KING_BED,"Hypoallergenic luxury king mattress with 400 thread-count Egyptian cotton linens"
+amenity_smart_tv,"55-inch 4K Smart TV",SMART_TV,"Pre-loaded with Netflix, Prime Video, Disney+, and Apple AirPlay"
+amenity_ocean_view,"Private Ocean View Balcony",BALCONY,"Panoramic sea view terrace with loungers and dining table"
+amenity_jacuzzi,"Private Jacuzzi / Whirlpool Tub",JACUZZI,"Heated hydromassage spa tub with aromatherapy bath salts"
+amenity_minibar,"Artisan Mini Bar & Nespresso",MINIBAR,"Stocked gourmet snacks, premium spirits, craft beer, and Nespresso capsule machine"
+amenity_ac,"Silent Climate Control AC",CLIMATE,"Individual digital inverter climate thermostat with air purifier"
+amenity_safe,"Digital In-Room Safe",SAFE,"Laptop-sized electronic biometric and digital code security safe"
+amenity_workstation,"Ergonomic Executive Desk",DESK,"Solid wood workstation with ergonomic Herman Miller chair and USB-C docks"
+amenity_butler,"24/7 Dedicated Butler Service",BUTLER,"Round-the-clock personal concierge and butler assistance on demand"
+amenity_breakfast,"Complimentary Gourmet Breakfast",BREAKFAST,"Daily international buffet breakfast or in-room breakfast tray"

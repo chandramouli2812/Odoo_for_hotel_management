@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Report Action -->
+    <record id="action_report_daily_flash" model="ir.actions.report">
+        <field name="name">Daily Resort Flash Report</field>
+        <field name="model">hotel.daily.flash.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mouli_hotels.report_daily_flash_template</field>
+        <field name="print_report_name">'Daily_Flash_Report_' + (object.report_date.strftime('%Y-%m-%d') if object.report_date else 'Today')</field>
+    </record>
+
+    <!-- QWeb Template -->
+    <template id="report_daily_flash_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: #1e293b; line-height: 1.5;">
+
+                        <style>
+                            .flash-table {
+                                border-collapse: collapse !important;
+                                width: 100% !important;
+                                margin-bottom: 0 !important;
+                            }
+                            .flash-table th {
+                                background-color: #0f172a !important;
+                                color: #ffffff !important;
+                                font-weight: 700 !important;
+                                font-size: 9px !important;
+                                padding: 4px 2px !important;
+                                text-align: center !important;
+                                vertical-align: middle !important;
+                                border: 1px solid #334155 !important;
+                                line-height: 1.2 !important;
+                            }
+                            .flash-table td {
+                                font-size: 9px !important;
+                                padding: 4px 2px !important;
+                                text-align: center !important;
+                                vertical-align: middle !important;
+                                border: 1px solid #cbd5e1 !important;
+                            }
+                            .th-gross-rev {
+                                background-color: #15803d !important;
+                                color: #ffffff !important;
+                            }
+                            .th-total-col {
+                                background-color: #0369a1 !important;
+                                color: #ffffff !important;
+                            }
+                            .th-out-due {
+                                background-color: #b91c1c !important;
+                                color: #ffffff !important;
+                            }
+                            .th-maint-open {
+                                background-color: #334155 !important;
+                                color: #ffffff !important;
+                            }
+                            .th-maint-urg {
+                                background-color: #991b1b !important;
+                                color: #ffffff !important;
+                            }
+                        </style>
+
+                        <!-- Executive Header Banner -->
+                        <div style="background-color: #0f172a !important; background: -webkit-linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%) !important; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%) !important; color: #ffffff !important; padding: 10px 18px; border-radius: 6px; margin-bottom: 10px;">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <div style="text-transform: uppercase; font-size: 9px; letter-spacing: 1.5px; color: #93c5fd !important; font-weight: 700; margin-bottom: 2px;">
+                                        Mouli Hotels &amp; Resorts Management Suite
+                                    </div>
+                                    <h2 style="margin: 0; font-size: 18px; font-weight: 800; color: #ffffff !important; letter-spacing: 0.5px;">
+                                        EXECUTIVE DAILY RESORT FLASH REPORT
+                                    </h2>
+                                    <div style="font-size: 10px; color: #cbd5e1 !important; margin-top: 2px;">
+                                        Comprehensive Morning Operations, Revenue &amp; Night Audit Briefing
+                                    </div>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <div style="background-color: #1e293b !important; padding: 5px 10px; border-radius: 4px; display: inline-block; text-align: right; border: 1px solid #334155 !important;">
+                                        <div style="font-size: 9px; text-transform: uppercase; color: #94a3b8 !important; font-weight: 600;">Report Date</div>
+                                        <div style="font-size: 12px; font-weight: 700; color: #ffffff !important;"><t t-out="doc.report_date"/></div>
+                                        <div style="font-size: 9px; color: #38bdf8 !important; font-weight: 600;"><t t-out="doc.property_id.name or 'All Properties Consolidated'"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hero Executive KPI Highlights Cards -->
+                        <div class="row g-2 mb-2 text-center">
+                            <div class="col-3">
+                                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 6px 4px;">
+                                    <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; color: #166534;">Occupancy Rate</div>
+                                    <div style="font-size: 18px; font-weight: 800; color: #15803d; margin: 1px 0;">
+                                        <t t-out="'%.1f' % doc.occupancy_rate"/>%
+                                    </div>
+                                    <div style="font-size: 9px; color: #16a34a; font-weight: 600;">
+                                        <t t-out="doc.occupied_rooms"/> Occ / <t t-out="doc.available_rooms"/> Avail (<t t-out="doc.total_rooms"/> Total)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 6px 4px;">
+                                    <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; color: #1e40af;">Average Daily Rate (ADR)</div>
+                                    <div style="font-size: 17px; font-weight: 800; color: #1d4ed8; margin: 1px 0;">
+                                        <t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.adr)"/>
+                                    </div>
+                                    <div style="font-size: 9px; color: #2563eb; font-weight: 600;">
+                                        RevPOR: <t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.revpor)"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 6px; padding: 6px 4px;">
+                                    <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; color: #6b21a8;">RevPAR (Rev/Avail)</div>
+                                    <div style="font-size: 17px; font-weight: 800; color: #7e22ce; margin: 1px 0;">
+                                        <t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.revpar)"/>
+                                    </div>
+                                    <div style="font-size: 9px; color: #9333ea; font-weight: 600;">
+                                        ALOS: <t t-out="'%.1f' % doc.alos"/> Nights
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; padding: 6px 4px;">
+                                    <div style="font-size: 9px; font-weight: 700; text-transform: uppercase; color: #92400e;">Total Resort Revenue</div>
+                                    <div style="font-size: 17px; font-weight: 800; color: #b45309; margin: 1px 0;">
+                                        <t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.total_resort_revenue)"/>
+                                    </div>
+                                    <div style="font-size: 9px; color: #d97706; font-weight: 600;">Rooms + F&amp;B + Bar + Spa + Act</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 1. Room Inventory & Occupancy Breakdown -->
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: 800; font-size: 11px; text-transform: uppercase; color: #0f172a; padding-bottom: 2px; border-bottom: 2px solid #0284c7; margin-bottom: 4px; letter-spacing: 0.5px;">
+                                1. Room Inventory &amp; Occupancy Performance
+                            </div>
+                            <table class="table table-sm table-bordered text-center align-middle flash-table" style="font-size: 9px; border-color: #cbd5e1; margin-bottom: 0;">
+                                <thead>
+                                    <tr>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Total Inv</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Out of Order</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Available</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Occupied</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Vacant Ready</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Occupancy %</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">ADR</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">RevPAR</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">RevPOR</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">ALOS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="font-weight: 700; background-color: #f8fafc;">
+                                        <td><t t-out="doc.total_rooms"/></td>
+                                        <td style="color: #dc2626;"><t t-out="doc.blocked_rooms"/></td>
+                                        <td style="color: #0284c7;"><t t-out="doc.available_rooms"/></td>
+                                        <td style="color: #1e40af;"><t t-out="doc.occupied_rooms"/></td>
+                                        <td style="color: #16a34a;"><t t-out="doc.vacant_rooms"/></td>
+                                        <td style="color: #0284c7;"><t t-out="'%.1f' % doc.occupancy_rate"/>%</td>
+                                        <td style="color: #16a34a;"><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.adr)"/></td>
+                                        <td style="color: #7c3aed;"><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.revpar)"/></td>
+                                        <td style="color: #2563eb;"><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.revpor)"/></td>
+                                        <td><t t-out="'%.1f' % doc.alos"/> Nts</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 2. Front Office Movements -->
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: 800; font-size: 11px; text-transform: uppercase; color: #0f172a; padding-bottom: 2px; border-bottom: 2px solid #0284c7; margin-bottom: 4px; letter-spacing: 0.5px;">
+                                2. Front Desk Operations &amp; Guest Movements
+                            </div>
+                            <table class="table table-sm table-bordered text-center align-middle flash-table" style="font-size: 9px; border-color: #cbd5e1; margin-bottom: 0;">
+                                <thead>
+                                    <tr>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Expected Arrivals</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Actual Check-Ins</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Stayovers</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Expected Departures</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Actual Check-Outs</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">In-House Guests</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">VIP Guests</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">No-Shows</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Cancellations</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="font-weight: 700; background-color: #f8fafc;">
+                                        <td><t t-out="doc.expected_arrivals"/></td>
+                                        <td style="color: #16a34a;"><t t-out="doc.checked_in_arrivals"/></td>
+                                        <td style="color: #0284c7;"><t t-out="doc.stayover_count"/></td>
+                                        <td><t t-out="doc.expected_departures"/></td>
+                                        <td style="color: #0284c7;"><t t-out="doc.checked_out_departures"/></td>
+                                        <td style="color: #0f172a;"><t t-out="doc.in_house_guests"/></td>
+                                        <td style="color: #dc2626;">★ <t t-out="doc.vip_count"/> VIPs</td>
+                                        <td style="color: #e11d48;"><t t-out="doc.no_show_count"/></td>
+                                        <td style="color: #64748b;"><t t-out="doc.cancellation_count"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 3. Departmental Revenue Breakdown -->
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: 800; font-size: 11px; text-transform: uppercase; color: #0f172a; padding-bottom: 2px; border-bottom: 2px solid #0284c7; margin-bottom: 4px; letter-spacing: 0.5px;">
+                                3. Multi-Outlet Resort Revenue Breakdown
+                            </div>
+                            <table class="table table-sm table-bordered text-center align-middle flash-table" style="font-size: 9px; border-color: #cbd5e1; margin-bottom: 0;">
+                                <thead>
+                                    <tr>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Room Accommodations</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Restaurant &amp; Dining</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Bar &amp; Beverages</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Spa &amp; Wellness</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Activities &amp; Sports</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Guest Laundry</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Ancillary / Other</th>
+                                        <th class="th-gross-rev" style="background-color: #15803d !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">GROSS RESORT REVENUE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="font-weight: 700; background-color: #f8fafc;">
+                                        <td><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.room_revenue)"/></td>
+                                        <td><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.restaurant_revenue)"/></td>
+                                        <td><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.bar_revenue)"/></td>
+                                        <td><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.spa_revenue)"/></td>
+                                        <td><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.activity_revenue)"/></td>
+                                        <td><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.laundry_revenue)"/></td>
+                                        <td><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.other_revenue)"/></td>
+                                        <td style="color: #15803d; font-size: 10px; background-color: #f0fdf4;">
+                                            <t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.total_resort_revenue)"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 4. Front Desk Cashier Collections & Balances -->
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: 800; font-size: 11px; text-transform: uppercase; color: #0f172a; padding-bottom: 2px; border-bottom: 2px solid #0284c7; margin-bottom: 4px; letter-spacing: 0.5px;">
+                                4. Front Desk Cashier Collections &amp; Outstanding Guest Ledger
+                            </div>
+                            <table class="table table-sm table-bordered text-center align-middle flash-table" style="font-size: 9px; border-color: #cbd5e1; margin-bottom: 0;">
+                                <thead>
+                                    <tr>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Cash</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Credit / Debit Card</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">UPI / Digital</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Bank Wire</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Discounts Given</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Refunds Issued</th>
+                                        <th class="th-total-col" style="background-color: #0369a1 !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">TOTAL COLLECTED</th>
+                                        <th class="th-out-due" style="background-color: #b91c1c !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">OUTSTANDING GUEST LEDGER</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="font-weight: 700; background-color: #f8fafc;">
+                                        <td><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.cash_collected)"/></td>
+                                        <td><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.card_collected)"/></td>
+                                        <td><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.upi_collected)"/></td>
+                                        <td><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.bank_collected)"/></td>
+                                        <td style="color: #64748b;"><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.discounts_given)"/></td>
+                                        <td style="color: #dc2626;"><t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.refunds_issued)"/></td>
+                                        <td style="color: #0369a1; font-size: 10px; background-color: #f0f9ff;">
+                                            <t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.total_collected)"/>
+                                        </td>
+                                        <td style="color: #b91c1c; font-size: 10px; background-color: #fef2f2;">
+                                            <t t-out="doc.currency_id.symbol"/><t t-out="'{:,.2f}'.format(doc.total_outstanding_due)"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 5. Housekeeping & Resort Operations Status -->
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-weight: 800; font-size: 11px; text-transform: uppercase; color: #0f172a; padding-bottom: 2px; border-bottom: 2px solid #0284c7; margin-bottom: 4px; letter-spacing: 0.5px;">
+                                5. Housekeeping Room Condition &amp; Maintenance Operations
+                            </div>
+                            <table class="table table-sm table-bordered text-center align-middle flash-table" style="font-size: 9px; border-color: #cbd5e1; margin-bottom: 0;">
+                                <thead>
+                                    <tr>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Clean &amp; Ready</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Inspected &amp; Approved</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Dirty / Turnaround</th>
+                                        <th style="background-color: #0f172a !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Cleaning In Progress</th>
+                                        <th class="th-maint-open" style="background-color: #334155 !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Open Maintenance Issues</th>
+                                        <th class="th-maint-urg" style="background-color: #991b1b !important; color: #ffffff !important; padding: 4px 2px; font-weight: 700;">Urgent / High Priority Repairs</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="font-weight: 700; background-color: #f8fafc;">
+                                        <td style="color: #16a34a; font-size: 10px;">✓ <t t-out="doc.clean_rooms"/></td>
+                                        <td style="color: #0284c7; font-size: 10px;">★ <t t-out="doc.inspected_rooms"/></td>
+                                        <td style="color: #d97706; font-size: 10px;"><t t-out="doc.dirty_rooms"/></td>
+                                        <td style="color: #0891b2; font-size: 10px;"><t t-out="doc.cleaning_rooms"/></td>
+                                        <td style="color: #334155; font-size: 10px;"><t t-out="doc.maintenance_open_issues"/> Open</td>
+                                        <td style="color: #dc2626; font-size: 10px;"><t t-out="doc.maintenance_urgent_issues"/> Urgent</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Executive Sign-Off & Verification Block -->
+                        <div style="margin-top: 15px; padding-top: 6px; border-top: 1px solid #cbd5e1;">
+                            <div style="font-size: 8px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 1px; margin-bottom: 4px; text-align: center;">
+                                Daily Operations Sign-off &amp; Audit Verification
+                            </div>
+                            <div class="row text-center" style="font-size: 9px;">
+                                <div class="col-4">
+                                    <div style="border-top: 1px solid #475569; width: 70%; margin: 18px auto 2px auto;"></div>
+                                    <strong style="color: #1e293b;">Night Auditor / Front Desk Supervisor</strong>
+                                    <div style="font-size: 8px; color: #64748b;">Time: ________________</div>
+                                </div>
+                                <div class="col-4">
+                                    <div style="border-top: 1px solid #475569; width: 70%; margin: 18px auto 2px auto;"></div>
+                                    <strong style="color: #1e293b;">Director of Operations / Maintenance</strong>
+                                    <div style="font-size: 8px; color: #64748b;">Time: ________________</div>
+                                </div>
+                                <div class="col-4">
+                                    <div style="border-top: 1px solid #475569; width: 70%; margin: 18px auto 2px auto;"></div>
+                                    <strong style="color: #1e293b;">General Manager / Managing Director</strong>
+                                    <div style="font-size: 8px; color: #64748b;">Time: ________________</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 15px; text-align: center; font-size: 8px; color: #94a3b8; border-top: 1px dashed #e2e8f0; padding-top: 4px;">
+                            Generated by Mouli Hotels PMS Suite • Confidential &amp; Proprietary Resort Management Record
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

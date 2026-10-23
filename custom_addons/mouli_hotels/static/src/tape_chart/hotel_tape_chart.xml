@@ -1,0 +1,971 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="mouli_hotels.HotelTapeChart">
+        <div class="o_hotel_tape_chart_container">
+
+            <!-- Loading Spinner Overlay -->
+            <div t-if="this.state.loading" class="o_tape_chart_loader_overlay">
+                <div class="o_loader_box">
+                    <i class="oi oi-spin oi-2x text-primary" data-icon="refresh"/>
+                    <span class="ms-2 fw-semibold text-secondary">Updating Tape Chart...</span>
+                </div>
+            </div>
+
+            <t t-if="this.state.data">
+
+                <!-- 1. TOP HEADER & CONTROL CENTER -->
+                <header class="o_tape_chart_topbar">
+                    <!-- Left: Navigation, Date Picker & Range Switcher -->
+                    <div class="o_topbar_nav_section">
+                        <div class="o_date_nav_group">
+                            <button class="btn btn-sm btn-outline-secondary o_btn_nav" t-on-click="() => this.onPrevDays(7)" title="Previous 7 Days">
+                                <i class="oi" data-icon="chevron_left"/>
+                            </button>
+                            <div class="o_date_picker_wrapper" title="Select Anchor Date">
+                                <i class="oi o_cal_icon" data-icon="calendar_today"/>
+                                <input type="date"
+                                       class="form-control form-control-sm o_date_input"
+                                       t-att-value="this.state.startDate"
+                                       t-on-change="this.onDateChange"/>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary o_btn_today" t-on-click="this.onToday" title="Jump to Today">
+                                Today
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary o_btn_nav" t-on-click="() => this.onNextDays(7)" title="Next 7 Days">
+                                <i class="oi" data-icon="chevron_right"/>
+                            </button>
+                        </div>
+
+                        <!-- Date Range Display Badge -->
+                        <div class="o_date_range_pill">
+                            <i class="oi me-1 text-primary" data-icon="schedule"/>
+                            <span class="fw-semibold" t-esc="this.getDateRangeLabel()"/>
+                        </div>
+
+                        <!-- View Duration Switcher (7D, 11D, 14D, 30D) -->
+                        <div class="btn-group btn-group-sm o_view_span_group" role="group">
+                            <button type="button"
+                                    t-attf-class="btn btn-outline-secondary {{ this.state.daysCount === 7 ? 'active' : '' }}"
+                                    t-on-click="() => this.setDaysCount(7)">7D</button>
+                            <button type="button"
+                                    t-attf-class="btn btn-outline-secondary {{ this.state.daysCount === 11 ? 'active' : '' }}"
+                                    t-on-click="() => this.setDaysCount(11)">11D</button>
+                            <button type="button"
+                                    t-attf-class="btn btn-outline-secondary {{ this.state.daysCount === 14 ? 'active' : '' }}"
+                                    t-on-click="() => this.setDaysCount(14)">14D</button>
+                            <button type="button"
+                                    t-attf-class="btn btn-outline-secondary {{ this.state.daysCount === 30 ? 'active' : '' }}"
+                                    t-on-click="() => this.setDaysCount(30)">30D</button>
+                        </div>
+
+                        <!-- Live Search Input & Dropdown -->
+                        <div class="o_search_box_wrapper">
+                            <i class="oi o_search_icon" data-icon="search"/>
+                            <input type="text"
+                                   class="form-control form-control-sm o_search_input"
+                                   placeholder="Search guest (e.g. Krishna)..."
+                                   t-att-value="this.state.searchQuery"
+                                   t-on-input="this.onSearchInput"
+                                   t-on-focus="this.onSearchFocus"/>
+                            <i t-if="this.state.isSearching" class="oi oi-spin o_search_spinner text-primary" data-icon="refresh"/>
+                            <button t-if="this.state.searchQuery"
+                                    class="btn btn-sm o_btn_clear_search"
+                                    t-on-click="this.clearSearch"
+                                    title="Clear search">
+                                <i class="oi" data-icon="close"/>
+                            </button>
+
+                            <!-- Backdrop to close dropdown when clicking outside -->
+                            <div t-if="this.state.showSearchResultsDropdown"
+                                 class="o_search_backdrop"
+                                 t-on-click="this.closeSearchDropdown"/>
+
+                            <!-- Global Guest & Reservation Search Results Dropdown -->
+                            <div t-if="this.state.showSearchResultsDropdown" class="o_search_results_dropdown shadow-lg">
+                                <div class="o_search_drop_header">
+                                    <div class="o_drop_title">
+                                        <i class="oi me-1 text-primary" data-icon="group"/>
+                                        <t t-if="this.state.searchResults.length">
+                                            Found <strong t-esc="this.state.searchResults.length"/> stay(s) for "<t t-esc="this.state.searchQuery"/>"
+                                        </t>
+                                        <t t-else="">
+                                            No stays found for "<t t-esc="this.state.searchQuery"/>"
+                                        </t>
+                                    </div>
+                                    <button class="btn btn-sm btn-link text-muted p-0 o_btn_close_drop"
+                                            t-on-click="this.closeSearchDropdown"
+                                            title="Close">
+                                        <i class="oi" data-icon="close"/>
+                                    </button>
+                                </div>
+
+                                <div class="o_search_drop_list">
+                                    <t t-if="this.state.searchResults.length">
+                                        <t t-foreach="this.state.searchResults" t-as="item" t-key="item.id">
+                                            <div class="o_search_drop_item" t-on-click="() => this.onSelectSearchResult(item)">
+                                                <div class="o_drop_item_top">
+                                                    <div class="o_drop_guest_info">
+                                                        <span class="o_drop_guest_name" t-esc="item.guest_name"/>
+                                                        <span t-if="item.guest_vip and item.guest_vip !== 'standard' and item.guest_vip !== 'none'"
+                                                              t-attf-class="badge o_vip_mini_badge o_vip_{{ item.guest_vip }} ms-1">
+                                                            <t t-esc="item.guest_vip.toUpperCase()"/>
+                                                        </span>
+                                                    </div>
+                                                    <span t-attf-class="badge o_stay_status_badge o_status_{{ item.state }}">
+                                                        <t t-if="item.state === 'check_in'"><i class="oi me-1" data-icon="bed"/>In-House</t>
+                                                        <t t-elif="item.state === 'confirmed'"><i class="oi me-1" data-icon="lock"/>Confirmed</t>
+                                                        <t t-elif="item.state === 'check_out'"><i class="oi me-1" data-icon="check_circle"/>Checked Out</t>
+                                                        <t t-else=""><t t-esc="item.state_label"/></t>
+                                                    </span>
+                                                </div>
+
+                                                <div class="o_drop_item_mid">
+                                                    <span class="o_drop_badge o_badge_room">
+                                                        <i class="oi me-1" data-icon="key"/>Room <strong t-esc="item.room_number"/>
+                                                    </span>
+                                                    <span class="o_drop_badge o_badge_dates">
+                                                        <i class="oi me-1" data-icon="calendar_today"/>
+                                                        <t t-esc="item.check_in_display"/> – <t t-esc="item.check_out_display"/>
+                                                        <span class="ms-1 fw-bold">(<t t-esc="item.nights"/>N)</span>
+                                                    </span>
+                                                </div>
+
+                                                <div class="o_drop_item_bot">
+                                                    <span class="o_drop_ref text-muted small">
+                                                        <t t-esc="item.name"/>
+                                                        <t t-if="item.guest_phone"> • <i class="oi" data-icon="phone"/> <t t-esc="item.guest_phone"/></t>
+                                                    </span>
+                                                    <span class="o_drop_fin">
+                                                        <span class="fw-bold text-dark" t-esc="item.total_formatted"/>
+                                                        <span t-if="item.amount_due > 0" class="text-danger small ms-1">(Due: <t t-esc="item.due_formatted"/>)</span>
+                                                        <span t-elif="item.amount_total > 0" class="text-success small ms-1">(Paid)</span>
+                                                    </span>
+                                                </div>
+
+                                                <div class="o_drop_item_hint">
+                                                    <i class="oi me-1 text-primary" data-icon="calendar_today"/> Click to jump calendar to this stay &amp; view folio
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="p-3 text-center text-muted small">
+                                            <i class="oi me-1" data-icon="search"/> No reservations or stays found matching "<t t-esc="this.state.searchQuery"/>".
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Filters, Property, Quick Actions -->
+                    <div class="o_topbar_actions_section">
+                        <!-- Property Dropdown if multiple -->
+                        <div t-if="this.state.data.all_properties and this.state.data.all_properties.length > 1" class="o_prop_select_wrapper">
+                            <select class="form-select form-select-sm o_property_select" t-on-change="this.onPropertyChange" title="Select Property">
+                                <t t-foreach="this.state.data.all_properties" t-as="prop" t-key="prop.id">
+                                    <option t-att-value="prop.id" t-att-selected="prop.id === this.state.propertyId">
+                                        <t t-esc="prop.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+
+                        <!-- Meal Plan Selector -->
+                        <div class="o_meal_plan_wrapper" title="Meal Plan Pricing Scheme">
+                            <span class="o_meal_plan_label">Meal:</span>
+                            <select class="form-select form-select-sm o_meal_plan_select" t-on-change="this.onMealPlanChange">
+                                <option value="CP" t-att-selected="this.state.mealPlan === 'CP'">CP (Breakfast)</option>
+                                <option value="EP" t-att-selected="this.state.mealPlan === 'EP'">EP (Room Only)</option>
+                                <option value="MAP" t-att-selected="this.state.mealPlan === 'MAP'">MAP (Half Board)</option>
+                                <option value="AP" t-att-selected="this.state.mealPlan === 'AP'">AP (Full Board)</option>
+                            </select>
+                        </div>
+
+                        <!-- 1-Click New Reservation Button (Primary Action) -->
+                        <button class="btn btn-primary btn-sm o_btn_quick_reservation" t-on-click="() => this.openQuickBook()">
+                            <i class="oi me-1" data-icon="add"/> New Reservation
+                        </button>
+
+                        <!-- Refresh Grid -->
+                        <button class="btn btn-light btn-sm o_btn_icon" t-on-click="this.loadTapeChartData" title="Refresh Calendar">
+                            <i class="oi" data-icon="refresh"/>
+                        </button>
+
+                        <!-- Guide / Legend Modal Button -->
+                        <button class="btn btn-light btn-sm o_btn_icon" t-on-click="this.toggleLegend" title="Color &amp; Status Legend">
+                            <i class="oi" data-icon="help"/>
+                        </button>
+
+                        <!-- TV & Projector Fullscreen Presentation Mode Button -->
+                        <button class="btn btn-light btn-sm o_btn_icon o_btn_fullscreen"
+                                t-on-click="this.toggleFullscreen"
+                                title="TV &amp; Projector Fullscreen Mode">
+                            <i class="oi" t-att-data-icon="this.state.isFullscreen ? 'fullscreen_exit' : 'fullscreen'"/>
+                        </button>
+                    </div>
+                </header>
+
+                <!-- 2. KPI STATUS FILTER PILLS BAR -->
+                <div class="o_kpi_filter_bar">
+                    <div class="o_kpi_label">Status Filter:</div>
+                    <div class="o_kpi_pills_list">
+                        <!-- All -->
+                        <button t-attf-class="o_kpi_pill o_kpi_all {{ this.state.selectedStatusFilter === 'all' ? 'active' : '' }}"
+                                t-on-click="() => this.onFilterStatus('all')">
+                            All Rooms <span class="badge" t-esc="this.state.data.metrics.all"/>
+                        </button>
+
+                        <!-- Vacant / Available -->
+                        <button t-attf-class="o_kpi_pill o_kpi_vacant {{ this.state.selectedStatusFilter === 'vacant' ? 'active' : '' }}"
+                                t-on-click="() => this.onFilterStatus('vacant')">
+                            <span class="o_dot o_dot_vacant"/> Vacant <span class="badge" t-esc="this.state.data.metrics.vacant"/>
+                        </button>
+
+                        <!-- Occupied / In-House -->
+                        <button t-attf-class="o_kpi_pill o_kpi_occupied {{ this.state.selectedStatusFilter === 'occupied' ? 'active' : '' }}"
+                                t-on-click="() => this.onFilterStatus('occupied')">
+                            <span class="o_dot o_dot_occupied"/> Occupied <span class="badge" t-esc="this.state.data.metrics.occupied"/>
+                        </button>
+
+                        <!-- Reserved / Confirmed -->
+                        <button t-attf-class="o_kpi_pill o_kpi_reserved {{ this.state.selectedStatusFilter === 'reserved' ? 'active' : '' }}"
+                                t-on-click="() => this.onFilterStatus('reserved')">
+                            <span class="o_dot o_dot_reserved"/> Reserved <span class="badge" t-esc="this.state.data.metrics.reserved"/>
+                        </button>
+
+                        <!-- Blocked / Maintenance -->
+                        <button t-attf-class="o_kpi_pill o_kpi_blocked {{ this.state.selectedStatusFilter === 'blocked' ? 'active' : '' }}"
+                                t-on-click="() => this.onFilterStatus('blocked')">
+                            <span class="o_dot o_dot_blocked"/> Blocked <span class="badge" t-esc="this.state.data.metrics.blocked"/>
+                        </button>
+
+                        <!-- Due Out -->
+                        <button t-attf-class="o_kpi_pill o_kpi_due_out {{ this.state.selectedStatusFilter === 'due_out' ? 'active' : '' }}"
+                                t-on-click="() => this.onFilterStatus('due_out')">
+                            <span class="o_dot o_dot_due_out"/> Due Out <span class="badge" t-esc="this.state.data.metrics.due_out"/>
+                        </button>
+
+                        <!-- Dirty / Needs Cleaning -->
+                        <button t-attf-class="o_kpi_pill o_kpi_dirty {{ this.state.selectedStatusFilter === 'dirty' ? 'active' : '' }}"
+                                t-on-click="() => this.onFilterStatus('dirty')">
+                            <span class="o_dot o_dot_dirty"/> Dirty <span class="badge" t-esc="this.state.data.metrics.dirty"/>
+                        </button>
+
+                        <!-- Clear Filter Button (if filtered) -->
+                        <button t-if="this.state.selectedStatusFilter !== 'all' || this.state.searchQuery"
+                                class="btn btn-sm btn-link text-danger p-0 ms-2 text-decoration-none"
+                                t-on-click="this.clearFilter">
+                            <i class="oi me-1" data-icon="cancel"/> Clear filter
+                        </button>
+                    </div>
+
+                    <!-- Mini Visual Legend Bar (Directly Visible) -->
+                    <div class="o_mini_legend">
+                        <span class="o_legend_chip o_pill_occupied"><i class="oi me-1" data-icon="person"/> Occupied</span>
+                        <span class="o_legend_chip o_pill_reserved"><i class="oi me-1" data-icon="lock"/> Confirmed</span>
+                        <span class="o_legend_chip o_pill_checked_out"><i class="oi me-1" data-icon="check"/> Checked Out</span>
+                        <span class="o_legend_chip o_pill_maintenance"><i class="oi me-1" data-icon="build"/> Maintenance</span>
+                    </div>
+                </div>
+
+                <!-- 2.5 SEARCH MATCHES SUMMARY STRIP (GLOBAL STAYS BAR) -->
+                <div t-if="this.state.searchQuery and this.state.searchResults and this.state.searchResults.length" class="o_search_summary_strip">
+                    <div class="o_strip_left">
+                        <i class="oi text-primary me-2" data-icon="search"/>
+                        <span>
+                            Search results for <strong>"<t t-esc="this.state.searchQuery"/>"</strong>:
+                            Found <strong><t t-esc="this.state.searchResults.length"/></strong> stay(s) (including checked-out &amp; repeat guests)
+                        </span>
+                    </div>
+                    <div class="o_strip_chips">
+                        <t t-foreach="this.state.searchResults" t-as="item" t-key="item.id">
+                            <button type="button"
+                                    t-attf-class="btn btn-sm o_stay_jump_chip {{ this.state.highlightedBookingId === item.id ? 'active' : '' }}"
+                                    t-on-click="() => this.onSelectSearchResult(item)"
+                                    title="Click to jump calendar to this stay">
+                                <i class="oi me-1" data-icon="person"/>
+                                <span class="fw-bold" t-esc="item.guest_name"/>
+                                <span class="badge bg-secondary ms-1">Room <t t-esc="item.room_number"/></span>
+                                <span t-attf-class="badge o_stay_mini_badge o_status_{{ item.state }} ms-1">
+                                    <t t-if="item.state === 'check_in'"><i class="oi me-1" data-icon="bed"/>In-House</t>
+                                    <t t-elif="item.state === 'confirmed'"><i class="oi me-1" data-icon="lock"/>Confirmed</t>
+                                    <t t-elif="item.state === 'check_out'"><i class="oi me-1" data-icon="check_circle"/>Checked Out</t>
+                                    <t t-else=""><t t-esc="item.state_label"/></t>
+                                </span>
+                                <span class="text-muted small ms-1">(<t t-esc="item.check_in_display"/>)</span>
+                            </button>
+                        </t>
+                        <button class="btn btn-sm btn-outline-danger o_btn_clear_strip" t-on-click="this.clearSearch" title="Clear Search">
+                            <i class="oi me-1" data-icon="close"/> Clear Search
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. MAIN TIMELINE GRID -->
+                <div class="o_tape_chart_scroll_area">
+                    <div class="o_tape_chart_grid">
+
+                        <!-- HEADER ROW (Dates & Days) -->
+                        <div class="o_grid_row o_grid_header_row">
+                            <!-- Left Fixed Header -->
+                            <div class="o_grid_cell_left o_header_left_cell">
+                                <div class="o_header_left_title">
+                                    <i class="oi text-primary me-2" data-icon="bed"/>
+                                    <span class="fw-bold">Room &amp; Category</span>
+                                </div>
+                                <span class="badge bg-light text-secondary border small">
+                                    <t t-esc="this.state.data.metrics.all"/> Rooms
+                                </span>
+                            </div>
+
+                            <!-- Day Column Headers -->
+                            <div class="o_grid_columns_container" t-attf-style="grid-template-columns: repeat({{ this.state.daysCount }}, minmax(80px, 1fr));">
+                                <t t-foreach="this.state.data.days_header" t-as="day" t-key="day.index">
+                                    <div t-attf-class="o_day_header_cell {{ day.is_today ? 'o_today_column' : '' }} {{ day.is_weekend ? 'o_weekend_column' : '' }}">
+                                        <div class="o_day_name" t-esc="day.day_name"/>
+                                        <div class="o_day_date">
+                                            <span class="o_day_num" t-esc="day.day_number"/>
+                                            <span class="o_day_month" t-esc="day.month_name"/>
+                                        </div>
+                                        <div t-if="day.is_today" class="o_today_badge">TODAY</div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- ROOM TYPE GROUPS & ROOM ROWS -->
+                        <t t-foreach="this.state.data.groups" t-as="group" t-key="group.id">
+                            <!-- Room Type Accordion Header Row -->
+                            <div class="o_grid_row o_room_type_header_row" t-on-click="() => this.toggleGroup(group.id)">
+                                <div class="o_grid_cell_left o_type_left_cell">
+                                    <span class="o_accordion_icon">
+                                        <i class="oi" t-att-data-icon="this.isGroupCollapsed(group.id) ? 'chevron_right' : 'expand_more'"/>
+                                    </span>
+                                    <span class="o_type_title" t-esc="group.name"/>
+                                    <span class="badge bg-secondary-subtle text-secondary ms-auto small">
+                                        <t t-esc="group.rooms ? group.rooms.length : 0"/> Rooms
+                                    </span>
+                                </div>
+                                <div class="o_grid_columns_container" t-attf-style="grid-template-columns: repeat({{ this.state.daysCount }}, minmax(80px, 1fr));">
+                                    <t t-foreach="group.daily_info" t-as="d_info" t-key="d_info.date">
+                                        <div t-attf-class="o_type_day_cell {{ d_info.is_sold_out ? 'o_sold_out' : '' }}">
+                                            <!-- Availability count chip -->
+                                            <div t-attf-class="o_avail_chip {{ d_info.is_sold_out ? 'sold_out' : '' }}">
+                                                <t t-if="d_info.is_sold_out">Sold Out</t>
+                                                <t t-else=""><t t-esc="d_info.available_count"/> Left</t>
+                                            </div>
+                                            <!-- Rate chip -->
+                                            <div class="o_rate_chip">
+                                                <span t-esc="d_info.price_formatted"/><span class="o_rate_unit">/nt</span>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Individual Room Rows inside this Group -->
+                            <t t-if="!this.isGroupCollapsed(group.id)">
+                                <t t-foreach="this.getFilteredRooms(group)" t-as="room" t-key="room.id">
+                                    <div class="o_grid_row o_room_row">
+                                        <!-- Left Cell: Room Number, Floor, and 1-Click Status Badge -->
+                                        <div class="o_grid_cell_left o_room_left_cell">
+                                            <div class="o_room_info_box">
+                                                <span class="o_room_number" t-esc="room.number"/>
+                                                <span t-if="room.floor" class="o_room_floor" t-esc="room.floor"/>
+                                            </div>
+
+                                            <!-- Interactive Housekeeping / Maintenance Badge (Click to Change) -->
+                                            <div class="o_room_status_action"
+                                                 t-on-click.stop="() => this.openRoomStatusModal(room)"
+                                                 title="Click to update room status">
+                                                <!-- Clean -->
+                                                <span t-if="room.housekeeping_status === 'clean'" class="badge o_badge_hk o_hk_clean">
+                                                    <i class="oi me-1" data-icon="check_circle"/>Clean
+                                                </span>
+                                                <!-- Inspected -->
+                                                <span t-elif="room.housekeeping_status === 'inspected'" class="badge o_badge_hk o_hk_inspected">
+                                                    <i class="oi me-1" data-icon="star"/>Ready
+                                                </span>
+                                                <!-- Dirty -->
+                                                <span t-elif="room.housekeeping_status === 'dirty'" class="badge o_badge_hk o_hk_dirty">
+                                                    <i class="oi me-1" data-icon="brush"/>Dirty
+                                                </span>
+                                                <!-- Cleaning in progress -->
+                                                <span t-elif="room.housekeeping_status === 'cleaning'" class="badge o_badge_hk o_hk_cleaning">
+                                                    <i class="oi oi-spin me-1" data-icon="refresh"/>Cleaning
+                                                </span>
+                                                <!-- Maintenance -->
+                                                <span t-if="room.maintenance_status !== 'operational'" class="badge o_badge_hk o_hk_maintenance ms-1">
+                                                    <i class="oi" data-icon="build"/>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Timeline Columns for this Room -->
+                                        <div class="o_grid_columns_container o_room_timeline_container"
+                                             t-attf-style="grid-template-columns: repeat({{ this.state.daysCount }}, minmax(80px, 1fr));">
+
+                                            <!-- Background Day Slots (Click to Quick-Book) -->
+                                            <t t-foreach="this.state.data.days_header" t-as="day" t-key="day.index">
+                                                <div t-attf-class="o_timeline_day_cell {{ day.is_today ? 'o_today_column' : '' }}"
+                                                     t-on-click="() => this.openQuickBook(room, day)"
+                                                     title="Click to Book Room on this date">
+                                                    <span class="o_cell_add_hover">+ Book</span>
+                                                </div>
+                                            </t>
+
+                                            <!-- Overlaid Booking Bars (Pills) -->
+                                            <t t-foreach="room.bookings" t-as="bk" t-key="bk.id || bk.name">
+                                                <div t-attf-class="o_booking_pill o_pill_{{ bk.status_style }} {{ this.isReservationHighlighted(bk) ? 'o_pill_highlighted' : '' }}"
+                                                     t-attf-style="grid-column: {{ bk.start_col + 1 }} / span {{ bk.col_span }};"
+                                                     t-on-click.stop="() => this.onBookingClick(bk)"
+                                                     t-on-mouseenter="(ev) => this.onBookingMouseEnter(bk, ev)"
+                                                     t-on-mouseleave="this.onBookingMouseLeave">
+
+                                                    <!-- Icon based on status -->
+                                                    <t t-if="bk.status_style === 'occupied'">
+                                                        <i class="oi me-1" data-icon="person"/>
+                                                    </t>
+                                                    <t t-elif="bk.status_style === 'reserved'">
+                                                        <i class="oi me-1" data-icon="lock"/>
+                                                    </t>
+                                                    <t t-elif="bk.status_style === 'maintenance'">
+                                                        <i class="oi me-1" data-icon="build"/>
+                                                    </t>
+                                                    <t t-elif="bk.status_style === 'checked_out'">
+                                                        <i class="oi me-1" data-icon="check_circle"/>
+                                                    </t>
+
+                                                    <!-- Guest Name -->
+                                                    <span class="o_pill_text">
+                                                        <t t-esc="bk.guest_name"/>
+                                                        <t t-if="bk.status_style === 'checked_out'">
+                                                            <span class="o_pill_co_badge ms-1">(Checked Out)</span>
+                                                        </t>
+                                                    </span>
+
+                                                    <!-- Nights Badge if col_span >= 2 -->
+                                                    <span t-if="bk.col_span >= 2 and bk.nights" class="o_pill_nights_badge">
+                                                        <t t-esc="bk.nights"/>N
+                                                    </span>
+
+                                                    <!-- Balance status chip -->
+                                                    <t t-if="bk.status_style !== 'maintenance' and bk.col_span >= 3">
+                                                        <span t-if="bk.amount_due > 0" class="o_pill_due_chip" title="Outstanding balance due">
+                                                            Due: <t t-esc="bk.due_formatted"/>
+                                                        </span>
+                                                        <span t-elif="bk.amount_due &lt;= 0 and bk.amount_total > 0" class="o_pill_paid_chip">
+                                                            Paid
+                                                        </span>
+                                                    </t>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
+                            </t>
+                        </t>
+
+                        <!-- 4. BOTTOM SUMMARY ROW: Available Inventory -->
+                        <div class="o_grid_row o_summary_row o_available_inv_row">
+                            <div class="o_grid_cell_left o_summary_left_cell">
+                                <i class="oi text-primary me-2" data-icon="home"/>
+                                <span class="fw-bold">Available Inventory</span>
+                            </div>
+                            <div class="o_grid_columns_container" t-attf-style="grid-template-columns: repeat({{ this.state.daysCount }}, minmax(80px, 1fr));">
+                                <t t-foreach="this.state.data.bottom_summary.available_inventory" t-as="avail" t-key="avail_index">
+                                    <div class="o_summary_day_cell">
+                                        <span class="o_inv_badge" t-esc="avail"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- 5. BOTTOM SUMMARY ROW: Occupancy (%) -->
+                        <div class="o_grid_row o_summary_row o_occupancy_row">
+                            <div class="o_grid_cell_left o_summary_left_cell">
+                                <i class="oi text-success me-2" data-icon="bar_chart"/>
+                                <span class="fw-bold">Occupancy (%)</span>
+                            </div>
+                            <div class="o_grid_columns_container" t-attf-style="grid-template-columns: repeat({{ this.state.daysCount }}, minmax(80px, 1fr));">
+                                <t t-foreach="this.state.data.bottom_summary.occupancy_percent" t-as="occ" t-key="occ_index">
+                                    <div class="o_summary_day_cell o_occ_cell">
+                                        <div class="o_occ_indicator">
+                                            <div class="o_occ_progress">
+                                                <div t-attf-class="o_occ_fill {{ occ.percent >= 80 ? 'high' : occ.percent >= 50 ? 'medium' : 'low' }}"
+                                                     t-attf-style="width: {{ occ.percent }}%;"/>
+                                            </div>
+                                            <span class="o_occ_pct_label" t-esc="occ.percent + '%'"/>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ============================================================== -->
+                <!-- 4. QUICK OPERATIONS SIDE DRAWER (THE OPERATIONS POWERHOUSE!)  -->
+                <!-- ============================================================== -->
+                <div t-if="this.state.showBookingDrawer and this.state.selectedBooking" class="o_drawer_backdrop" t-on-click="this.closeBookingDrawer">
+                    <div class="o_booking_drawer" t-on-click.stop="">
+                        <div class="o_drawer_header">
+                            <div class="o_drawer_header_left">
+                                <span class="o_drawer_res_name" t-esc="this.state.selectedBooking.name"/>
+                                <span t-attf-class="badge o_drawer_status_badge o_status_{{ this.state.selectedBooking.state }}">
+                                    <t t-if="this.state.selectedBooking.state === 'check_in'">In-House (Occupied)</t>
+                                    <t t-elif="this.state.selectedBooking.state === 'confirmed'">Confirmed (Reserved)</t>
+                                    <t t-elif="this.state.selectedBooking.state === 'check_out'">Checked Out</t>
+                                    <t t-else=""><t t-esc="this.state.selectedBooking.state"/></t>
+                                </span>
+                            </div>
+                            <button class="btn btn-sm btn-light o_btn_close_drawer" t-on-click="this.closeBookingDrawer">
+                                <i class="oi" data-icon="close"/>
+                            </button>
+                        </div>
+
+                        <div class="o_drawer_body">
+                            <!-- Guest Profile Card -->
+                            <div class="o_drawer_card o_guest_card">
+                                <div class="o_card_title"><i class="oi text-primary me-2" data-icon="account_circle"/>Guest Information</div>
+                                <div class="o_guest_hero">
+                                    <div class="o_guest_avatar">
+                                        <t t-esc="this.state.selectedBooking.guest_name ? this.state.selectedBooking.guest_name.substring(0, 2).toUpperCase() : 'G'"/>
+                                    </div>
+                                    <div class="o_guest_details">
+                                        <div class="o_guest_name">
+                                            <t t-esc="this.state.selectedBooking.guest_name"/>
+                                            <span t-if="this.state.selectedBooking.guest_vip and this.state.selectedBooking.guest_vip !== 'standard' and this.state.selectedBooking.guest_vip !== 'none'"
+                                                  t-attf-class="badge o_vip_badge o_vip_{{ this.state.selectedBooking.guest_vip }} ms-2">
+                                                <t t-esc="this.state.selectedBooking.guest_vip.toUpperCase()"/> VIP
+                                            </span>
+                                        </div>
+                                        <div t-if="this.state.selectedBooking.guest_phone" class="o_contact_item">
+                                            <i class="oi text-muted me-2" data-icon="phone"/>
+                                            <a t-attf-href="tel:{{ this.state.selectedBooking.guest_phone }}" class="text-decoration-none">
+                                                <t t-esc="this.state.selectedBooking.guest_phone"/>
+                                            </a>
+                                        </div>
+                                        <div t-if="this.state.selectedBooking.guest_email" class="o_contact_item">
+                                            <i class="oi text-muted me-2" data-icon="mail"/>
+                                            <a t-attf-href="mailto:{{ this.state.selectedBooking.guest_email }}" class="text-decoration-none">
+                                                <t t-esc="this.state.selectedBooking.guest_email"/>
+                                            </a>
+                                        </div>
+                                        <div class="o_contact_item text-muted small">
+                                            <i class="oi me-2" data-icon="tag"/>Source: <strong t-esc="this.state.selectedBooking.booking_source"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stay Details Card -->
+                            <div class="o_drawer_card">
+                                <div class="o_card_title"><i class="oi text-primary me-2" data-icon="calendar_today"/>Stay &amp; Room Details</div>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="o_info_item">
+                                            <span class="label">Assigned Room</span>
+                                            <span class="value fw-bold text-primary">
+                                                Room <t t-esc="this.state.selectedBooking.room_number"/>
+                                            </span>
+                                            <span class="sub text-muted small" t-esc="this.state.selectedBooking.room_type_name"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="o_info_item">
+                                            <span class="label">Duration</span>
+                                            <span class="value fw-bold">
+                                                <t t-esc="this.state.selectedBooking.nights"/> Nights
+                                            </span>
+                                            <span class="sub text-muted small">
+                                                <t t-esc="this.state.selectedBooking.adults || 1"/> Adults, <t t-esc="this.state.selectedBooking.children || 0"/> Children
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="o_info_item">
+                                            <span class="label">Check-In</span>
+                                            <span class="value" t-esc="this.state.selectedBooking.check_in_dt || this.state.selectedBooking.check_in"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="o_info_item">
+                                            <span class="label">Check-Out</span>
+                                            <span class="value" t-esc="this.state.selectedBooking.check_out_dt || this.state.selectedBooking.check_out"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Financials & Folio Summary Card -->
+                            <div class="o_drawer_card">
+                                <div class="o_card_title"><i class="oi text-success me-2" data-icon="payments"/>Billing &amp; Folio Summary</div>
+                                <div class="o_financials_grid">
+                                    <div class="o_fin_box">
+                                        <span class="label">Rate / Night</span>
+                                        <span class="amount" t-esc="this.state.selectedBooking.rate_formatted"/>
+                                    </div>
+                                    <div class="o_fin_box">
+                                        <span class="label">Total Amount</span>
+                                        <span class="amount fw-bold" t-esc="this.state.selectedBooking.total_formatted"/>
+                                    </div>
+                                    <div class="o_fin_box">
+                                        <span class="label">Paid to Date</span>
+                                        <span class="amount text-success fw-bold" t-esc="this.state.selectedBooking.paid_formatted"/>
+                                    </div>
+                                    <div class="o_fin_box o_due_box">
+                                        <span class="label">Balance Due</span>
+                                        <span t-attf-class="amount fw-bold {{ this.state.selectedBooking.amount_due > 0 ? 'text-danger' : 'text-success' }}"
+                                              t-esc="this.state.selectedBooking.due_formatted"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Special Notes -->
+                            <div t-if="this.state.selectedBooking.notes" class="o_drawer_card">
+                                <div class="o_card_title"><i class="oi text-muted me-2" data-icon="chat_bubble"/>Guest Requests &amp; Notes</div>
+                                <div class="o_notes_box" t-esc="this.state.selectedBooking.notes"/>
+                            </div>
+                        </div>
+
+                        <!-- DRAWER ACTION TOOLBAR (DIRECT OPERATIONS) -->
+                        <div class="o_drawer_footer">
+                            <!-- 1. Check In Button (if confirmed) -->
+                            <button t-if="this.state.selectedBooking.state === 'confirmed'"
+                                    class="btn btn-success o_btn_action w-100 mb-2"
+                                    t-on-click="() => this.doCheckIn(this.state.selectedBooking.id)">
+                                <i class="oi me-2" data-icon="login"/> Check In Guest Now
+                            </button>
+
+                            <!-- 2. Check Out Button (if checked in) -->
+                            <button t-if="this.state.selectedBooking.state === 'check_in'"
+                                    class="btn btn-warning o_btn_action w-100 mb-2"
+                                    t-on-click="() => this.doCheckOut(this.state.selectedBooking.id)">
+                                <i class="oi me-2" data-icon="logout"/> Check Out &amp; Settle Folio
+                            </button>
+
+                            <div class="d-flex gap-2 w-100 mb-2">
+                                <!-- View Folio -->
+                                <button class="btn btn-outline-primary btn-sm flex-fill"
+                                        t-on-click="() => this.doViewFolio(this.state.selectedBooking.id)">
+                                    <i class="oi me-1" data-icon="description"/> View Folio
+                                </button>
+                                <!-- Print Bill -->
+                                <button class="btn btn-outline-secondary btn-sm flex-fill"
+                                        t-on-click="() => this.doPrintBill(this.state.selectedBooking.id)">
+                                    <i class="oi me-1" data-icon="print"/> Print Bill
+                                </button>
+                            </div>
+
+                            <div class="d-flex gap-2 w-100">
+                                <!-- Edit Full Reservation Form -->
+                                <button class="btn btn-light btn-sm flex-fill"
+                                        t-on-click="() => this.doOpenFullReservation(this.state.selectedBooking.id)">
+                                    <i class="oi me-1" data-icon="open_in_new"/> Full Form
+                                </button>
+                                <!-- Cancel Reservation -->
+                                <button t-if="this.state.selectedBooking.state !== 'check_out' and this.state.selectedBooking.state !== 'cancel'"
+                                        class="btn btn-outline-danger btn-sm"
+                                        t-on-click="() => this.doCancelReservation(this.state.selectedBooking.id)"
+                                        title="Cancel Reservation">
+                                    <i class="oi" data-icon="block"/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================== -->
+                <!-- 5. 1-CLICK QUICK BOOKING MODAL                                 -->
+                <!-- ============================================================== -->
+                <div t-if="this.state.showQuickBookModal" class="o_tape_chart_modal_backdrop" t-on-click="this.closeQuickBook">
+                    <div class="o_quick_book_modal" t-on-click.stop="">
+                        <div class="o_modal_header">
+                            <div>
+                                <h5 class="m-0 fw-bold"><i class="oi text-warning me-2" data-icon="flash_on"/>Quick Hotel Reservation</h5>
+                                <div class="text-muted small">Instant front-desk booking and walk-in check-in</div>
+                            </div>
+                            <button class="btn btn-sm btn-close" t-on-click="this.closeQuickBook"/>
+                        </div>
+
+                        <div class="o_modal_body">
+                            <!-- Guest Name & Auto-Suggest -->
+                            <div class="mb-3 position-relative">
+                                <label class="form-label fw-semibold">Guest Name <span class="text-danger">*</span></label>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Enter Guest Full Name..."
+                                       t-att-value="this.state.quickBookForm.guest_name"
+                                       t-on-input="this.onGuestNameInput"/>
+                                <!-- Suggestion dropdown if matching existing partner -->
+                                <div t-if="this.state.guestSuggestions.length > 0" class="o_guest_suggestions_dropdown">
+                                    <t t-foreach="this.state.guestSuggestions" t-as="gst" t-key="gst.id">
+                                        <div class="o_suggestion_item" t-on-click="() => this.selectGuest(gst)">
+                                            <strong t-esc="gst.name"/>
+                                            <span t-if="gst.phone" class="text-muted small ms-2" t-esc="gst.phone"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Phone & Email -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">Mobile / Phone</label>
+                                    <input type="tel"
+                                           class="form-control form-control-sm"
+                                           placeholder="+91 / Phone..."
+                                           t-att-value="this.state.quickBookForm.guest_phone"
+                                           t-on-input="(ev) => this.state.quickBookForm.guest_phone = ev.target.value"/>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">Email (Optional)</label>
+                                    <input type="email"
+                                           class="form-control form-control-sm"
+                                           placeholder="guest@example.com"
+                                           t-att-value="this.state.quickBookForm.guest_email"
+                                           t-on-input="(ev) => this.state.quickBookForm.guest_email = ev.target.value"/>
+                                </div>
+                            </div>
+
+                            <!-- Assigned Room & Room Type -->
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Assigned Room <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" t-on-change="this.onQuickBookRoomChange">
+                                    <t t-foreach="this.state.data.all_rooms_list" t-as="rm" t-key="rm.id">
+                                        <option t-att-value="rm.id" t-att-selected="rm.id === this.state.quickBookForm.room_id">
+                                            Room <t t-esc="rm.number"/> — <t t-esc="rm.room_type_name"/> (<t t-esc="this.state.data.currency_symbol"/><t t-esc="rm.list_price"/>/nt)
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <!-- Check-In, Check-Out & Nights -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-5">
+                                    <label class="form-label small fw-semibold">Check-In</label>
+                                    <input type="date"
+                                           class="form-control form-control-sm"
+                                           t-att-value="this.state.quickBookForm.check_in"
+                                           t-on-change="(ev) => { this.state.quickBookForm.check_in = ev.target.value; this.onQuickBookDatesChange(); }"/>
+                                </div>
+                                <div class="col-5">
+                                    <label class="form-label small fw-semibold">Check-Out</label>
+                                    <input type="date"
+                                           class="form-control form-control-sm"
+                                           t-att-value="this.state.quickBookForm.check_out"
+                                           t-on-change="(ev) => { this.state.quickBookForm.check_out = ev.target.value; this.onQuickBookDatesChange(); }"/>
+                                </div>
+                                <div class="col-2">
+                                    <label class="form-label small fw-semibold">Nights</label>
+                                    <input type="number"
+                                           class="form-control form-control-sm text-center fw-bold bg-light"
+                                           readonly="readonly"
+                                           t-att-value="this.state.quickBookForm.nights"/>
+                                </div>
+                            </div>
+
+                            <!-- Rate & Advance Deposit -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-4">
+                                    <label class="form-label small fw-semibold">Rate / Night</label>
+                                    <input type="number"
+                                           class="form-control form-control-sm"
+                                           t-att-value="this.state.quickBookForm.rate_per_night"
+                                           t-on-input="(ev) => this.state.quickBookForm.rate_per_night = parseFloat(ev.target.value) || 0"/>
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small fw-semibold">Advance Deposit</label>
+                                    <input type="number"
+                                           class="form-control form-control-sm"
+                                           t-att-value="this.state.quickBookForm.advance_payment"
+                                           t-on-input="(ev) => this.state.quickBookForm.advance_payment = parseFloat(ev.target.value) || 0"/>
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small fw-semibold">Payment Mode</label>
+                                    <select class="form-select form-select-sm"
+                                            t-on-change="(ev) => this.state.quickBookForm.advance_payment_method = ev.target.value">
+                                        <option value="cash">Cash</option>
+                                        <option value="card">Card</option>
+                                        <option value="upi">UPI / QR</option>
+                                        <option value="bank">Bank</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Notes / Special Requests -->
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Special Requests / Notes</label>
+                                <textarea class="form-control form-control-sm"
+                                          rows="2"
+                                          placeholder="Extra bed, airport pickup, dietary requests..."
+                                          t-att-value="this.state.quickBookForm.notes"
+                                          t-on-input="(ev) => this.state.quickBookForm.notes = ev.target.value"/>
+                            </div>
+                        </div>
+
+                        <div class="o_modal_footer justify-content-between">
+                            <button class="btn btn-link btn-sm text-secondary text-decoration-none" t-on-click="this.openFullFormBooking">
+                                <i class="oi me-1" data-icon="open_in_new"/> Open Full Odoo Form
+                            </button>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-secondary btn-sm" t-on-click="this.closeQuickBook">Cancel</button>
+                                <button class="btn btn-success btn-sm" t-on-click="() => this.submitQuickBook('confirm')">
+                                    <i class="oi me-1" data-icon="check"/> Confirm Booking
+                                </button>
+                                <button class="btn btn-primary btn-sm" t-on-click="() => this.submitQuickBook('check_in')">
+                                    <i class="oi me-1" data-icon="login"/> Check-In Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================== -->
+                <!-- 6. ROOM HOUSEKEEPING & STATUS MODAL                            -->
+                <!-- ============================================================== -->
+                <div t-if="this.state.showRoomStatusPopover and this.state.selectedRoomForStatus"
+                     class="o_tape_chart_modal_backdrop"
+                     t-on-click="this.closeRoomStatusModal">
+                    <div class="o_room_status_modal" t-on-click.stop="">
+                        <div class="o_modal_header">
+                            <h5 class="m-0 fw-bold">
+                                <i class="oi text-primary me-2" data-icon="bed"/>Room <t t-esc="this.state.selectedRoomForStatus.number"/> Status
+                            </h5>
+                            <button class="btn btn-sm btn-close" t-on-click="this.closeRoomStatusModal"/>
+                        </div>
+                        <div class="o_modal_body">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Housekeeping Condition</label>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-success text-start"
+                                            t-on-click="() => this.setRoomHousekeeping(this.state.selectedRoomForStatus, 'clean')">
+                                        <i class="oi me-2" data-icon="check_circle"/> <strong>Mark as Clean</strong>
+                                        <div class="small text-muted">Ready for arriving guests</div>
+                                    </button>
+                                    <button class="btn btn-outline-primary text-start"
+                                            t-on-click="() => this.setRoomHousekeeping(this.state.selectedRoomForStatus, 'inspected')">
+                                        <i class="oi me-2" data-icon="star"/> <strong>Mark as Inspected &amp; Ready</strong>
+                                        <div class="small text-muted">Supervisor verified and approved</div>
+                                    </button>
+                                    <button class="btn btn-outline-warning text-start"
+                                            t-on-click="() => this.setRoomHousekeeping(this.state.selectedRoomForStatus, 'dirty')">
+                                        <i class="oi me-2" data-icon="brush"/> <strong>Mark as Dirty</strong>
+                                        <div class="small text-muted">Requires housekeeping turnaround</div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <hr class="my-3"/>
+
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Maintenance / Availability</label>
+                                <div class="d-flex gap-2">
+                                    <button t-if="this.state.selectedRoomForStatus.maintenance_status === 'operational'"
+                                            class="btn btn-outline-danger btn-sm flex-fill"
+                                            t-on-click="() => this.setRoomMaintenance(this.state.selectedRoomForStatus, 'maintenance')">
+                                        <i class="oi me-1" data-icon="build"/> Put Out of Order
+                                    </button>
+                                    <button t-else=""
+                                            class="btn btn-outline-success btn-sm flex-fill"
+                                            t-on-click="() => this.setRoomMaintenance(this.state.selectedRoomForStatus, 'operational')">
+                                        <i class="oi me-1" data-icon="check"/> Return to Service
+                                    </button>
+                                    <button class="btn btn-light btn-sm"
+                                            t-on-click="() => this.viewRoomForm(this.state.selectedRoomForStatus.id)">
+                                        <i class="oi" data-icon="settings"/> Room Settings
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================== -->
+                <!-- 7. COLOR & STATUS GUIDE MODAL                                  -->
+                <!-- ============================================================== -->
+                <div t-if="this.state.showLegendModal" class="o_tape_chart_modal_backdrop" t-on-click="this.toggleLegend">
+                    <div class="o_tape_chart_modal" t-on-click.stop="">
+                        <div class="o_modal_header">
+                            <h5 class="m-0 fw-bold"><i class="oi text-primary me-2" data-icon="help"/>Hotel Calendar Grid Guide</h5>
+                            <button class="btn btn-sm btn-close" t-on-click="this.toggleLegend"/>
+                        </div>
+                        <div class="o_modal_body">
+                            <div class="o_legend_item">
+                                <div class="o_legend_color o_pill_occupied"><i class="oi me-1" data-icon="person"/>In-House</div>
+                                <div class="o_legend_desc">
+                                    <strong>Occupied / In-House:</strong> Guest has checked in. Room is actively generating folio stay charges.
+                                </div>
+                            </div>
+                            <div class="o_legend_item">
+                                <div class="o_legend_color o_pill_reserved"><i class="oi me-1" data-icon="lock"/>Confirmed</div>
+                                <div class="o_legend_desc">
+                                    <strong>Confirmed / Reserved:</strong> Confirmed booking with deposit. Ready for 1-click check-in.
+                                </div>
+                            </div>
+                            <div class="o_legend_item">
+                                <div class="o_legend_color o_pill_checked_out"><i class="oi me-1" data-icon="check"/>Checked Out</div>
+                                <div class="o_legend_desc">
+                                    <strong>Checked Out:</strong> Stay completed, guest departed, bill settled.
+                                </div>
+                            </div>
+                            <div class="o_legend_item">
+                                <div class="o_legend_color o_pill_maintenance"><i class="oi me-1" data-icon="build"/>Maintenance</div>
+                                <div class="o_legend_desc">
+                                    <strong>Blocked / Maintenance:</strong> Room out of service for repairs, painting, or AC servicing.
+                                </div>
+                            </div>
+                            <div class="o_legend_item">
+                                <div class="o_legend_color o_legend_empty">+ Book</div>
+                                <div class="o_legend_desc">
+                                    <strong>Vacant Cell:</strong> Click any empty date cell on a room row to open the 1-click Quick Booking window.
+                                </div>
+                            </div>
+                            <hr class="my-2"/>
+                            <div class="small text-muted">
+                                <strong>Front Desk Tip:</strong> Click any booking bar on the calendar to open the instant operations drawer (Check-in, Check-out, Bill printing, Folio).
+                            </div>
+                        </div>
+                        <div class="o_modal_footer">
+                            <button class="btn btn-primary btn-sm" t-on-click="this.toggleLegend">Got It</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================== -->
+                <!-- 8. RICH FLOATING HOVER TOOLTIP                                 -->
+                <!-- ============================================================== -->
+                <div t-if="this.state.hoveredBooking and !this.state.showBookingDrawer"
+                     class="o_rich_tooltip"
+                     t-attf-style="top: {{ this.state.tooltipPos.y }}px; left: {{ this.state.tooltipPos.x }}px;">
+                    <div class="o_tip_header">
+                        <span class="o_tip_guest" t-esc="this.state.hoveredBooking.guest_name"/>
+                        <span t-attf-class="badge o_tip_badge o_status_{{ this.state.hoveredBooking.state }}">
+                            <t t-if="this.state.hoveredBooking.state === 'check_in'">In-House</t>
+                            <t t-elif="this.state.hoveredBooking.state === 'confirmed'">Confirmed</t>
+                            <t t-else=""><t t-esc="this.state.hoveredBooking.state"/></t>
+                        </span>
+                    </div>
+                    <div class="o_tip_body">
+                        <div><i class="oi text-muted me-1" data-icon="tag"/> <t t-esc="this.state.hoveredBooking.name"/></div>
+                        <div><i class="oi text-muted me-1" data-icon="calendar_today"/> <t t-esc="this.state.hoveredBooking.check_in"/> to <t t-esc="this.state.hoveredBooking.check_out"/> (<t t-esc="this.state.hoveredBooking.nights"/>N)</div>
+                        <div><i class="oi text-muted me-1" data-icon="bed"/> Room <t t-esc="this.state.hoveredBooking.room_number"/> (<t t-esc="this.state.hoveredBooking.room_type_name"/>)</div>
+                        <div class="mt-1 pt-1 border-top d-flex justify-content-between">
+                            <span>Total: <strong t-esc="this.state.hoveredBooking.total_formatted"/></span>
+                            <span t-attf-class="{{ this.state.hoveredBooking.amount_due > 0 ? 'text-danger' : 'text-success' }}">
+                                Due: <strong t-esc="this.state.hoveredBooking.due_formatted"/>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="o_tip_footer">
+                        <i class="oi me-1" data-icon="visibility"/> Click for quick operations &amp; billing
+                    </div>
+                </div>
+
+            </t>
+        </div>
+    </t>
+</templates>

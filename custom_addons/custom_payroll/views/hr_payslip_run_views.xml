@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hr_payslip_run_form" model="ir.ui.view">
+        <field name="name">hr.payslip.run.form</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="arch" type="xml">
+            <form string="Payslip Batch">
+                <header>
+                    <button name="action_generate_payslips" string="Generate Payslips" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_compute_all" string="Compute All Sheets" type="object" class="btn-secondary" invisible="state != 'draft'"/>
+                    <button name="action_validate_all" string="Validate Batch" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_paid_all" string="Register Batch Payment" type="object" class="btn-success" invisible="state != 'close'"/>
+                    <button name="action_draft" string="Set to Draft" type="object" class="btn-secondary" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,close,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_payslips" type="object" class="oe_stat_button" icon="fa-money">
+                            <field name="payslip_count" widget="statinfo" string="Payslips"/>
+                        </button>
+                    </div>
+
+                    <widget name="web_ribbon" title="Paid" bg_color="text-bg-success" invisible="state != 'paid'"/>
+                    <widget name="web_ribbon" title="Done" bg_color="text-bg-info" invisible="state != 'close'"/>
+
+                    <div class="oe_title">
+                        <label for="name" string="Batch Name"/>
+                        <h1><field name="name" placeholder="e.g. October 2026 Monthly Salaries"/></h1>
+                    </div>
+
+                    <group>
+                        <group string="Period &amp; Structure">
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="struct_id" placeholder="Default Structure for All"/>
+                        </group>
+                        <group string="Batch Financials">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="total_net_wage" widget="monetary" class="text-success fw-bold fs-4"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Payslips" name="payslips">
+                            <field name="slip_ids" readonly="state in ('close', 'paid')">
+                                <list string="Batch Payslips">
+                                    <field name="number"/>
+                                    <field name="employee_id"/>
+                                    <field name="gross_wage" widget="monetary"/>
+                                    <field name="total_deductions" widget="monetary"/>
+                                    <field name="net_wage" widget="monetary" decoration-bf="1"/>
+                                    <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-primary="state == 'verify'" decoration-warning="state == 'done'" decoration-success="state == 'paid'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_payslip_run_list" model="ir.ui.view">
+        <field name="name">hr.payslip.run.list</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="arch" type="xml">
+            <list string="Payslip Batches" decoration-info="state == 'draft'" decoration-success="state == 'paid'">
+                <field name="name" decoration-bf="1"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="payslip_count"/>
+                <field name="total_net_wage" widget="monetary" decoration-success="1" decoration-bf="1"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'close'" decoration-success="state == 'paid'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hr_payslip_run" model="ir.actions.act_window">
+        <field name="name">Payslip Batches</field>
+        <field name="res_model">hr.payslip.run</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Monthly Payslip Batch!
+            </p>
+            <p>
+                Payslip Batches allow you to generate, review, compute, and disburse salaries for your entire company or specific departments in one simple click.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root Top Menu: Payroll -->
+    <menuitem id="menu_hr_payroll_root"
+              name="Payroll"
+              sequence="75"
+              groups="custom_payroll.group_hr_payroll_user"
+              web_icon="custom_payroll,static/description/icon.png"/>
+
+    <!-- Payslips Menu Section -->
+    <menuitem id="menu_hr_payslip_sub"
+              name="Payslips"
+              parent="menu_hr_payroll_root"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_payslip_all"
+              name="All Payslips"
+              parent="menu_hr_payslip_sub"
+              action="action_hr_payslip"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_payslip_batches"
+              name="Payslip Batches (Pay Runs)"
+              parent="menu_hr_payslip_sub"
+              action="action_hr_payslip_run"
+              sequence="20"/>
+
+    <!-- Contracts Menu Section -->
+    <menuitem id="menu_hr_contract_sub"
+              name="Contracts"
+              parent="menu_hr_payroll_root"
+              sequence="20"/>
+
+    <menuitem id="menu_hr_contract_all"
+              name="Employee Contracts"
+              parent="menu_hr_contract_sub"
+              action="action_hr_contract"
+              sequence="10"/>
+
+    <!-- Configuration Menu Section -->
+    <menuitem id="menu_hr_payroll_configuration"
+              name="Configuration"
+              parent="menu_hr_payroll_root"
+              sequence="90"
+              groups="custom_payroll.group_hr_payroll_manager"/>
+
+    <menuitem id="menu_hr_payroll_structures"
+              name="Salary Structures"
+              parent="menu_hr_payroll_configuration"
+              action="action_hr_payroll_structure"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_salary_rules"
+              name="Salary Rules"
+              parent="menu_hr_payroll_configuration"
+              action="action_hr_salary_rule"
+              sequence="20"/>
+
+    <menuitem id="menu_hr_salary_rule_categories"
+              name="Rule Categories"
+              parent="menu_hr_payroll_configuration"
+              action="action_hr_salary_rule_category"
+              sequence="30"/>
+</odoo>

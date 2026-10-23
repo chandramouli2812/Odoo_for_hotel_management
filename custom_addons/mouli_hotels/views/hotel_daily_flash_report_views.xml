@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Executive Daily Flash Report Form View -->
+    <record id="view_hotel_daily_flash_report_form" model="ir.ui.view">
+        <field name="name">hotel.daily.flash.report.form</field>
+        <field name="model">hotel.daily.flash.report</field>
+        <field name="arch" type="xml">
+            <form string="Executive Daily Resort Flash Report">
+                <header>
+                    <button name="action_print_pdf" string="Print Executive Briefing (PDF)" type="object" class="btn-primary" icon="fa-print"/>
+                    <button name="action_set_today" string="Today" type="object" class="btn-outline-primary" icon="fa-calendar"/>
+                    <button name="action_set_yesterday" string="Yesterday" type="object" class="btn-outline-secondary" icon="fa-history"/>
+                    <button name="action_refresh" string="Recalculate Live KPIs" type="object" class="btn-secondary" icon="fa-refresh"/>
+                </header>
+                <sheet>
+                    <div class="oe_title mb-3">
+                        <span class="text-muted text-uppercase fw-bold small">Mouli Hotels &amp; Resorts Management Suite</span>
+                        <h1 class="m-0 text-primary fw-bold">Executive Daily Flash Report</h1>
+                        <p class="text-secondary small m-0">Live morning operational briefing across Occupancy, Front Office, F&amp;B, Collections &amp; Housekeeping</p>
+                    </div>
+
+                    <!-- Top Filter Parameters -->
+                    <div class="card p-3 mb-4 bg-light border-0 shadow-sm rounded-3">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-3">
+                                <label for="report_date" class="fw-bold small text-muted text-uppercase"/>
+                                <field name="report_date" class="form-control form-control-sm"/>
+                            </div>
+                            <div class="col-md-5">
+                                <label for="property_id" class="fw-bold small text-muted text-uppercase"/>
+                                <field name="property_id" placeholder="All Resorts &amp; Properties (Consolidated)" class="form-control form-control-sm"/>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="currency_id" class="fw-bold small text-muted text-uppercase"/>
+                                <field name="currency_id" readonly="1"/>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <div class="btn-group">
+                                    <button name="action_set_today" string="Today" type="object" class="btn btn-sm btn-outline-primary"/>
+                                    <button name="action_set_yesterday" string="Yesterday" type="object" class="btn btn-sm btn-outline-secondary"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 1: Executive Key Metrics (Rooms & Revenue Performance) -->
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                        <h5 class="fw-bold text-dark m-0">
+                            <i class="oi me-1 text-primary" data-icon="bar_chart"/> 1. Occupancy &amp; Room Revenue Performance
+                        </h5>
+                        <div class="d-flex gap-2">
+                            <button name="action_view_occupied_rooms" string="View Occupied Rooms" type="object" class="btn btn-sm btn-outline-primary"/>
+                            <button name="action_view_vacant_rooms" string="View Vacant Ready" type="object" class="btn btn-sm btn-outline-success"/>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-4 text-center">
+                        <div class="col-md-3">
+                            <div class="card p-3 h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);">
+                                <span class="text-muted small fw-bold text-uppercase">Occupancy Rate</span>
+                                <h2 class="fw-bold text-primary my-2"><field name="occupancy_rate" widget="float" digits="[16,1]"/>%</h2>
+                                <span class="small text-secondary"><field name="occupied_rooms"/> Occ / <field name="available_rooms"/> Avail (<field name="total_rooms"/> Total)</span>
+                                <div class="mt-2">
+                                    <button name="action_view_occupied_rooms" string="Occupied Details →" type="object" class="btn btn-sm btn-link p-0 text-primary fw-semibold"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card p-3 h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
+                                <span class="text-muted small fw-bold text-uppercase">ADR (Avg Daily Rate)</span>
+                                <h2 class="fw-bold text-success my-2"><field name="adr" widget="monetary"/></h2>
+                                <span class="small text-secondary">RevPOR: <field name="revpor" widget="monetary"/></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card p-3 h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);">
+                                <span class="text-muted small fw-bold text-uppercase">RevPAR (Rev/Avail Room)</span>
+                                <h2 class="fw-bold text-purple my-2"><field name="revpar" widget="monetary"/></h2>
+                                <span class="small text-secondary">ALOS: <field name="alos" widget="float" digits="[16,1]"/> Nights</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card p-3 h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);">
+                                <span class="text-muted small fw-bold text-uppercase">Vacant &amp; Ready</span>
+                                <h2 class="fw-bold text-warning my-2"><field name="vacant_rooms"/></h2>
+                                <span class="small text-secondary">Blocked / OOO: <field name="blocked_rooms"/></span>
+                                <div class="mt-2">
+                                    <button name="action_view_vacant_rooms" string="Vacant Details →" type="object" class="btn btn-sm btn-link p-0 text-warning fw-semibold"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Front Office Guest Movement -->
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                        <h5 class="fw-bold text-dark m-0">
+                            <i class="oi me-1 text-primary" data-icon="person"/> 2. Today's Front Desk Movements
+                        </h5>
+                        <div class="d-flex gap-2">
+                            <button name="action_view_in_house" string="All In-House Guests" type="object" class="btn btn-sm btn-outline-secondary"/>
+                            <button name="action_view_stayovers" string="Stayovers" type="object" class="btn btn-sm btn-outline-primary"/>
+                            <button name="action_view_vip_guests" string="⭐ In-House VIPs" type="object" class="btn btn-sm btn-outline-danger"/>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="card p-3 border shadow-sm rounded-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold text-primary">Arrivals &amp; Check-Ins</span>
+                                    <button name="action_view_arrivals" string="View Arrival List →" type="object" class="btn btn-sm btn-outline-primary"/>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Expected Arrivals:</span>
+                                    <span class="badge bg-primary fs-6"><field name="expected_arrivals"/></span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Checked In So Far:</span>
+                                    <span class="badge bg-success fs-6"><field name="checked_in_arrivals"/></span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>No-Shows / Pending:</span>
+                                    <span class="badge bg-danger fs-6"><field name="no_show_count"/></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card p-3 border shadow-sm rounded-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold text-primary">Departures &amp; Activity</span>
+                                    <button name="action_view_departures" string="View Due Out List →" type="object" class="btn btn-sm btn-outline-warning text-dark"/>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Expected Departures:</span>
+                                    <span class="badge bg-warning fs-6 text-dark"><field name="expected_departures"/></span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Completed Check-Outs:</span>
+                                    <span class="badge bg-info fs-6 text-dark"><field name="checked_out_departures"/></span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Cancellations Today:</span>
+                                    <span class="badge bg-secondary fs-6"><field name="cancellation_count"/></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="d-flex gap-3 bg-light p-3 rounded-3 border align-items-center">
+                                <div class="flex-fill d-flex align-items-center justify-content-between border-end pe-3">
+                                    <div>
+                                        <span class="text-muted small">Total In-House Guests:</span>
+                                        <strong class="ms-2 fs-5 text-dark"><field name="in_house_guests"/></strong>
+                                    </div>
+                                    <button name="action_view_in_house" string="View Stays" type="object" class="btn btn-sm btn-outline-secondary"/>
+                                </div>
+                                <div class="flex-fill d-flex align-items-center justify-content-between border-end pe-3 ps-2">
+                                    <div>
+                                        <span class="text-muted small">Stayovers (Continuing):</span>
+                                        <strong class="ms-2 fs-5 text-primary"><field name="stayover_count"/></strong>
+                                    </div>
+                                    <button name="action_view_stayovers" string="View Stayovers" type="object" class="btn btn-sm btn-outline-primary"/>
+                                </div>
+                                <div class="flex-fill d-flex align-items-center justify-content-between ps-2">
+                                    <div>
+                                        <span class="text-muted small">VIP Guests In-House:</span>
+                                        <strong class="ms-2 fs-5 text-danger">★ <field name="vip_count"/></strong>
+                                    </div>
+                                    <button name="action_view_vip_guests" string="View VIP Profiles" type="object" class="btn btn-sm btn-outline-danger"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Total Departmental Revenue Breakdown -->
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                        <h5 class="fw-bold text-dark m-0">
+                            <i class="oi me-1 text-success" data-icon="payments"/> 3. Multi-Outlet Resort Revenue Breakdown
+                        </h5>
+                        <button name="action_view_fnb_orders" string="View F&amp;B Outlet Sales" type="object" class="btn btn-sm btn-outline-success"/>
+                    </div>
+                    <div class="card p-3 mb-4 border shadow-sm rounded-3">
+                        <div class="row g-2 text-center">
+                            <div class="col-md-2">
+                                <span class="text-muted small">Rooms</span>
+                                <h5 class="fw-bold text-dark my-1"><field name="room_revenue" widget="monetary"/></h5>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="text-muted small">Dining &amp; F&amp;B</span>
+                                <h5 class="fw-bold text-dark my-1"><field name="restaurant_revenue" widget="monetary"/></h5>
+                                <button name="action_view_fnb_orders" string="POS Orders" type="object" class="btn btn-sm btn-link p-0 small"/>
+                            </div>
+                            <div class="col-md-1">
+                                <span class="text-muted small">Bar</span>
+                                <h5 class="fw-bold text-dark my-1"><field name="bar_revenue" widget="monetary"/></h5>
+                            </div>
+                            <div class="col-md-1">
+                                <span class="text-muted small">Spa</span>
+                                <h5 class="fw-bold text-dark my-1"><field name="spa_revenue" widget="monetary"/></h5>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="text-muted small">Activities</span>
+                                <h5 class="fw-bold text-dark my-1"><field name="activity_revenue" widget="monetary"/></h5>
+                            </div>
+                            <div class="col-md-1">
+                                <span class="text-muted small">Laundry</span>
+                                <h5 class="fw-bold text-dark my-1"><field name="laundry_revenue" widget="monetary"/></h5>
+                            </div>
+                            <div class="col-md-1">
+                                <span class="text-muted small">Other</span>
+                                <h5 class="fw-bold text-dark my-1"><field name="other_revenue" widget="monetary"/></h5>
+                            </div>
+                            <div class="col-md-2 border-start bg-success-subtle rounded-3 p-2">
+                                <span class="text-success fw-bold small">GROSS REVENUE</span>
+                                <h4 class="fw-bold text-success my-1"><field name="total_resort_revenue" widget="monetary"/></h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Cashier Collections & Balances -->
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                        <h5 class="fw-bold text-dark m-0">
+                            <i class="oi me-1 text-primary" data-icon="description"/> 4. Cashier Collections &amp; Ledger Balances
+                        </h5>
+                        <button name="action_view_guest_ledger" string="Open Guest Ledger" type="object" class="btn btn-sm btn-outline-danger"/>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8">
+                            <div class="card p-3 border shadow-sm rounded-3">
+                                <span class="fw-bold text-dark mb-2">Collections &amp; Financial Adjustments</span>
+                                <div class="row g-2 text-center mb-2">
+                                    <div class="col-3 p-2 bg-light rounded">
+                                        <div class="small text-muted">Cash</div>
+                                        <div class="fw-bold"><field name="cash_collected" widget="monetary"/></div>
+                                    </div>
+                                    <div class="col-3 p-2 bg-light rounded">
+                                        <div class="small text-muted">Card</div>
+                                        <div class="fw-bold"><field name="card_collected" widget="monetary"/></div>
+                                    </div>
+                                    <div class="col-3 p-2 bg-light rounded">
+                                        <div class="small text-muted">UPI / QR</div>
+                                        <div class="fw-bold"><field name="upi_collected" widget="monetary"/></div>
+                                    </div>
+                                    <div class="col-3 p-2 bg-light rounded">
+                                        <div class="small text-muted">Bank Transfer</div>
+                                        <div class="fw-bold"><field name="bank_collected" widget="monetary"/></div>
+                                    </div>
+                                </div>
+                                <div class="row g-2 text-center mb-2">
+                                    <div class="col-6 p-2 bg-light rounded">
+                                        <div class="small text-muted">Discounts Granted</div>
+                                        <div class="fw-bold text-secondary"><field name="discounts_given" widget="monetary"/></div>
+                                    </div>
+                                    <div class="col-6 p-2 bg-light rounded">
+                                        <div class="small text-muted">Refunds Issued</div>
+                                        <div class="fw-bold text-danger"><field name="refunds_issued" widget="monetary"/></div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-end fw-bold text-primary">
+                                    Total Collections Settled: <field name="total_collected" widget="monetary"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card p-3 border shadow-sm rounded-3 bg-danger-subtle h-100 d-flex flex-column justify-content-center text-center">
+                                <span class="text-danger fw-bold small text-uppercase">Outstanding Guest Balances</span>
+                                <h2 class="fw-bold text-danger my-2"><field name="total_outstanding_due" widget="monetary"/></h2>
+                                <span class="small text-muted mb-2">Total Due Across Active Folios</span>
+                                <div>
+                                    <button name="action_view_guest_ledger" string="View Due Folios →" type="object" class="btn btn-sm btn-danger"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 5: Housekeeping & Maintenance Conditions -->
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                        <h5 class="fw-bold text-dark m-0">
+                            <i class="oi me-1 text-primary" data-icon="brush"/> 5. Housekeeping &amp; Resort Maintenance Status
+                        </h5>
+                        <div class="d-flex gap-2">
+                            <button name="action_view_dirty_rooms" string="View Dirty Rooms" type="object" class="btn btn-sm btn-outline-warning text-dark"/>
+                            <button name="action_view_maintenance" string="View Maintenance Issues" type="object" class="btn btn-sm btn-outline-danger"/>
+                        </div>
+                    </div>
+                    <div class="row g-3 text-center">
+                        <div class="col-2">
+                            <div class="p-3 bg-success-subtle text-success rounded-3 border">
+                                <div class="small fw-bold">Clean &amp; Ready</div>
+                                <h3 class="fw-bold m-0"><field name="clean_rooms"/></h3>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="p-3 bg-primary-subtle text-primary rounded-3 border">
+                                <div class="small fw-bold">Inspected</div>
+                                <h3 class="fw-bold m-0"><field name="inspected_rooms"/></h3>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="p-3 bg-warning-subtle text-dark rounded-3 border">
+                                <div class="small fw-bold">Dirty / Turnaround</div>
+                                <h3 class="fw-bold m-0"><field name="dirty_rooms"/></h3>
+                                <div class="mt-2" invisible="dirty_rooms == 0">
+                                    <button name="action_view_dirty_rooms" string="View →" type="object" class="btn btn-sm btn-outline-dark p-0 px-2"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="p-3 bg-info-subtle text-dark rounded-3 border">
+                                <div class="small fw-bold">Cleaning In Progress</div>
+                                <h3 class="fw-bold m-0"><field name="cleaning_rooms"/></h3>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="p-3 bg-secondary-subtle text-dark rounded-3 border">
+                                <div class="small fw-bold">Open Maintenance</div>
+                                <h3 class="fw-bold m-0 text-dark"><field name="maintenance_open_issues"/></h3>
+                                <div class="mt-2" invisible="maintenance_open_issues == 0">
+                                    <button name="action_view_maintenance" string="Tickets →" type="object" class="btn btn-sm btn-outline-secondary p-0 px-2"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="p-3 bg-danger-subtle text-danger rounded-3 border">
+                                <div class="small fw-bold">Urgent Repairs</div>
+                                <h3 class="fw-bold m-0 text-danger"><field name="maintenance_urgent_issues"/></h3>
+                            </div>
+                        </div>
+                    </div>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_hotel_daily_flash_report" model="ir.actions.act_window">
+        <field name="name">Daily Resort Flash Report</field>
+        <field name="res_model">hotel.daily.flash.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Action Server: Instantly opens today's populated dashboard -->
+    <record id="action_hotel_daily_flash_server" model="ir.actions.server">
+        <field name="name">Daily Resort Flash Report</field>
+        <field name="model_id" ref="model_hotel_daily_flash_report"/>
+        <field name="state">code</field>
+        <field name="code">
+action = model.action_open_dashboard()
+        </field>
+    </record>
+</odoo>

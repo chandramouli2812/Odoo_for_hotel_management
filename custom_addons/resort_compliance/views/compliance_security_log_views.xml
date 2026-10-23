@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Kanban View: Visual Security & Gate Pass Management -->
+    <record id="view_compliance_security_log_kanban" model="ir.ui.view">
+        <field name="name">compliance.security.log.kanban</field>
+        <field name="model">compliance.security.log</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="log_type" sample="1" quick_create="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="log_type"/>
+                <field name="visitor_name"/>
+                <field name="visitor_phone"/>
+                <field name="vehicle_number"/>
+                <field name="vehicle_type"/>
+                <field name="eco_transport_type"/>
+                <field name="is_ev_vehicle"/>
+                <field name="allocated_ev_charging"/>
+                <field name="visiting_guest_id"/>
+                <field name="room_id"/>
+                <field name="entry_datetime"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click p-2 mb-2 rounded shadow-sm border">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge text-bg-dark text-white font-monospace px-2 py-1 shadow-sm" style="background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important;">
+                                    <span style="color: #ffffff !important; font-weight: 700;">
+                                        <field name="name" class="text-white"/>
+                                    </span>
+                                </span>
+                                <span t-if="record.is_ev_vehicle.raw_value" class="badge bg-success-subtle text-success border border-success">
+                                    EV Vehicle
+                                </span>
+                            </div>
+
+                            <div t-if="record.visitor_name.raw_value" class="mb-1">
+                                <strong class="fs-6 text-primary"><field name="visitor_name"/></strong>
+                                <div class="text-muted small"><field name="visitor_phone"/></div>
+                            </div>
+
+                            <div t-if="record.vehicle_number.raw_value" class="mb-1">
+                                <strong class="fs-6 text-dark"><field name="vehicle_number"/></strong>
+                                <span class="badge bg-light text-dark border ms-1"><field name="vehicle_type"/></span>
+                            </div>
+
+                            <div t-if="record.visiting_guest_id.raw_value" class="text-muted small mb-2">
+                                <span>Meeting: <field name="visiting_guest_id"/></span>
+                                <span t-if="record.room_id.raw_value" class="badge bg-primary text-white ms-1">Room <field name="room_id"/></span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
+                                <div>
+                                    <span t-if="record.state.raw_value == 'active'" class="badge bg-success">
+                                        On Premises
+                                    </span>
+                                    <span t-elif="record.state.raw_value == 'departed'" class="badge bg-secondary">
+                                        Departed
+                                    </span>
+                                    <span t-else="" class="badge bg-danger">
+                                        Security Alert
+                                    </span>
+                                </div>
+                                <div class="text-end">
+                                    <button t-if="record.state.raw_value == 'active'" name="action_mark_departed" type="object" class="btn btn-sm btn-outline-secondary">
+                                        Record Exit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- List / Tree View -->
+    <record id="view_compliance_security_log_tree" model="ir.ui.view">
+        <field name="name">compliance.security.log.tree</field>
+        <field name="model">compliance.security.log</field>
+        <field name="arch" type="xml">
+            <list string="Resort Security &amp; Visitor Register"
+                  decoration-danger="state == 'flagged'"
+                  decoration-muted="state == 'departed'"
+                  decoration-success="state == 'active'">
+                <field name="name" decoration-bf="1"/>
+                <field name="log_type" widget="badge"/>
+                <field name="entry_datetime"/>
+                <field name="exit_datetime"/>
+                <field name="visitor_name"/>
+                <field name="visiting_guest_id"/>
+                <field name="room_id"/>
+                <field name="vehicle_number"/>
+                <field name="eco_transport_type" widget="badge"
+                       decoration-success="eco_transport_type in ('ev', 'hybrid', 'bicycle')"/>
+                <field name="allocated_ev_charging" widget="boolean_toggle" string="EV Charger"/>
+                <field name="security_officer_id"/>
+                <field name="shift"/>
+                <field name="is_paperless_gate_pass" widget="badge" string="e-Gate Pass"
+                       decoration-success="is_paperless_gate_pass == True"/>
+                <field name="state" widget="badge"
+                       decoration-danger="state == 'flagged'"
+                       decoration-success="state == 'active'"
+                       decoration-muted="state == 'departed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_compliance_security_log_form" model="ir.ui.view">
+        <field name="name">compliance.security.log.form</field>
+        <field name="model">compliance.security.log</field>
+        <field name="arch" type="xml">
+            <form string="Security &amp; Visitor Log Entry">
+                <header>
+                    <button name="action_mark_departed" string="Record Departure / Handover" type="object" class="btn-primary" invisible="state == 'departed'"/>
+                    <button name="action_flag_alert" string="Flag Security Alert" type="object" class="btn-danger" invisible="state == 'flagged'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="active,departed"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Departed" bg_color="text-bg-secondary" invisible="state != 'departed'"/>
+                    <widget name="web_ribbon" title="Security Alert" bg_color="text-bg-danger" invisible="state != 'flagged'"/>
+                    <div class="alert alert-success d-flex align-items-center justify-content-between mb-2 py-2" role="alert">
+                        <div>
+                            <i class="fa fa-leaf text-success fs-5 me-2"/>
+                            <strong>100% Paperless Digital e-Gate Pass:</strong> Eliminates physical paper tokens and receipts.
+                        </div>
+                        <div invisible="not is_ev_vehicle">
+                            <span class="badge bg-success">Green / EV Transport</span>
+                        </div>
+                    </div>
+
+                    <div class="oe_title">
+                        <span class="o_form_label text-muted">Resort Gate &amp; Security Record</span>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Log Type &amp; Shift">
+                            <field name="log_type"/>
+                            <field name="shift"/>
+                            <field name="entry_datetime"/>
+                            <field name="exit_datetime"/>
+                            <field name="security_officer_id"/>
+                            <field name="property_id"/>
+                        </group>
+                        <group string="Visitor Information" invisible="log_type not in ('visitor', 'contractor')">
+                            <field name="visitor_name" placeholder="Visitor full name..."/>
+                            <field name="visitor_phone" widget="phone"/>
+                            <field name="visitor_id_proof" placeholder="Aadhaar / Driving License No."/>
+                            <field name="visiting_guest_id" placeholder="In-house guest being visited..."/>
+                            <field name="room_id"/>
+                            <field name="purpose_of_visit"/>
+                        </group>
+                        <group string="Vehicle &amp; Green Mobility" invisible="log_type != 'vehicle'">
+                            <field name="vehicle_number" placeholder="e.g. GA-03-AB-1234"/>
+                            <field name="vehicle_type"/>
+                            <field name="eco_transport_type"/>
+                            <field name="allocated_ev_charging"/>
+                            <field name="driver_name"/>
+                            <field name="parking_slot"/>
+                            <field name="is_paperless_gate_pass" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group string="Security Checkpoints &amp; Assets" invisible="log_type not in ('patrol', 'cctv', 'lost_found', 'key_control')">
+                        <group>
+                            <field name="patrol_zone" invisible="log_type != 'patrol'"/>
+                            <field name="key_name" invisible="log_type != 'key_control'"/>
+                        </group>
+                        <group>
+                            <field name="item_description" invisible="log_type != 'lost_found'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Observations &amp; Discrepancy Notes" name="observations">
+                            <field name="observations" placeholder="Record gate inspection notes, luggage check, security alerts, or incident references..."/>
+                        </page>
+                        <page string="Digital Gate Passes &amp; Scans" name="attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_compliance_security_log_search" model="ir.ui.view">
+        <field name="name">compliance.security.log.search</field>
+        <field name="model">compliance.security.log</field>
+        <field name="arch" type="xml">
+            <search string="Search Security Logs">
+                <field name="name"/>
+                <field name="visitor_name"/>
+                <field name="visitor_phone"/>
+                <field name="vehicle_number"/>
+                <field name="visiting_guest_id"/>
+                <separator/>
+                <filter string="Electric Vehicles (EV)" name="filter_ev" domain="[('eco_transport_type', 'in', ('ev', 'hybrid'))]"/>
+                <filter string="Paperless e-Gate Passes" name="filter_paperless" domain="[('is_paperless_gate_pass', '=', True)]"/>
+                <separator/>
+                <filter string="Non-Resident Visitors" name="filter_visitors" domain="[('log_type', '=', 'visitor')]"/>
+                <filter string="Vehicle Entry/Exit" name="filter_vehicles" domain="[('log_type', '=', 'vehicle')]"/>
+                <filter string="Patrol &amp; CCTV Logs" name="filter_patrol" domain="[('log_type', 'in', ('patrol', 'cctv'))]"/>
+                <filter string="Lost &amp; Found" name="filter_lost" domain="[('log_type', '=', 'lost_found')]"/>
+                <separator/>
+                <filter string="Currently On Premises" name="filter_active" domain="[('state', '=', 'active')]"/>
+                <filter string="Security Flagged" name="filter_flagged" domain="[('state', '=', 'flagged')]"/>
+                <group>
+                    <filter string="Log Type" name="group_type" context="{'group_by': 'log_type'}"/>
+                    <filter string="Eco / Transport" name="group_eco" context="{'group_by': 'eco_transport_type'}"/>
+                    <filter string="Duty Shift" name="group_shift" context="{'group_by': 'shift'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Duty Officer" name="group_officer" context="{'group_by': 'security_officer_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Security Gate Logs Pivot View -->
+    <record id="view_compliance_security_log_pivot" model="ir.ui.view">
+        <field name="name">compliance.security.log.pivot</field>
+        <field name="model">compliance.security.log</field>
+        <field name="arch" type="xml">
+            <pivot string="Gate Traffic Analysis" sample="1">
+                <field name="log_type" type="row"/>
+                <field name="shift" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Security Gate Logs Graph View -->
+    <record id="view_compliance_security_log_graph" model="ir.ui.view">
+        <field name="name">compliance.security.log.graph</field>
+        <field name="model">compliance.security.log</field>
+        <field name="arch" type="xml">
+            <graph string="Security Entries by Date" type="bar" sample="1">
+                <field name="entry_datetime" interval="day"/>
+                <field name="log_type"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_compliance_security_log_all" model="ir.actions.act_window">
+        <field name="name">Resort Security &amp; Gate Logs</field>
+        <field name="res_model">compliance.security.log</field>
+        <field name="view_mode">kanban,list,pivot,graph,form</field>
+        <field name="search_view_id" ref="view_compliance_security_log_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Record a Security Log Entry
+            </p>
+            <p>
+                Track visitor entries, vehicle movements, security guard patrol rounds, and gate check logs.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_compliance_security_log_visitors" model="ir.actions.act_window">
+        <field name="name">Visitor Register</field>
+        <field name="res_model">compliance.security.log</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('log_type', 'in', ('visitor', 'contractor'))]</field>
+    </record>
+
+    <record id="action_compliance_security_log_vehicles" model="ir.actions.act_window">
+        <field name="name">Vehicle Entry / Exit Register</field>
+        <field name="res_model">compliance.security.log</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('log_type', '=', 'vehicle')]</field>
+    </record>
+</odoo>

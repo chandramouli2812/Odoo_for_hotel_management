@@ -1,0 +1,1925 @@
+// ==========================================================================
+// HOTEL RESERVATION TAPE CHART / ROOM CALENDAR GRID STYLES
+// Professional PMS Aesthetics (Opera Cloud, Cloudbeds, Mews Standard)
+// ==========================================================================
+
+.o_hotel_tape_chart_container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #0f172a;
+    position: relative;
+    overflow: hidden;
+
+    // Standardize Odoo UI icons inside tape chart
+    .oi {
+        font-family: var(--icon-font-family, "Material Symbols Outlined") !important;
+        font-style: normal;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
+    }
+
+    // Loading Overlay
+    .o_tape_chart_loader_overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+
+        .o_loader_box {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            padding: 14px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e2e8f0;
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // 1. TOP CONTROL & NAVIGATION BAR
+    // ----------------------------------------------------------------------
+    .o_tape_chart_topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 14px;
+        background-color: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+        gap: 8px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+
+        .o_topbar_nav_section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+            flex-shrink: 0;
+
+            .o_date_nav_group {
+                display: inline-flex;
+                align-items: center;
+                background-color: #f1f5f9;
+                padding: 2px;
+                border-radius: 8px;
+                gap: 2px;
+
+                .o_btn_nav {
+                    border: none;
+                    background: transparent;
+                    color: #475569;
+                    padding: 3px 6px;
+                    border-radius: 6px;
+                    font-size: 11px;
+
+                    &:hover {
+                        background-color: #ffffff;
+                        color: #0f172a;
+                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+                    }
+                }
+
+                .o_btn_today {
+                    border: none;
+                    font-size: 11.5px;
+                    font-weight: 700;
+                    padding: 3px 8px;
+                    border-radius: 6px;
+                    background-color: #ffffff;
+                    color: #0284c7;
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+                    &:hover {
+                        background-color: #e0f2fe;
+                        color: #0369a1;
+                    }
+                }
+
+                .o_date_picker_wrapper {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+
+                    .o_cal_icon {
+                        position: absolute;
+                        left: 7px;
+                        color: #64748b;
+                        pointer-events: none;
+                        font-size: 11px;
+                    }
+
+                    .o_date_input {
+                        padding-left: 23px;
+                        height: 28px;
+                        font-size: 11.5px;
+                        font-weight: 600;
+                        border: 1px solid #cbd5e1;
+                        border-radius: 6px;
+                        background-color: #ffffff;
+                        width: 118px;
+                        color: #1e293b;
+
+                        &:focus {
+                            border-color: #3b82f6;
+                            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+                        }
+                    }
+                }
+            }
+
+            .o_date_range_pill {
+                font-size: 11.5px;
+                background-color: #eff6ff;
+                color: #1d4ed8;
+                padding: 3px 8px;
+                border-radius: 6px;
+                border: 1px solid #bfdbfe;
+                display: inline-flex;
+                align-items: center;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .o_view_span_group {
+                flex-shrink: 0;
+                .btn {
+                    font-size: 11px;
+                    font-weight: 600;
+                    padding: 3px 7px;
+                    border-color: #cbd5e1;
+                    color: #475569;
+
+                    &.active {
+                        background-color: #0f172a;
+                        color: #ffffff;
+                        border-color: #0f172a;
+                    }
+                }
+            }
+
+            .o_search_box_wrapper {
+                position: relative;
+                display: flex;
+                align-items: center;
+                flex-shrink: 0;
+
+                .o_search_icon {
+                    position: absolute;
+                    left: 8px;
+                    color: #94a3b8;
+                    font-size: 11px;
+                    pointer-events: none;
+                    z-index: 2;
+                }
+
+                .o_search_spinner {
+                    position: absolute;
+                    right: 28px;
+                    font-size: 11px;
+                    z-index: 2;
+                }
+
+                .o_search_input {
+                    padding-left: 25px;
+                    padding-right: 28px;
+                    height: 28px;
+                    font-size: 11.5px;
+                    width: 165px;
+                    border-radius: 6px;
+                    border: 1px solid #cbd5e1;
+                    transition: width 0.2s ease, border-color 0.2s ease;
+                    z-index: 2;
+
+                    &:focus {
+                        width: 215px;
+                        border-color: #0284c7;
+                        box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+                    }
+                }
+
+                .o_btn_clear_search {
+                    position: absolute;
+                    right: 4px;
+                    padding: 2px 6px;
+                    color: #94a3b8;
+                    background: transparent;
+                    border: none;
+                    font-size: 11px;
+                    z-index: 3;
+
+                    &:hover {
+                        color: #0f172a;
+                    }
+                }
+
+                // Transparent backdrop to dismiss on click outside
+                .o_search_backdrop {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    z-index: 998;
+                    background: transparent;
+                }
+
+                // Search Results Floating Panel
+                .o_search_results_dropdown {
+                    position: absolute;
+                    top: calc(100% + 6px);
+                    left: 0;
+                    width: 390px;
+                    max-height: 480px;
+                    background: #ffffff;
+                    border-radius: 10px;
+                    border: 1px solid #e2e8f0;
+                    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.18), 0 5px 15px rgba(0, 0, 0, 0.08);
+                    z-index: 999;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    animation: dropFadeIn 0.15s ease-out;
+
+                    .o_search_drop_header {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 10px 14px;
+                        background: #f8fafc;
+                        border-bottom: 1px solid #e2e8f0;
+
+                        .o_drop_title {
+                            font-size: 12px;
+                            font-weight: 600;
+                            color: #334155;
+                            strong {
+                                color: #0284c7;
+                            }
+                        }
+
+                        .o_btn_close_drop {
+                            font-size: 12px;
+                            line-height: 1;
+                            cursor: pointer;
+                        }
+                    }
+
+                    .o_search_drop_list {
+                        overflow-y: auto;
+                        max-height: 420px;
+                        padding: 6px;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 6px;
+
+                        .o_search_drop_item {
+                            padding: 10px 12px;
+                            border-radius: 8px;
+                            border: 1px solid #f1f5f9;
+                            background: #ffffff;
+                            cursor: pointer;
+                            transition: all 0.15s ease;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 5px;
+
+                            &:hover {
+                                background: #f0f9ff;
+                                border-color: #bae6fd;
+                                transform: translateY(-1px);
+                                box-shadow: 0 3px 8px rgba(2, 132, 199, 0.1);
+
+                                .o_drop_item_hint {
+                                    opacity: 1;
+                                    color: #0284c7;
+                                }
+                            }
+
+                            .o_drop_item_top {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+
+                                .o_drop_guest_info {
+                                    display: flex;
+                                    align-items: center;
+
+                                    .o_drop_guest_name {
+                                        font-size: 13px;
+                                        font-weight: 700;
+                                        color: #0f172a;
+                                    }
+
+                                    .o_vip_mini_badge {
+                                        font-size: 9px;
+                                        font-weight: 700;
+                                        padding: 2px 5px;
+                                        border-radius: 4px;
+
+                                        &.o_vip_gold { background: #fef3c7; color: #b45309; }
+                                        &.o_vip_platinum { background: #e0e7ff; color: #4338ca; }
+                                        &.o_vip_diamond { background: #f3e8ff; color: #7e22ce; }
+                                    }
+                                }
+
+                                .o_stay_status_badge {
+                                    font-size: 10.5px;
+                                    font-weight: 600;
+                                    padding: 2px 7px;
+                                    border-radius: 12px;
+
+                                    &.o_status_check_in {
+                                        background: #fef2f2;
+                                        color: #b91c1c;
+                                        border: 1px solid #fecaca;
+                                    }
+                                    &.o_status_confirmed {
+                                        background: #ecfdf5;
+                                        color: #047857;
+                                        border: 1px solid #a7f3d0;
+                                    }
+                                    &.o_status_check_out {
+                                        background: #e0f2fe;
+                                        color: #0369a1;
+                                        border: 1px solid #bae6fd;
+                                    }
+                                }
+                            }
+
+                            .o_drop_item_mid {
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                                flex-wrap: wrap;
+
+                                .o_drop_badge {
+                                    font-size: 11px;
+                                    padding: 2px 6px;
+                                    border-radius: 4px;
+
+                                    &.o_badge_room {
+                                        background: #e0f2fe;
+                                        color: #0369a1;
+                                        font-weight: 700;
+                                    }
+
+                                    &.o_badge_dates {
+                                        background: #f8fafc;
+                                        color: #475569;
+                                        border: 1px solid #e2e8f0;
+                                    }
+                                }
+                            }
+
+                            .o_drop_item_bot {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                font-size: 11px;
+
+                                .o_drop_fin {
+                                    display: inline-flex;
+                                    align-items: center;
+                                }
+                            }
+
+                            .o_drop_item_hint {
+                                font-size: 10px;
+                                color: #94a3b8;
+                                opacity: 0;
+                                transition: opacity 0.15s ease;
+                                display: flex;
+                                align-items: center;
+                                padding-top: 2px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .o_topbar_actions_section {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: nowrap;
+            flex-shrink: 0;
+
+            .o_property_select {
+                height: 28px;
+                font-size: 11.5px;
+                font-weight: 600;
+                border-radius: 6px;
+                border-color: #cbd5e1;
+                max-width: 175px;
+                background-color: #f8fafc;
+                text-overflow: ellipsis;
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
+
+            .o_meal_plan_wrapper {
+                display: inline-flex;
+                align-items: center;
+                gap: 3px;
+                flex-shrink: 0;
+
+                .o_meal_plan_label {
+                    font-size: 11px;
+                    font-weight: 600;
+                    color: #64748b;
+                    white-space: nowrap;
+                }
+
+                .o_meal_plan_select {
+                    height: 28px;
+                    font-size: 11px;
+                    font-weight: 600;
+                    border-radius: 6px;
+                    border-color: #cbd5e1;
+                    width: 110px;
+                    background-color: #f8fafc;
+                    padding-top: 2px;
+                    padding-bottom: 2px;
+                }
+            }
+
+            .o_btn_quick_reservation {
+                height: 28px;
+                font-size: 11.5px;
+                font-weight: 600;
+                padding: 0 10px;
+                border-radius: 6px;
+                display: inline-flex;
+                align-items: center;
+                white-space: nowrap;
+                flex-shrink: 0;
+                background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+                border: none;
+                box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);
+                transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+                .oi {
+                    font-size: 14px;
+                    line-height: 1;
+                }
+
+                &:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 8px rgba(2, 132, 199, 0.35);
+                    background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+                }
+            }
+
+            .o_btn_icon {
+                height: 28px;
+                width: 28px;
+                min-width: 28px;
+                padding: 0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 6px;
+                border: 1px solid #cbd5e1;
+                background-color: #ffffff;
+                color: #475569;
+                transition: all 0.15s ease;
+                cursor: pointer;
+                flex-shrink: 0;
+
+                .oi {
+                    font-size: 15px;
+                    line-height: 1;
+                }
+
+                &:hover {
+                    color: #0284c7;
+                    background-color: #f0f9ff;
+                    border-color: #0284c7;
+                    transform: translateY(-1px);
+                    box-shadow: 0 2px 4px rgba(2, 132, 199, 0.15);
+                }
+
+                &:active {
+                    transform: translateY(0);
+                    box-shadow: none;
+                }
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // 2. KPI STATUS FILTER PILLS & MINI LEGEND STRIP
+    // ----------------------------------------------------------------------
+    .o_kpi_filter_bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 16px;
+        background-color: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+        gap: 12px;
+        flex-wrap: wrap;
+
+        .o_kpi_label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .o_kpi_pills_list {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+
+            .o_kpi_pill {
+                border: 1px solid #e2e8f0;
+                background-color: #ffffff;
+                color: #334155;
+                font-size: 11.5px;
+                font-weight: 500;
+                padding: 3px 8px;
+                border-radius: 20px;
+                display: inline-flex;
+                align-items: center;
+                cursor: pointer;
+                transition: all 0.15s ease;
+
+                .o_dot {
+                    width: 7px;
+                    height: 7px;
+                    border-radius: 50%;
+                    margin-right: 5px;
+                    display: inline-block;
+
+                    &.o_dot_vacant { background-color: #10b981; }
+                    &.o_dot_occupied { background-color: #ef4444; }
+                    &.o_dot_reserved { background-color: #22c55e; }
+                    &.o_dot_blocked { background-color: #0f172a; }
+                    &.o_dot_due_out { background-color: #0284c7; }
+                    &.o_dot_dirty { background-color: #f59e0b; }
+                }
+
+                .badge {
+                    background-color: #f1f5f9;
+                    color: #0f172a;
+                    margin-left: 5px;
+                    font-size: 10.5px;
+                    font-weight: 700;
+                    padding: 2px 6px;
+                    border-radius: 10px;
+                }
+
+                &:hover {
+                    background-color: #f8fafc;
+                    border-color: #94a3b8;
+                }
+
+                &.active {
+                    background-color: #0f172a;
+                    color: #ffffff;
+                    border-color: #0f172a;
+
+                    .badge {
+                        background-color: rgba(255, 255, 255, 0.25);
+                        color: #ffffff;
+                    }
+                }
+
+                &.o_kpi_vacant.active {
+                    background-color: #10b981;
+                    border-color: #10b981;
+                }
+                &.o_kpi_occupied.active {
+                    background-color: #ef4444;
+                    border-color: #ef4444;
+                }
+                &.o_kpi_reserved.active {
+                    background-color: #22c55e;
+                    border-color: #22c55e;
+                }
+                &.o_kpi_dirty.active {
+                    background-color: #f59e0b;
+                    border-color: #f59e0b;
+                }
+            }
+        }
+
+        .o_mini_legend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #64748b;
+
+            .o_legend_chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-size: 10.5px;
+                font-weight: 600;
+                color: #ffffff;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+
+                .oi {
+                    font-size: 13px;
+                    line-height: 1;
+                }
+
+                &.o_pill_occupied { background-color: #ff5757; }
+                &.o_pill_reserved { background-color: #22c55e; }
+                &.o_pill_checked_out { background-color: #0284c7; }
+                &.o_pill_maintenance {
+                    background: repeating-linear-gradient(-45deg, #0f172a, #0f172a 4px, #334155 4px, #334155 8px);
+                }
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // 2.5 SEARCH MATCHES SUMMARY STRIP
+    // ----------------------------------------------------------------------
+    .o_search_summary_strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 16px;
+        background: linear-gradient(90deg, #eff6ff 0%, #f0fdf4 100%);
+        border-bottom: 1px solid #bfdbfe;
+        gap: 12px;
+        flex-wrap: wrap;
+
+        .o_strip_left {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #1e3a8a;
+
+            strong {
+                color: #0284c7;
+            }
+        }
+
+        .o_strip_chips {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+
+            .o_stay_jump_chip {
+                background: #ffffff;
+                border: 1px solid #cbd5e1;
+                color: #0f172a;
+                font-size: 11.5px;
+                padding: 3px 8px;
+                border-radius: 6px;
+                display: inline-flex;
+                align-items: center;
+                transition: all 0.15s ease;
+
+                &:hover {
+                    background: #f0f9ff;
+                    border-color: #0284c7;
+                    transform: translateY(-1px);
+                    box-shadow: 0 2px 5px rgba(2, 132, 199, 0.15);
+                }
+
+                &.active {
+                    background: #0284c7;
+                    color: #ffffff;
+                    border-color: #0284c7;
+                    box-shadow: 0 0 0 2px #38bdf8;
+
+                    .badge {
+                        background: rgba(255, 255, 255, 0.25) !important;
+                        color: #ffffff !important;
+                    }
+
+                    .text-muted {
+                        color: #e0f2fe !important;
+                    }
+                }
+
+                .o_stay_mini_badge {
+                    font-size: 9.5px;
+                    padding: 2px 5px;
+                    border-radius: 4px;
+
+                    &.o_status_check_in { background: #fee2e2; color: #991b1b; }
+                    &.o_status_confirmed { background: #dcfce7; color: #166534; }
+                    &.o_status_check_out { background: #e0f2fe; color: #0369a1; }
+                }
+            }
+
+            .o_btn_clear_strip {
+                font-size: 11px;
+                padding: 3px 8px;
+                border-radius: 6px;
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // 3. MAIN TIMELINE GRID
+    // ----------------------------------------------------------------------
+    .o_tape_chart_scroll_area {
+        flex: 1 1 auto;
+        overflow: auto;
+        background-color: #ffffff;
+    }
+
+    .o_tape_chart_grid {
+        min-width: 1050px;
+        display: flex;
+        flex-direction: column;
+
+        // Base Grid Row
+        .o_grid_row {
+            display: flex;
+            border-bottom: 1px solid #f1f5f9;
+            min-height: 44px;
+            align-items: stretch;
+
+            &:hover {
+                background-color: #fcfcfd;
+            }
+        }
+
+        // Left Sticky Room Column
+        .o_grid_cell_left {
+            width: 230px;
+            min-width: 230px;
+            max-width: 230px;
+            position: sticky;
+            left: 0;
+            background-color: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            z-index: 5;
+            box-shadow: 2px 0 6px -2px rgba(0, 0, 0, 0.06);
+        }
+
+        // Timeline Columns Container (11 or custom count)
+        .o_grid_columns_container {
+            flex: 1 1 0;
+            display: grid;
+        }
+
+        // HEADER ROW (DATES)
+        .o_grid_header_row {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #ffffff;
+            border-bottom: 2px solid #cbd5e1;
+            min-height: 52px;
+
+            .o_header_left_cell {
+                justify-content: space-between;
+                background-color: #ffffff;
+
+                .o_header_left_title {
+                    font-size: 13px;
+                    color: #0f172a;
+                    display: inline-flex;
+                    align-items: center;
+                }
+            }
+
+            .o_day_header_cell {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border-right: 1px solid #f1f5f9;
+                padding: 4px 2px;
+                text-align: center;
+                position: relative;
+
+                .o_day_name {
+                    font-size: 10.5px;
+                    font-weight: 700;
+                    color: #64748b;
+                    letter-spacing: 0.5px;
+                }
+
+                .o_day_date {
+                    font-size: 12.5px;
+                    font-weight: 600;
+                    color: #0f172a;
+
+                    .o_day_num {
+                        font-weight: 700;
+                    }
+                    .o_day_month {
+                        margin-left: 2px;
+                        font-size: 11px;
+                        color: #64748b;
+                    }
+                }
+
+                .o_today_badge {
+                    position: absolute;
+                    bottom: 2px;
+                    font-size: 8px;
+                    font-weight: 800;
+                    color: #16a34a;
+                    background: #dcfce7;
+                    padding: 0 4px;
+                    border-radius: 4px;
+                }
+
+                &.o_today_column {
+                    background-color: #f0fdf4;
+                    border-bottom: 3px solid #16a34a;
+
+                    .o_day_name, .o_day_date {
+                        color: #15803d;
+                    }
+                }
+
+                &.o_weekend_column {
+                    background-color: #fbfbfc;
+                }
+            }
+        }
+
+        // ROOM TYPE ACCORDION HEADER ROW
+        .o_room_type_header_row {
+            background-color: #f8fafc;
+            cursor: pointer;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            min-height: 42px;
+
+            &:hover {
+                background-color: #f1f5f9;
+            }
+
+            .o_type_left_cell {
+                gap: 8px;
+                background-color: inherit;
+
+                .o_accordion_icon {
+                    color: #64748b;
+                    font-size: 11px;
+                }
+
+                .o_type_title {
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: #0f172a;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+
+            .o_type_day_cell {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border-right: 1px solid #f1f5f9;
+                padding: 4px 2px;
+                gap: 2px;
+
+                .o_avail_chip {
+                    font-size: 10.5px;
+                    font-weight: 700;
+                    color: #15803d;
+                    background-color: #ecfdf5;
+                    padding: 1px 6px;
+                    border-radius: 4px;
+                    border: 1px solid #a7f3d0;
+
+                    &.sold_out {
+                        color: #b91c1c;
+                        background-color: #fef2f2;
+                        border-color: #fecaca;
+                    }
+                }
+
+                .o_rate_chip {
+                    font-size: 10.5px;
+                    font-weight: 600;
+                    color: #475569;
+
+                    .o_rate_unit {
+                        font-size: 9px;
+                        color: #94a3b8;
+                    }
+                }
+            }
+        }
+
+        // INDIVIDUAL ROOM ROW
+        .o_room_row {
+            min-height: 46px;
+            background-color: #ffffff;
+
+            .o_room_left_cell {
+                justify-content: space-between;
+
+                .o_room_info_box {
+                    display: flex;
+                    flex-direction: column;
+
+                    .o_room_number {
+                        font-size: 13.5px;
+                        font-weight: 700;
+                        color: #0f172a;
+                        line-height: 1.2;
+                    }
+
+                    .o_room_floor {
+                        font-size: 10px;
+                        color: #64748b;
+                    }
+                }
+
+                .o_room_status_action {
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    transition: transform 0.15s ease;
+
+                    &:hover {
+                        transform: scale(1.05);
+                    }
+
+                    .o_badge_hk {
+                        font-size: 10px;
+                        font-weight: 600;
+                        padding: 3px 6px;
+                        border-radius: 4px;
+                        display: inline-flex;
+                        align-items: center;
+
+                        &.o_hk_clean {
+                            background-color: #ecfdf5;
+                            color: #047857;
+                            border: 1px solid #a7f3d0;
+                        }
+
+                        &.o_hk_inspected {
+                            background-color: #faf5ff;
+                            color: #7e22ce;
+                            border: 1px solid #e9d5ff;
+                        }
+
+                        &.o_hk_dirty {
+                            background-color: #fffbeb;
+                            color: #b45309;
+                            border: 1px solid #fde68a;
+                        }
+
+                        &.o_hk_cleaning {
+                            background-color: #eff6ff;
+                            color: #1d4ed8;
+                            border: 1px solid #bfdbfe;
+                        }
+
+                        &.o_hk_maintenance {
+                            background-color: #1e293b;
+                            color: #f1f5f9;
+                        }
+                    }
+                }
+            }
+
+            .o_room_timeline_container {
+                position: relative;
+
+                .o_timeline_day_cell {
+                    border-right: 1px solid #f1f5f9;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    position: relative;
+
+                    .o_cell_add_hover {
+                        opacity: 0;
+                        color: #0284c7;
+                        font-size: 11px;
+                        font-weight: 700;
+                        background: #e0f2fe;
+                        padding: 2px 6px;
+                        border-radius: 4px;
+                        transition: opacity 0.15s ease;
+                    }
+
+                    &:hover {
+                        background-color: #f0f9ff;
+
+                        .o_cell_add_hover {
+                            opacity: 1;
+                        }
+                    }
+
+                    &.o_today_column {
+                        background-color: rgba(240, 253, 244, 0.4);
+                    }
+                }
+
+                // Booking Pill Element
+                .o_booking_pill {
+                    position: absolute;
+                    top: 6px;
+                    bottom: 6px;
+                    left: 2px;
+                    right: 2px;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    border-radius: 6px;
+                    font-size: 11.5px;
+                    font-weight: 600;
+                    z-index: 3;
+                    cursor: pointer;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    gap: 6px;
+                    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+                    &:hover {
+                        transform: translateY(-1px);
+                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                        z-index: 4;
+                    }
+
+                    .o_pill_text {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        flex: 1 1 auto;
+                    }
+
+                    .o_pill_nights_badge {
+                        background: rgba(0, 0, 0, 0.2);
+                        padding: 1px 4px;
+                        border-radius: 3px;
+                        font-size: 10px;
+                        font-weight: 700;
+                    }
+
+                    .o_pill_due_chip {
+                        background: rgba(0, 0, 0, 0.25);
+                        padding: 1px 5px;
+                        border-radius: 3px;
+                        font-size: 10px;
+                        font-weight: 600;
+                        color: #fff;
+                    }
+
+                    .o_pill_paid_chip {
+                        background: rgba(255, 255, 255, 0.3);
+                        padding: 1px 5px;
+                        border-radius: 3px;
+                        font-size: 9.5px;
+                        font-weight: 700;
+                    }
+
+                    // Occupied (Coral / Vibrant Rose)
+                    &.o_pill_occupied {
+                        background: linear-gradient(135deg, #ff5757 0%, #ef4444 100%);
+                        color: #ffffff;
+                    }
+
+                    // Reserved / Confirmed (Emerald)
+                    &.o_pill_reserved {
+                        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+                        color: #ffffff;
+                    }
+
+                    // Checked out (Sky Blue)
+                    &.o_pill_checked_out {
+                        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+                        color: #ffffff;
+                    }
+
+                    // Maintenance (Dark Stripes)
+                    &.o_pill_maintenance {
+                        background: repeating-linear-gradient(
+                            -45deg,
+                            #0f172a,
+                            #0f172a 6px,
+                            #1e293b 6px,
+                            #1e293b 12px
+                        );
+                        color: #e2e8f0;
+                        border: 1px solid #334155;
+                    }
+
+                    .o_pill_co_badge {
+                        font-size: 10px;
+                        font-weight: 600;
+                        opacity: 0.9;
+                        background: rgba(0, 0, 0, 0.2);
+                        padding: 1px 4px;
+                        border-radius: 3px;
+                    }
+
+                    // Highlight on search
+                    &.o_pill_highlighted {
+                        box-shadow: 0 0 0 3px #f59e0b, 0 0 16px rgba(245, 158, 11, 0.85) !important;
+                        animation: pulseHighlight 1.5s infinite;
+                        z-index: 10 !important;
+                        transform: translateY(-2px);
+                    }
+                }
+            }
+        }
+
+        // BOTTOM SUMMARY ROWS
+        .o_summary_row {
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            min-height: 40px;
+
+            .o_summary_left_cell {
+                background-color: #f8fafc;
+                font-size: 12px;
+                color: #334155;
+            }
+
+            .o_summary_day_cell {
+                border-right: 1px solid #e2e8f0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                color: #0f172a;
+
+                .o_inv_badge {
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: #0f172a;
+                    background-color: #ffffff;
+                    border: 1px solid #cbd5e1;
+                    padding: 2px 8px;
+                    border-radius: 4px;
+                }
+
+                .o_occ_indicator {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    width: 85%;
+
+                    .o_occ_progress {
+                        flex: 1 1 auto;
+                        height: 6px;
+                        border-radius: 3px;
+                        background-color: #e2e8f0;
+                        overflow: hidden;
+
+                        .o_occ_fill {
+                            height: 100%;
+                            border-radius: 3px;
+
+                            &.low { background-color: #10b981; }
+                            &.medium { background-color: #0284c7; }
+                            &.high { background-color: #f59e0b; }
+                        }
+                    }
+
+                    .o_occ_pct_label {
+                        font-size: 10.5px;
+                        font-weight: 700;
+                        color: #475569;
+                        min-width: 28px;
+                        text-align: right;
+                    }
+                }
+            }
+
+            &.o_occupancy_row {
+                border-bottom: 2px solid #cbd5e1;
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // 4. QUICK OPERATIONS SIDE DRAWER (PMS STANDARD)
+    // ----------------------------------------------------------------------
+    .o_drawer_backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(2px);
+        z-index: 1050;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .o_booking_drawer {
+        width: 440px;
+        max-width: 90vw;
+        height: 100vh;
+        background-color: #ffffff;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+        .o_drawer_header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background-color: #0f172a;
+            color: #ffffff;
+
+            .o_drawer_header_left {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+
+                .o_drawer_res_name {
+                    font-size: 16px;
+                    font-weight: 700;
+                    letter-spacing: 0.2px;
+                }
+
+                .o_drawer_status_badge {
+                    font-size: 11px;
+                    padding: 3px 8px;
+                    border-radius: 12px;
+
+                    &.o_status_check_in { background-color: #ef4444; color: #fff; }
+                    &.o_status_confirmed { background-color: #22c55e; color: #fff; }
+                    &.o_status_check_out { background-color: #0284c7; color: #fff; }
+                    &.o_status_draft { background-color: #64748b; color: #fff; }
+                }
+            }
+
+            .o_btn_close_drawer {
+                background: transparent;
+                border: none;
+                color: #94a3b8;
+                font-size: 16px;
+
+                &:hover {
+                    color: #ffffff;
+                }
+            }
+        }
+
+        .o_drawer_body {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+
+            .o_drawer_card {
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 10px;
+                padding: 14px 16px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+
+                .o_card_title {
+                    font-size: 12px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    color: #64748b;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 12px;
+                    display: flex;
+                    align-items: center;
+                }
+
+                &.o_guest_card {
+                    .o_guest_hero {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 14px;
+
+                        .o_guest_avatar {
+                            width: 46px;
+                            height: 46px;
+                            border-radius: 50%;
+                            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+                            color: #ffffff;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 16px;
+                            font-weight: 700;
+                            flex-shrink: 0;
+                        }
+
+                        .o_guest_details {
+                            flex: 1 1 auto;
+
+                            .o_guest_name {
+                                font-size: 15px;
+                                font-weight: 700;
+                                color: #0f172a;
+                                margin-bottom: 4px;
+                            }
+
+                            .o_contact_item {
+                                font-size: 12.5px;
+                                margin-bottom: 3px;
+                            }
+
+                            .o_vip_badge {
+                                font-size: 9.5px;
+                                font-weight: 700;
+                                padding: 2px 6px;
+                                border-radius: 10px;
+
+                                &.o_vip_platinum { background-color: #475569; color: #fff; }
+                                &.o_vip_gold { background-color: #d97706; color: #fff; }
+                                &.o_vip_silver { background-color: #64748b; color: #fff; }
+                            }
+                        }
+                    }
+                }
+
+                .o_info_item {
+                    display: flex;
+                    flex-direction: column;
+
+                    .label {
+                        font-size: 11px;
+                        color: #64748b;
+                    }
+                    .value {
+                        font-size: 13px;
+                        color: #0f172a;
+                    }
+                }
+
+                .o_financials_grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 10px;
+
+                    .o_fin_box {
+                        background: #f8fafc;
+                        border: 1px solid #e2e8f0;
+                        border-radius: 8px;
+                        padding: 8px 10px;
+                        display: flex;
+                        flex-direction: column;
+
+                        .label {
+                            font-size: 10.5px;
+                            color: #64748b;
+                        }
+                        .amount {
+                            font-size: 13.5px;
+                            color: #0f172a;
+                        }
+
+                        &.o_due_box {
+                            background: #fef2f2;
+                            border-color: #fecaca;
+                        }
+                    }
+                }
+
+                .o_notes_box {
+                    font-size: 12.5px;
+                    color: #334155;
+                    background: #f8fafc;
+                    padding: 8px 10px;
+                    border-radius: 6px;
+                    border-left: 3px solid #0284c7;
+                }
+            }
+        }
+
+        .o_drawer_footer {
+            padding: 14px 20px;
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+
+            .o_btn_action {
+                font-size: 13.5px;
+                font-weight: 700;
+                padding: 10px 14px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // 5. QUICK BOOKING MODAL
+    // ----------------------------------------------------------------------
+    .o_tape_chart_modal_backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1060;
+
+        .o_quick_book_modal {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.25);
+            width: 520px;
+            max-width: 92vw;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: modalFadeIn 0.2s ease-out;
+
+            .o_modal_header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 14px 18px;
+                border-bottom: 1px solid #f1f5f9;
+                background-color: #f8fafc;
+            }
+
+            .o_modal_body {
+                padding: 16px 18px;
+                max-height: 75vh;
+                overflow-y: auto;
+
+                .o_guest_suggestions_dropdown {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    background: #ffffff;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 6px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                    z-index: 10;
+                    max-height: 160px;
+                    overflow-y: auto;
+
+                    .o_suggestion_item {
+                        padding: 8px 12px;
+                        cursor: pointer;
+                        border-bottom: 1px solid #f1f5f9;
+                        font-size: 12.5px;
+
+                        &:hover {
+                            background-color: #eff6ff;
+                        }
+                    }
+                }
+            }
+
+            .o_modal_footer {
+                display: flex;
+                align-items: center;
+                padding: 12px 18px;
+                border-top: 1px solid #f1f5f9;
+                background-color: #f8fafc;
+            }
+        }
+
+        // Room Status Modal
+        .o_room_status_modal {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            width: 380px;
+            max-width: 90vw;
+            overflow: hidden;
+
+            .o_modal_header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 16px;
+                border-bottom: 1px solid #f1f5f9;
+                background-color: #f8fafc;
+            }
+
+            .o_modal_body {
+                padding: 16px;
+            }
+        }
+
+        // Legend Modal
+        .o_tape_chart_modal {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 480px;
+            max-width: 90vw;
+            padding: 18px;
+
+            .o_modal_header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 14px;
+                border-bottom: 1px solid #f1f5f9;
+                padding-bottom: 8px;
+            }
+
+            .o_legend_item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 10px;
+
+                .o_legend_color {
+                    min-width: 105px;
+                    padding: 5px 8px;
+                    border-radius: 6px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-align: center;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                    color: #fff;
+
+                    .oi {
+                        font-size: 14px;
+                        line-height: 1;
+                    }
+
+                    &.o_pill_occupied { background-color: #ff5757; }
+                    &.o_pill_reserved { background-color: #22c55e; }
+                    &.o_pill_checked_out { background-color: #0284c7; }
+                    &.o_pill_maintenance {
+                        background: repeating-linear-gradient(-45deg, #0f172a, #0f172a 4px, #334155 4px, #334155 8px);
+                    }
+                    &.o_legend_empty {
+                        border: 1px dashed #94a3b8;
+                        background: #f8fafc;
+                        color: #64748b;
+                    }
+                }
+
+                .o_legend_desc {
+                    font-size: 12px;
+                    color: #475569;
+                }
+            }
+
+            .o_modal_footer {
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 14px;
+                padding-top: 8px;
+                border-top: 1px solid #f1f5f9;
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // 6. RICH FLOATING TOOLTIP
+    // ----------------------------------------------------------------------
+    .o_rich_tooltip {
+        position: fixed;
+        width: 290px;
+        background: #0f172a;
+        color: #ffffff;
+        border-radius: 8px;
+        padding: 10px 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        z-index: 1040;
+        pointer-events: none;
+        font-size: 11.5px;
+        animation: tooltipFade 0.15s ease-out;
+
+        .o_tip_header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #334155;
+
+            .o_tip_guest {
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+            .o_tip_badge {
+                font-size: 9.5px;
+                padding: 2px 6px;
+
+                &.o_status_check_in { background: #ef4444; }
+                &.o_status_confirmed { background: #22c55e; }
+                &.o_status_check_out { background: #0284c7; }
+            }
+        }
+
+        .o_tip_body {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            color: #cbd5e1;
+        }
+
+        .o_tip_footer {
+            margin-top: 6px;
+            padding-top: 4px;
+            border-top: 1px solid #334155;
+            font-size: 10px;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+    }
+}
+
+// Keyframe Animations
+@keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulseHighlight {
+    0% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7), 0 0 0 3px #f59e0b;
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(245, 158, 11, 0), 0 0 0 3px #f59e0b;
+        transform: scale(1.02);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0), 0 0 0 3px #f59e0b;
+        transform: scale(1);
+    }
+}
+
+@keyframes dropFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ==========================================================================
+// OMNI-DEVICE TAPE CHART RESPONSIVENESS (MOBILE, TABLET, DESKTOP, TV, PROJECTOR)
+// ==========================================================================
+
+// --- 1. FULLSCREEN & TV / PROJECTOR PRESENTATION MODE ---
+.o_hotel_tape_chart_container:fullscreen,
+.o_hotel_tape_chart_container:-webkit-full-screen {
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: #f1f5f9;
+
+    .o_tape_chart_topbar {
+        padding: 10px 24px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+        .o_date_nav_group {
+            padding: 4px;
+            .o_btn_nav, .o_btn_today {
+                font-size: 13px;
+                padding: 6px 12px;
+            }
+        }
+
+        .o_date_range_pill {
+            font-size: 13.5px;
+            padding: 6px 14px;
+            font-weight: 700;
+        }
+
+        .o_view_span_group .btn {
+            font-size: 12.5px;
+            padding: 6px 12px;
+        }
+
+        .o_btn_quick_reservation {
+            font-size: 13.5px;
+            padding: 8px 16px;
+            font-weight: 700;
+        }
+    }
+
+    .o_kpi_filter_bar {
+        padding: 8px 24px;
+        background-color: #ffffff;
+        border-bottom: 2px solid #cbd5e1;
+
+        .o_kpi_label {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .o_kpi_pill {
+            font-size: 13px;
+            padding: 6px 14px;
+            font-weight: 700;
+
+            .badge {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+        }
+    }
+
+    // High-contrast, large-format grid for conference projectors & TVs
+    .o_col_header_cell {
+        font-size: 13.5px;
+        font-weight: 700;
+        padding: 10px 4px;
+    }
+
+    .o_room_cell {
+        font-size: 14px;
+        font-weight: 700;
+        color: #020617;
+    }
+
+    .o_booking_block {
+        font-size: 12.5px;
+        font-weight: 700;
+        border-width: 1.5px !important;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+}
+
+// --- 2. MOBILE PHONES (max-width: 767.98px) ---
+@media screen and (max-width: 767.98px) {
+    .o_hotel_tape_chart_container {
+        .o_tape_chart_topbar {
+            padding: 6px 10px;
+            gap: 6px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+
+            .o_topbar_nav_section {
+                gap: 6px;
+            }
+
+            .o_date_range_pill {
+                font-size: 10.5px;
+                padding: 2px 6px;
+            }
+
+            .o_search_box_wrapper .o_search_input {
+                width: 125px;
+                &:focus {
+                    width: 160px;
+                }
+            }
+        }
+
+        .o_kpi_filter_bar {
+            padding: 4px 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            &::-webkit-scrollbar {
+                display: none;
+            }
+
+            .o_kpi_pills_list {
+                flex-wrap: nowrap;
+                gap: 4px;
+            }
+
+            .o_kpi_pill {
+                padding: 4px 8px;
+                font-size: 11px;
+                white-space: nowrap;
+            }
+        }
+
+        // Side Drawer full width on mobile
+        .o_booking_drawer {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100vh !important;
+        }
+
+        // Quick book modal on mobile
+        .o_quick_book_modal {
+            width: 95vw !important;
+            max-width: 95vw !important;
+            max-height: 92vh !important;
+            overflow-y: auto !important;
+        }
+    }
+}
+
+// --- 3. TABLETS & IPADS (768px - 1024px) ---
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    .o_hotel_tape_chart_container {
+        .o_tape_chart_topbar {
+            padding: 8px 14px;
+            .o_btn_nav, .o_btn_today, .o_btn_icon {
+                min-height: 38px;
+                min-width: 38px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        .o_booking_drawer {
+            width: 380px;
+            max-width: 85vw;
+        }
+    }
+}
+
+// --- 4. BOARDROOM PROJECTORS & 4K SCREENS (min-width: 1600px) ---
+@media screen and (min-width: 1600px) {
+    .o_hotel_tape_chart_container {
+        font-size: 13px;
+
+        .o_tape_chart_topbar {
+            padding: 8px 18px;
+            .o_btn_nav, .o_btn_today {
+                font-size: 12.5px;
+            }
+            .o_date_range_pill {
+                font-size: 13px;
+                padding: 5px 12px;
+            }
+            .o_btn_quick_reservation {
+                font-size: 13px;
+                padding: 6px 14px;
+            }
+        }
+
+        .o_kpi_filter_bar {
+            padding: 6px 18px;
+            .o_kpi_pill {
+                font-size: 12.5px;
+                padding: 5px 12px;
+            }
+        }
+
+        .o_col_header_cell {
+            font-size: 12.5px;
+        }
+
+        .o_room_cell {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .o_booking_block {
+            font-size: 12px;
+            font-weight: 600;
+        }
+    }
+}
+

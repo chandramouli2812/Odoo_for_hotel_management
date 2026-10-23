@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Bakery, Breads & Pastries -->
+        <record id="item_croissant" model="hotel.breakfast.item">
+            <field name="name">Butter Croissant (Freshly Baked)</field>
+            <field name="code">BKR-01</field>
+            <field name="sequence">1</field>
+            <field name="category">bakery</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Flaky French butter croissant served with marmalade &amp; butter</field>
+        </record>
+        <record id="item_pain_chocolat" model="hotel.breakfast.item">
+            <field name="name">Pain au Chocolat (Chocolate Croissant)</field>
+            <field name="code">BKR-02</field>
+            <field name="sequence">2</field>
+            <field name="category">bakery</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Dark chocolate batons in flaky pastry</field>
+        </record>
+        <record id="item_muffin" model="hotel.breakfast.item">
+            <field name="name">Blueberry &amp; Bran Muffin</field>
+            <field name="code">BKR-03</field>
+            <field name="sequence">3</field>
+            <field name="category">bakery</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Warm blueberry muffin with butter</field>
+        </record>
+        <record id="item_pancakes" model="hotel.breakfast.item">
+            <field name="name">Fluffy Buttermilk Pancakes</field>
+            <field name="code">BKR-04</field>
+            <field name="sequence">4</field>
+            <field name="category">bakery</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Stack of 3 pancakes served with Canadian maple syrup &amp; whipped butter</field>
+        </record>
+        <record id="item_waffles" model="hotel.breakfast.item">
+            <field name="name">Crisp Belgian Waffles with Honey</field>
+            <field name="code">BKR-05</field>
+            <field name="sequence">5</field>
+            <field name="category">bakery</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Golden crisp waffles dusted with powdered sugar</field>
+        </record>
+        <record id="item_artisan_toast" model="hotel.breakfast.item">
+            <field name="name">Artisan Toast Basket (Multigrain / Sourdough)</field>
+            <field name="code">BKR-06</field>
+            <field name="sequence">6</field>
+            <field name="category">bakery</field>
+            <field name="dietary_type">vegan</field>
+            <field name="description">Served with fruit preserves, honey and churned butter</field>
+        </record>
+
+        <!-- Eggs & Hot Kitchen -->
+        <record id="item_masala_omelette" model="hotel.breakfast.item">
+            <field name="name">Chef's Masala Omelette with Herbs &amp; Cheese</field>
+            <field name="code">EGG-01</field>
+            <field name="sequence">10</field>
+            <field name="category">eggs_hot</field>
+            <field name="dietary_type">egg</field>
+            <field name="description">Two-egg omelette with onions, tomatoes, green chillies, coriander &amp; cheddar</field>
+        </record>
+        <record id="item_eggs_to_order" model="hotel.breakfast.item">
+            <field name="name">Eggs to Order (Sunny Side Up / Poached / Boiled)</field>
+            <field name="code">EGG-02</field>
+            <field name="sequence">11</field>
+            <field name="category">eggs_hot</field>
+            <field name="dietary_type">egg</field>
+            <field name="description">Prepared as per guest preference with grilled tomato &amp; hash brown</field>
+        </record>
+        <record id="item_eggs_benedict" model="hotel.breakfast.item">
+            <field name="name">Classic Eggs Benedict with Hollandaise</field>
+            <field name="code">EGG-03</field>
+            <field name="sequence">12</field>
+            <field name="category">eggs_hot</field>
+            <field name="dietary_type">egg</field>
+            <field name="description">Poached eggs on toasted English muffin with warm buttery hollandaise</field>
+        </record>
+        <record id="item_bacon_sausage" model="hotel.breakfast.item">
+            <field name="name">Crispy Bacon &amp; Chicken Sausage Platter</field>
+            <field name="code">EGG-04</field>
+            <field name="sequence">13</field>
+            <field name="category">eggs_hot</field>
+            <field name="dietary_type">non_veg</field>
+            <field name="description">Grilled chicken sausages, crispy bacon rashers, and hash brown</field>
+        </record>
+
+        <!-- Indian Breakfast Specialties -->
+        <record id="item_masala_dosa" model="hotel.breakfast.item">
+            <field name="name">Crispy Masala Dosa with Sambar &amp; 3 Chutneys</field>
+            <field name="code">IND-01</field>
+            <field name="sequence">20</field>
+            <field name="category">indian</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Golden rice-lentil crepe with spiced potato filling, served with piping hot sambar</field>
+        </record>
+        <record id="item_idli_vada" model="hotel.breakfast.item">
+            <field name="name">Steamed Idli &amp; Crispy Medu Vada Combo</field>
+            <field name="code">IND-02</field>
+            <field name="sequence">21</field>
+            <field name="category">indian</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Soft steamed rice cakes and lentil fritters with coconut chutney &amp; tomato chutney</field>
+        </record>
+        <record id="item_aloo_paratha" model="hotel.breakfast.item">
+            <field name="name">Stuffed Aloo Paratha with Curd &amp; Homemade Pickle</field>
+            <field name="code">IND-03</field>
+            <field name="sequence">22</field>
+            <field name="category">indian</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Griddled whole wheat flatbread stuffed with spiced potato mash</field>
+        </record>
+        <record id="item_poha" model="hotel.breakfast.item">
+            <field name="name">Indori Poha with Roasted Peanuts &amp; Pomegranate</field>
+            <field name="code">IND-04</field>
+            <field name="sequence">23</field>
+            <field name="category">indian</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Flattened rice tempered with mustard seeds, turmeric, curry leaves and fresh lime</field>
+        </record>
+        <record id="item_puri_bhaji" model="hotel.breakfast.item">
+            <field name="name">Puri Bhaji (Puffed Bread with Potato Masala)</field>
+            <field name="code">IND-05</field>
+            <field name="sequence">24</field>
+            <field name="category">indian</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Deep fried golden wheat puris with aromatic mild potato gravy</field>
+        </record>
+
+        <!-- Healthy, Fruits & Cereals -->
+        <record id="item_tropical_fruits" model="hotel.breakfast.item">
+            <field name="name">Tropical Resort Fresh Fruit Platter</field>
+            <field name="code">HLT-01</field>
+            <field name="sequence">30</field>
+            <field name="category">healthy_fruits</field>
+            <field name="dietary_type">vegan</field>
+            <field name="description">Seasonal cut fruits: Papaya, pineapple, watermelon, dragonfruit &amp; kiwi</field>
+        </record>
+        <record id="item_granola_yogurt" model="hotel.breakfast.item">
+            <field name="name">House Granola with Greek Yoghurt &amp; Berries</field>
+            <field name="code">HLT-02</field>
+            <field name="sequence">31</field>
+            <field name="category">healthy_fruits</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Toasted oats, almonds, sunflower seeds with creamy yoghurt and wild forest honey</field>
+        </record>
+        <record id="item_oatmeal" model="hotel.breakfast.item">
+            <field name="name">Warm Cinnamon Oatmeal Porridge</field>
+            <field name="code">HLT-03</field>
+            <field name="sequence">32</field>
+            <field name="category">healthy_fruits</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Slow cooked rolled oats with almond flakes, raisins, and brown sugar</field>
+        </record>
+        <record id="item_avocado_toast" model="hotel.breakfast.item">
+            <field name="name">Smashed Avocado Toast on Sourdough</field>
+            <field name="code">HLT-04</field>
+            <field name="sequence">33</field>
+            <field name="category">healthy_fruits</field>
+            <field name="dietary_type">vegan</field>
+            <field name="description">Hass avocado with lime, extra virgin olive oil, chili flakes &amp; microgreens</field>
+        </record>
+
+        <!-- Juices & Hot Beverages -->
+        <record id="item_orange_juice" model="hotel.breakfast.item">
+            <field name="name">Fresh Cold-Pressed Orange Juice</field>
+            <field name="code">BEV-01</field>
+            <field name="sequence">40</field>
+            <field name="category">beverages</field>
+            <field name="dietary_type">vegan</field>
+            <field name="description">100% pure fresh Valencia orange juice</field>
+        </record>
+        <record id="item_watermelon_juice" model="hotel.breakfast.item">
+            <field name="name">Fresh Watermelon &amp; Mint Cooler</field>
+            <field name="code">BEV-02</field>
+            <field name="sequence">41</field>
+            <field name="category">beverages</field>
+            <field name="dietary_type">vegan</field>
+            <field name="description">Chilled fresh watermelon with garden mint</field>
+        </record>
+        <record id="item_filter_coffee" model="hotel.breakfast.item">
+            <field name="name">South Indian Filter Coffee</field>
+            <field name="code">BEV-03</field>
+            <field name="sequence">42</field>
+            <field name="category">beverages</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Authentic dark roast chicory blend with frothy whole milk in brass davarah</field>
+        </record>
+        <record id="item_masala_chai" model="hotel.breakfast.item">
+            <field name="name">Traditional Spiced Masala Chai</field>
+            <field name="code">BEV-04</field>
+            <field name="sequence">43</field>
+            <field name="category">beverages</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Assam tea brewed with ginger, green cardamom, cloves, and milk</field>
+        </record>
+        <record id="item_cappuccino" model="hotel.breakfast.item">
+            <field name="name">Barista Cappuccino / Cafe Latte</field>
+            <field name="code">BEV-05</field>
+            <field name="sequence">44</field>
+            <field name="category">beverages</field>
+            <field name="dietary_type">veg</field>
+            <field name="description">Espresso with steamed silky milk foam</field>
+        </record>
+        <record id="item_green_tea" model="hotel.breakfast.item">
+            <field name="name">Organic Green Tea with Lemon &amp; Honey</field>
+            <field name="code">BEV-06</field>
+            <field name="sequence">45</field>
+            <field name="category">beverages</field>
+            <field name="dietary_type">vegan</field>
+            <field name="description">Whole leaf green tea infusion</field>
+        </record>
+    </data>
+</odoo>

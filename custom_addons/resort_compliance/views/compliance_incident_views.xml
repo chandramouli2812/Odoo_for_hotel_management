@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Kanban View: Visual Incident Management -->
+    <record id="view_compliance_incident_kanban" model="ir.ui.view">
+        <field name="name">compliance.incident.kanban</field>
+        <field name="model">compliance.incident</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1" quick_create="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="summary"/>
+                <field name="incident_type"/>
+                <field name="severity"/>
+                <field name="location"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="police_reported"/>
+                <field name="fir_registered"/>
+                <field name="fir_number"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click p-2 mb-2 rounded shadow-sm border">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge text-bg-dark text-white font-monospace px-2 py-1 shadow-sm" style="background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important;">
+                                    <span style="color: #ffffff !important; font-weight: 700;">
+                                        <field name="name" class="text-white"/>
+                                    </span>
+                                </span>
+                                <span t-if="record.severity.raw_value == 'critical'" class="badge bg-danger">
+                                    Critical
+                                </span>
+                                <span t-elif="record.severity.raw_value == 'high'" class="badge bg-warning text-dark">
+                                    High
+                                </span>
+                                <span t-elif="record.severity.raw_value == 'medium'" class="badge bg-info text-dark">
+                                    Medium
+                                </span>
+                                <span t-else="" class="badge bg-secondary">
+                                    Low
+                                </span>
+                            </div>
+
+                            <strong class="d-block text-truncate fs-6 text-dark mb-1"><field name="summary"/></strong>
+
+                            <div class="text-muted small mb-2">
+                                <span>Location: <field name="location"/></span> • 
+                                <span><field name="incident_type"/></span>
+                            </div>
+
+                            <div t-if="record.guest_id.raw_value" class="text-muted small mb-2">
+                                <span>Guest: <field name="guest_id"/></span>
+                                <span t-if="record.room_id.raw_value" class="badge bg-light text-dark border ms-1">Room <field name="room_id"/></span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
+                                <div>
+                                    <span t-if="record.fir_registered.raw_value" class="badge bg-danger">
+                                        FIR Registered
+                                    </span>
+                                    <span t-elif="record.police_reported.raw_value" class="badge bg-primary">
+                                        Police Notified
+                                    </span>
+                                    <span t-else="" class="badge bg-light text-muted border">
+                                        Internal Log
+                                    </span>
+                                </div>
+                                <div class="text-end">
+                                    <button t-if="record.state.raw_value == 'draft'" name="action_investigate" type="object" class="btn btn-sm btn-outline-primary">
+                                        Investigate
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- List / Tree View -->
+    <record id="view_compliance_incident_tree" model="ir.ui.view">
+        <field name="name">compliance.incident.tree</field>
+        <field name="model">compliance.incident</field>
+        <field name="arch" type="xml">
+            <list string="Incident Register &amp; Police Cases"
+                  decoration-danger="severity in ('high', 'critical') or fir_registered"
+                  decoration-warning="severity == 'medium'"
+                  decoration-success="state == 'resolved'"
+                  decoration-muted="state == 'closed'">
+                <field name="name" decoration-bf="1"/>
+                <field name="incident_date"/>
+                <field name="incident_type" widget="badge"/>
+                <field name="severity" widget="badge"
+                       decoration-danger="severity in ('high', 'critical')"
+                       decoration-warning="severity == 'medium'"
+                       decoration-info="severity == 'low'"/>
+                <field name="summary"/>
+                <field name="location"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="police_reported" widget="boolean_toggle"/>
+                <field name="fir_registered" widget="boolean_toggle"/>
+                <field name="fir_number"/>
+                <field name="state" widget="badge"
+                       decoration-danger="state == 'fir_lodged'"
+                       decoration-warning="state in ('investigating', 'police_notified')"
+                       decoration-success="state == 'resolved'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_compliance_incident_form" model="ir.ui.view">
+        <field name="name">compliance.incident.form</field>
+        <field name="model">compliance.incident</field>
+        <field name="arch" type="xml">
+            <form string="Resort Incident &amp; Police Case">
+                <header>
+                    <button name="action_investigate" string="Start Investigation" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_notify_police" string="Notify Police Authority" type="object" class="btn-warning" invisible="state not in ('draft', 'investigating')"/>
+                    <button name="action_lodge_fir" string="Record FIR Lodged" type="object" class="btn-danger" invisible="state not in ('investigating', 'police_notified')"/>
+                    <button name="action_resolve" string="Mark Case Resolved" type="object" class="btn-success" invisible="state in ('draft', 'resolved', 'closed')"/>
+                    <button name="action_close" string="Close &amp; Archive" type="object" invisible="state != 'resolved'"/>
+                    <button name="action_reopen" string="Re-Open Incident" type="object" invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,investigating,police_notified,fir_lodged,resolved,closed"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Case Resolved" bg_color="text-bg-success" invisible="state != 'resolved'"/>
+                    <widget name="web_ribbon" title="FIR Lodged" bg_color="text-bg-danger" invisible="state != 'fir_lodged'"/>
+                    <widget name="web_ribbon" title="Under Investigation" bg_color="text-bg-warning" invisible="state != 'investigating'"/>
+                    <!-- Protocol Guide Banner -->
+                    <div class="alert alert-primary py-2 mb-3" role="alert">
+                        <strong>Standard Operating Procedure (SOP):</strong>
+                        <strong>1.</strong> Fill details, secure affected resort area ➔
+                        <strong>2.</strong> Log witness statements &amp; secure CCTV cameras in Evidence tab ➔
+                        <strong>3.</strong> If police intervention is required, click <em>"Notify Police"</em> and record Station GD/FIR.
+                    </div>
+
+                    <div class="oe_title">
+                        <span class="o_form_label text-muted">Incident / Security Case</span>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                        <h3>
+                            <field name="summary" placeholder="e.g. Guest Reported Missing Cash from Villa Safe / Pool Area Slip Fall"/>
+                        </h3>
+                    </div>
+
+                    <group>
+                        <group string="Incident Classification">
+                            <field name="incident_type"/>
+                            <field name="severity" widget="radio" options="{'horizontal': true}"/>
+                            <field name="incident_date"/>
+                            <field name="reported_date"/>
+                            <field name="reported_by_id"/>
+                            <field name="location" placeholder="e.g. Villa 105, Beachfront Lounge, Gym"/>
+                            <field name="property_id"/>
+                        </group>
+                        <group string="Parties Involved">
+                            <field name="guest_id" placeholder="Select involved guest if any..."/>
+                            <field name="reservation_id"/>
+                            <field name="room_id"/>
+                            <field name="persons_involved" placeholder="Witnesses, Staff names, Visitor names and contact details..."/>
+                        </group>
+                    </group>
+
+                    <group string="Police &amp; Law Enforcement Case Tracking">
+                        <group>
+                            <field name="police_reported"/>
+                            <field name="police_station_name" invisible="not police_reported" placeholder="e.g. Anjuna Police Station"/>
+                            <field name="police_reported_datetime" invisible="not police_reported"/>
+                            <field name="police_diary_gd_no" invisible="not police_reported" placeholder="Station GD Entry No."/>
+                        </group>
+                        <group>
+                            <field name="fir_registered"/>
+                            <field name="fir_number" invisible="not fir_registered" placeholder="e.g. FIR No. 42/2026 U/S 379 IPC"/>
+                            <field name="fir_date" invisible="not fir_registered"/>
+                            <field name="investigating_officer" invisible="not fir_registered" placeholder="IO Name &amp; Rank"/>
+                            <field name="io_contact" widget="phone" invisible="not fir_registered"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Statement &amp; Event Sequence" name="description">
+                            <field name="description" placeholder="Provide complete chronology of events, statements recorded, and damage assessments..."/>
+                        </page>
+                        <page string="Immediate Action Taken" name="action">
+                            <field name="action_taken" placeholder="First aid provided, security cordon, manager notified, CCTV preservation..."/>
+                        </page>
+                        <page string="Evidence &amp; CCTV Notes" name="evidence">
+                            <field name="evidence_notes" placeholder="CCTV camera angles, timestamp ranges, physical items sealed in custody..."/>
+                        </page>
+                        <page string="Police Visits for this Case" name="visits">
+                            <field name="police_visit_ids" context="{'default_incident_id': id, 'default_police_station': police_station_name}">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="visit_datetime"/>
+                                    <field name="officer_name"/>
+                                    <field name="officer_rank"/>
+                                    <field name="police_station"/>
+                                    <field name="purpose"/>
+                                    <field name="observations"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Resolution &amp; Case Closure" name="resolution">
+                            <group>
+                                <field name="closed_date" readonly="1"/>
+                                <field name="closed_by_id" readonly="1"/>
+                            </group>
+                            <field name="resolution_summary" placeholder="Final outcome, compensation/settlement reached, property recovered, or court outcome..."/>
+                        </page>
+                        <page string="Photos &amp; FIR Documents" name="attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_compliance_incident_search" model="ir.ui.view">
+        <field name="name">compliance.incident.search</field>
+        <field name="model">compliance.incident</field>
+        <field name="arch" type="xml">
+            <search string="Search Incidents">
+                <field name="name"/>
+                <field name="summary"/>
+                <field name="location"/>
+                <field name="guest_id"/>
+                <field name="fir_number"/>
+                <field name="police_station_name"/>
+                <separator/>
+                <filter string="Theft &amp; Lost Property" name="filter_theft" domain="[('incident_type', 'in', ('theft', 'lost_found'))]"/>
+                <filter string="Guest Disputes &amp; Conflict" name="filter_dispute" domain="[('incident_type', 'in', ('guest_dispute', 'staff_dispute'))]"/>
+                <filter string="Accidents &amp; Medical" name="filter_accident" domain="[('incident_type', 'in', ('accident', 'medical_emergency'))]"/>
+                <filter string="Police Reported" name="filter_police" domain="[('police_reported', '=', True)]"/>
+                <filter string="Active FIRs" name="filter_fir" domain="[('fir_registered', '=', True)]"/>
+                <filter string="Critical Severity" name="filter_critical" domain="[('severity', '=', 'critical')]"/>
+                <separator/>
+                <filter string="Open Cases" name="filter_open" domain="[('state', 'not in', ('resolved', 'closed'))]"/>
+                <group>
+                    <filter string="Incident Type" name="group_type" context="{'group_by': 'incident_type'}"/>
+                    <filter string="Severity Level" name="group_severity" context="{'group_by': 'severity'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Police Station" name="group_station" context="{'group_by': 'police_station_name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Incident Analytics Pivot View -->
+    <record id="view_compliance_incident_pivot" model="ir.ui.view">
+        <field name="name">compliance.incident.pivot</field>
+        <field name="model">compliance.incident</field>
+        <field name="arch" type="xml">
+            <pivot string="Resort Incident Analytics" sample="1">
+                <field name="incident_type" type="row"/>
+                <field name="severity" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Incident Analytics Graph View -->
+    <record id="view_compliance_incident_graph" model="ir.ui.view">
+        <field name="name">compliance.incident.graph</field>
+        <field name="model">compliance.incident</field>
+        <field name="arch" type="xml">
+            <graph string="Incidents by Month &amp; Severity" type="bar" sample="1">
+                <field name="incident_date" interval="month"/>
+                <field name="severity"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Window Actions -->
+    <record id="action_compliance_incident_all" model="ir.actions.act_window">
+        <field name="name">Incident Register &amp; FIR Cases</field>
+        <field name="res_model">compliance.incident</field>
+        <field name="view_mode">kanban,list,pivot,graph,form</field>
+        <field name="search_view_id" ref="view_compliance_incident_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Record a Security Incident or Guest Dispute
+            </p>
+            <p>
+                Log thefts, accidents, property damage, police complaints, and active FIR cases with evidence tracking.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_compliance_incident_fir" model="ir.actions.act_window">
+        <field name="name">Active FIRs &amp; Police Cases</field>
+        <field name="res_model">compliance.incident</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('police_reported', '=', True)]</field>
+    </record>
+
+    <record id="action_compliance_incident_thefts" model="ir.actions.act_window">
+        <field name="name">Theft &amp; Property Losses</field>
+        <field name="res_model">compliance.incident</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('incident_type', 'in', ('theft', 'lost_found', 'property_damage'))]</field>
+    </record>
+
+    <record id="action_compliance_incident_emergency" model="ir.actions.act_window">
+        <field name="name">Accidents &amp; Emergencies</field>
+        <field name="res_model">compliance.incident</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('incident_type', 'in', ('accident', 'medical_emergency', 'fire_safety', 'assault'))]</field>
+    </record>
+</odoo>

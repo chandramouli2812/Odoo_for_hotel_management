@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hr_salary_rule_category_list" model="ir.ui.view">
+        <field name="name">hr.salary.rule.category.list</field>
+        <field name="model">hr.salary.rule.category</field>
+        <field name="arch" type="xml">
+            <list string="Salary Rule Categories">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="parent_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hr_salary_rule_category_form" model="ir.ui.view">
+        <field name="name">hr.salary.rule.category.form</field>
+        <field name="model">hr.salary.rule.category</field>
+        <field name="arch" type="xml">
+            <form string="Salary Rule Category">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Category Name"/>
+                        <h1><field name="name" placeholder="e.g. Basic, Allowance, Deduction"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code" placeholder="e.g. BASIC, ALW, DED"/>
+                            <field name="parent_id"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description &amp; Notes">
+                            <field name="note" placeholder="Write description or notes about this category..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_salary_rule_category" model="ir.actions.act_window">
+        <field name="name">Salary Rule Categories</field>
+        <field name="res_model">hr.salary.rule.category</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

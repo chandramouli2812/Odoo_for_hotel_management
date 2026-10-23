@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Police Guest Intimation Form Report Action -->
+    <record id="action_report_police_guest_intimation" model="ir.actions.report">
+        <field name="name">Police Guest Intimation Form</field>
+        <field name="model">compliance.guest.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">resort_compliance.report_police_guest_intimation_template</field>
+        <field name="print_report_name">'Police_Intimation_' + object.name.replace('/', '_')</field>
+        <field name="binding_model_id" ref="model_compliance_guest_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Foreign Guest Form C Report Action -->
+    <record id="action_report_foreign_guest_form_c" model="ir.actions.report">
+        <field name="name">FRRO Form C Registration</field>
+        <field name="model">compliance.foreign.guest</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">resort_compliance.report_foreign_guest_form_c_template</field>
+        <field name="print_report_name">'Form_C_' + object.name.replace('/', '_')</field>
+        <field name="binding_model_id" ref="model_compliance_foreign_guest"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Incident & FIR Case Summary Report Action -->
+    <record id="action_report_incident_police_summary" model="ir.actions.report">
+        <field name="name">Incident &amp; FIR Case Briefing</field>
+        <field name="model">compliance.incident</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">resort_compliance.report_incident_police_summary_template</field>
+        <field name="print_report_name">'Incident_Brief_' + object.name.replace('/', '_')</field>
+        <field name="binding_model_id" ref="model_compliance_incident"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Main Website Header Navigation: Rooms & Suites -->
+        <record id="menu_hotel_rooms" model="website.menu">
+            <field name="name">Rooms &amp; Suites</field>
+            <field name="url">/rooms</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence" type="int">15</field>
+        </record>
+    </data>
+</odoo>

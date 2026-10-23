@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================== -->
+    <!-- 1. FRONT OFFICE OPERATIONAL REPORTS                            -->
+    <!-- ============================================================== -->
+
+    <!-- Today's Expected Arrivals -->
+    <record id="action_hotel_arrivals_today" model="ir.actions.act_window">
+        <field name="name">Today's Arrivals</field>
+        <field name="res_model">hotel.reservation</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[
+            ('check_in', '&gt;=', (context_today()).strftime('%Y-%m-%d 00:00:00')),
+            ('check_in', '&lt;=', (context_today()).strftime('%Y-%m-%d 23:59:59')),
+            ('state', 'in', ['confirmed', 'check_in'])
+        ]</field>
+        <field name="context">{'search_default_group_by_property': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No expected arrivals for today.</p>
+        </field>
+    </record>
+
+    <!-- Today's Expected Departures -->
+    <record id="action_hotel_departures_today" model="ir.actions.act_window">
+        <field name="name">Today's Departures (Due Out)</field>
+        <field name="res_model">hotel.reservation</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[
+            ('check_out', '&gt;=', (context_today()).strftime('%Y-%m-%d 00:00:00')),
+            ('check_out', '&lt;=', (context_today()).strftime('%Y-%m-%d 23:59:59')),
+            ('state', 'in', ['check_in', 'check_out'])
+        ]</field>
+        <field name="context">{'search_default_group_by_property': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No expected departures for today.</p>
+        </field>
+    </record>
+
+    <!-- In-House Guests Report -->
+    <record id="action_hotel_in_house_guests" model="ir.actions.act_window">
+        <field name="name">Current In-House Guests</field>
+        <field name="res_model">hotel.reservation</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'check_in')]</field>
+        <field name="context">{'search_default_group_by_property': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No guests are currently checked in.</p>
+        </field>
+    </record>
+
+    <!-- Room Status Matrix Report -->
+    <record id="action_hotel_room_status_matrix" model="ir.actions.act_window">
+        <field name="name">Room Status &amp; Occupancy Matrix</field>
+        <field name="res_model">hotel.room</field>
+        <field name="view_mode">pivot,list,kanban</field>
+        <field name="context">{'search_default_group_by_property': 1, 'search_default_group_by_occupancy': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Live Room Matrix across Occupancy, Housekeeping &amp; Maintenance</p>
+        </field>
+    </record>
+
+    <!-- Guest Ledger: Outstanding Balances -->
+    <record id="action_hotel_guest_ledger_report" model="ir.actions.act_window">
+        <field name="name">Guest Ledger (Outstanding Balances)</field>
+        <field name="res_model">hotel.folio</field>
+        <field name="view_mode">list,pivot,form</field>
+        <field name="domain">[('amount_due', '&gt;', 0), ('state', '!=', 'cancel')]</field>
+        <field name="context">{'search_default_group_by_property': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">All active guest folios are fully settled.</p>
+        </field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- 2. FINANCE & FOLIO REVENUE BREAKDOWN                           -->
+    <!-- ============================================================== -->
+
+    <record id="view_hotel_folio_line_pivot" model="ir.ui.view">
+        <field name="name">hotel.folio.line.pivot</field>
+        <field name="model">hotel.folio.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Departmental Folio Revenue Breakdown" sample="1">
+                <field name="service_type" type="row"/>
+                <field name="price_subtotal" type="measure"/>
+                <field name="quantity" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_hotel_folio_line_graph" model="ir.ui.view">
+        <field name="name">hotel.folio.line.graph</field>
+        <field name="model">hotel.folio.line</field>
+        <field name="arch" type="xml">
+            <graph string="Folio Revenue by Service" type="pie" sample="1">
+                <field name="service_type"/>
+                <field name="price_subtotal" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_hotel_folio_line_analytics" model="ir.actions.act_window">
+        <field name="name">Department Revenue Breakdown</field>
+        <field name="res_model">hotel.folio.line</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Folio Revenue by Department (Room, F&amp;B, Spa, Laundry, Minibar)</p>
+        </field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- 3. HOUSEKEEPING OPERATIONS & PRODUCTIVITY                      -->
+    <!-- ============================================================== -->
+
+    <record id="action_hotel_hk_performance" model="ir.actions.act_window">
+        <field name="name">Housekeeping Tasks &amp; Productivity</field>
+        <field name="res_model">hotel.housekeeping.task</field>
+        <field name="view_mode">pivot,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Housekeeping Turnaround &amp; Employee Productivity</p>
+        </field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- 4. CROSS-DEPARTMENTAL OPERATIONAL LINKS                       -->
+    <!-- ============================================================== -->
+
+    <!-- Restaurant & POS Orders Report -->
+    <record id="action_hotel_pos_restaurant_orders" model="ir.actions.act_window">
+        <field name="name">Restaurant &amp; F&amp;B Outlet Sales</field>
+        <field name="res_model">pos.order</field>
+        <field name="view_mode">list,pivot,form</field>
+        <field name="domain">[('state', 'in', ['paid', 'done', 'invoiced'])]</field>
+    </record>
+
+    <!-- Resort Stock & Inventory Levels -->
+    <record id="action_hotel_stock_inventory" model="ir.actions.act_window">
+        <field name="name">Resort Stores &amp; Stock Levels</field>
+        <field name="res_model">stock.quant</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="domain">[('location_id.usage', '=', 'internal')]</field>
+    </record>
+
+    <!-- Resort Engineering & Maintenance Requests -->
+    <record id="action_hotel_maintenance_orders" model="ir.actions.act_window">
+        <field name="name">Engineering &amp; Room Maintenance</field>
+        <field name="res_model">maintenance.request</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+</odoo>

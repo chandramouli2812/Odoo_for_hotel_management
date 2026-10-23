@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 1. Pivot View: Executive & Revenue Analytics -->
+    <record id="view_hotel_reservation_report_pivot" model="ir.ui.view">
+        <field name="name">hotel.reservation.report.pivot</field>
+        <field name="model">hotel.reservation.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Resort Reservation &amp; Revenue Analytics" sample="1">
+                <field name="property_id" type="row"/>
+                <field name="room_type_id" type="row"/>
+                <field name="check_in" interval="month" type="col"/>
+                <field name="amount_total" type="measure"/>
+                <field name="adr" type="measure"/>
+                <field name="nights" type="measure"/>
+                <field name="res_count" type="measure"/>
+                <field name="amount_paid" type="measure"/>
+                <field name="amount_due" type="measure"/>
+                <field name="lead_time_days" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- 2. Graph View: Revenue Trends & Performance -->
+    <record id="view_hotel_reservation_report_graph" model="ir.ui.view">
+        <field name="name">hotel.reservation.report.graph</field>
+        <field name="model">hotel.reservation.report</field>
+        <field name="arch" type="xml">
+            <graph string="Resort Revenue Trends" type="bar" sample="1">
+                <field name="check_in" interval="month"/>
+                <field name="amount_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- 3. List View: Detailed Booking Lines -->
+    <record id="view_hotel_reservation_report_list" model="ir.ui.view">
+        <field name="name">hotel.reservation.report.list</field>
+        <field name="model">hotel.reservation.report</field>
+        <field name="arch" type="xml">
+            <list string="Reservation Analysis" create="0" delete="0">
+                <field name="name" class="fw-bold"/>
+                <field name="property_id"/>
+                <field name="guest_id"/>
+                <field name="guest_vip" widget="badge" decoration-warning="guest_vip in ('gold', 'diamond')" decoration-info="guest_vip == 'silver'" decoration-primary="guest_vip == 'platinum'"/>
+                <field name="room_type_id"/>
+                <field name="room_id"/>
+                <field name="booking_source" widget="badge" decoration-success="booking_source in ('direct', 'website')" decoration-info="booking_source == 'ota'"/>
+                <field name="check_in"/>
+                <field name="check_out"/>
+                <field name="nights"/>
+                <field name="rate_per_night" widget="monetary"/>
+                <field name="amount_total" sum="Total Revenue" widget="monetary" class="fw-bold text-success"/>
+                <field name="amount_paid" sum="Total Paid" widget="monetary"/>
+                <field name="amount_due" sum="Total Due" widget="monetary" decoration-danger="amount_due &gt; 0"/>
+                <field name="adr" widget="monetary"/>
+                <field name="lead_time_days"/>
+                <field name="state" widget="badge" decoration-success="state == 'check_in'" decoration-info="state == 'confirmed'" decoration-primary="state == 'check_out'" decoration-danger="state == 'cancel'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 4. Search View: Comprehensive Slicing & Dicing -->
+    <record id="view_hotel_reservation_report_search" model="ir.ui.view">
+        <field name="name">hotel.reservation.report.search</field>
+        <field name="model">hotel.reservation.report</field>
+        <field name="arch" type="xml">
+            <search string="Search Reservation Analytics">
+                <field name="name" string="Reservation No"/>
+                <field name="guest_id" string="Guest Name"/>
+                <field name="property_id" string="Property"/>
+                <field name="room_type_id" string="Room Type"/>
+                <field name="booking_source" string="Booking Source"/>
+
+                <!-- Status Filters -->
+                <filter string="Active Bookings" name="filter_active" domain="[('state', 'in', ['confirmed', 'check_in'])]"/>
+                <filter string="In-House (Checked In)" name="filter_in_house" domain="[('state', '=', 'check_in')]"/>
+                <filter string="Confirmed" name="filter_confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Completed (Checked Out)" name="filter_checked_out" domain="[('state', '=', 'check_out')]"/>
+                <filter string="Cancelled" name="filter_cancelled" domain="[('state', '=', 'cancel')]"/>
+
+                <separator/>
+
+                <!-- VIP & Balance Filters -->
+                <filter string="VIP Guests Only" name="filter_vip_only" domain="[('guest_vip', 'in', ['silver', 'gold', 'platinum', 'diamond'])]"/>
+                <filter string="Outstanding Balance Due" name="filter_has_due" domain="[('amount_due', '&gt;', 0)]"/>
+                <filter string="High-Value Stays (&gt; 25k)" name="filter_high_value" domain="[('amount_total', '&gt;=', 25000)]"/>
+                <filter string="Long Stays (&gt; 3 Nights)" name="filter_long_stay" domain="[('nights', '&gt;=', 3)]"/>
+
+                <separator/>
+
+                <!-- Channel Filters -->
+                <filter string="Direct &amp; Walk-In" name="filter_direct" domain="[('booking_source', '=', 'direct')]"/>
+                <filter string="Website Direct" name="filter_website" domain="[('booking_source', '=', 'website')]"/>
+                <filter string="OTAs (Booking.com / Expedia)" name="filter_ota" domain="[('booking_source', '=', 'ota')]"/>
+
+                <separator/>
+
+                <!-- Date Filters -->
+                <filter string="Check-In This Month" name="filter_checkin_this_month"
+                        domain="[('check_in', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('check_in', '&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Booked This Month" name="filter_booked_this_month"
+                        domain="[('booking_date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
+
+                <separator/>
+
+                <!-- Group By Options -->
+                <group>
+                    <filter string="Property / Resort" name="group_by_property" context="{'group_by': 'property_id'}"/>
+                    <filter string="Room Type" name="group_by_room_type" context="{'group_by': 'room_type_id'}"/>
+                    <filter string="Booking Source / Channel" name="group_by_source" context="{'group_by': 'booking_source'}"/>
+                    <filter string="Reservation Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Guest VIP Status" name="group_by_vip" context="{'group_by': 'guest_vip'}"/>
+                    <filter string="Check-In Month" name="group_by_checkin_month" context="{'group_by': 'check_in:month'}"/>
+                    <filter string="Booking Month" name="group_by_booking_month" context="{'group_by': 'booking_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hotel_reservation_report" model="ir.actions.act_window">
+        <field name="name">Reservation &amp; Revenue Analytics</field>
+        <field name="res_model">hotel.reservation.report</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="search_view_id" ref="view_hotel_reservation_report_search"/>
+        <field name="context">{'search_default_group_by_property': 1, 'search_default_group_by_checkin_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Comprehensive Resort Revenue &amp; Reservation Intelligence
+            </p>
+            <p>
+                Analyze Average Daily Rate (ADR), RevPAR contributions, booking pickup lead times, channel performance (OTA vs Direct), and length of stay patterns.
+            </p>
+        </field>
+    </record>
+</odoo>

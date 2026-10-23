@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hr_payslip_employees_form" model="ir.ui.view">
+        <field name="name">hr.payslip.employees.form</field>
+        <field name="model">hr.payslip.employees</field>
+        <field name="arch" type="xml">
+            <form string="Generate Payslips">
+                <p class="text-muted">
+                    Select the employees for whom you want to generate payslips in this batch.
+                    Active running contracts and default salary structures will be applied automatically.
+                </p>
+                <group>
+                    <field name="payslip_run_id" invisible="1"/>
+                    <field name="department_id" placeholder="Filter by Department (optional)"/>
+                    <field name="struct_id" placeholder="Override Salary Structure (optional)"/>
+                    <field name="auto_compute"/>
+                </group>
+                <div class="mb-3">
+                    <button name="action_select_all_employees" string="Select All Active Employees" type="object" class="btn btn-secondary btn-sm"/>
+                </div>
+                <field name="employee_ids" nolabel="1">
+                    <list string="Employees">
+                        <field name="name"/>
+                        <field name="department_id"/>
+                        <field name="job_id"/>
+                        <field name="work_email"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="compute_sheet" string="Generate Payslips" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_payslip_employees" model="ir.actions.act_window">
+        <field name="name">Generate Payslips</field>
+        <field name="res_model">hr.payslip.employees</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

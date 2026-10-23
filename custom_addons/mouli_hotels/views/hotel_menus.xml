@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top-Level Root Menu -->
+    <menuitem id="menu_mouli_hotel_root"
+              name="Mouli Hotels &amp; Resorts"
+              sequence="20"
+              web_icon="mouli_hotels,static/description/icon.png"/>
+
+    <!-- ============================================================== -->
+    <!-- 1. FRONT DESK MENU SECTION                                     -->
+    <!-- ============================================================== -->
+    <menuitem id="menu_hotel_frontdesk"
+              name="Front Desk"
+              parent="menu_mouli_hotel_root"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_tape_chart"
+              name="Room Calendar Grid"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_tape_chart"
+              sequence="5"/>
+
+    <menuitem id="menu_hotel_reservations"
+              name="Reservations"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_reservation"
+              sequence="10"/>
+
+    <!-- Front Desk Daily Operational Lists Sub-Menu -->
+    <menuitem id="menu_hotel_frontdesk_ops"
+              name="Daily Operational Lists"
+              parent="menu_hotel_frontdesk"
+              sequence="15"/>
+
+    <menuitem id="menu_hotel_breakfast_ops"
+              name="Daily Breakfast &amp; Meal List"
+              parent="menu_hotel_frontdesk_ops"
+              action="action_hotel_breakfast_service"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_arrivals_ops"
+              name="Today's Expected Arrivals"
+              parent="menu_hotel_frontdesk_ops"
+              action="action_hotel_arrivals_today"
+              sequence="20"/>
+
+    <menuitem id="menu_hotel_departures_ops"
+              name="Today's Departures (Due Out)"
+              parent="menu_hotel_frontdesk_ops"
+              action="action_hotel_departures_today"
+              sequence="30"/>
+
+    <menuitem id="menu_hotel_inhouse_ops"
+              name="Current In-House Guests"
+              parent="menu_hotel_frontdesk_ops"
+              action="action_hotel_in_house_guests"
+              sequence="40"/>
+
+    <menuitem id="menu_hotel_vip_ops"
+              name="VIP Guest Directory"
+              parent="menu_hotel_frontdesk_ops"
+              action="action_hotel_vip_guests"
+              sequence="50"/>
+
+    <menuitem id="menu_hotel_cashier_ops"
+              name="Daily Cashier &amp; Shift Payments"
+              parent="menu_hotel_frontdesk_ops"
+              action="action_hotel_cashier_payments"
+              sequence="60"/>
+
+    <menuitem id="menu_hotel_room_status_ops"
+              name="Morning Room Status Sheet"
+              parent="menu_hotel_frontdesk_ops"
+              action="action_hotel_room_status_sheet"
+              sequence="70"/>
+
+    <menuitem id="menu_hotel_room_dashboard"
+              name="Room Availability &amp; Status"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_room"
+              sequence="20"/>
+
+    <menuitem id="menu_hotel_guests"
+              name="Guest Profiles"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_guests"
+              sequence="30"/>
+
+    <menuitem id="menu_hotel_folios"
+              name="Folios &amp; Guest Billing"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_folio"
+              sequence="40"/>
+
+    <!-- ============================================================== -->
+    <!-- 2. HOUSEKEEPING MENU SECTION                                   -->
+    <!-- ============================================================== -->
+    <menuitem id="menu_hotel_housekeeping_root"
+              name="Housekeeping"
+              parent="menu_mouli_hotel_root"
+              sequence="20"/>
+
+    <menuitem id="menu_hotel_housekeeping_tasks"
+              name="Cleaning Tasks"
+              parent="menu_hotel_housekeeping_root"
+              action="action_hotel_housekeeping"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_housekeeping_room_sheet"
+              name="Morning Room Status Sheet"
+              parent="menu_hotel_housekeeping_root"
+              action="action_hotel_room_status_sheet"
+              sequence="20"/>
+
+    <!-- ============================================================== -->
+    <!-- 3. CONFIGURATION MENU SECTION                                  -->
+    <!-- ============================================================== -->
+    <menuitem id="menu_hotel_configuration"
+              name="Configuration"
+              parent="menu_mouli_hotel_root"
+              groups="group_hotel_manager"
+              sequence="90"/>
+
+    <menuitem id="menu_hotel_properties"
+              name="Properties &amp; Resorts"
+              parent="menu_hotel_configuration"
+              action="action_hotel_property"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_room_types"
+              name="Room Types"
+              parent="menu_hotel_configuration"
+              action="action_hotel_room_type"
+              sequence="20"/>
+
+    <menuitem id="menu_hotel_amenities"
+              name="Amenities"
+              parent="menu_hotel_configuration"
+              action="action_hotel_amenity"
+              sequence="30"/>
+
+    <menuitem id="menu_hotel_breakfast_items"
+              name="Breakfast Menu Items"
+              parent="menu_hotel_configuration"
+              action="action_hotel_breakfast_item"
+              sequence="35"/>
+
+    <!-- ============================================================== -->
+    <!-- 4. REPORTING & ANALYTICS ROOT MENU (COMPLETE RESORT ERP PMS)   -->
+    <!-- ============================================================== -->
+    <menuitem id="menu_hotel_reporting_root"
+              name="Reporting"
+              parent="menu_mouli_hotel_root"
+              sequence="50"/>
+
+    <!-- 4.1 Executive / Management Reports -->
+    <menuitem id="menu_hotel_reporting_executive"
+              name="Executive Reports"
+              parent="menu_hotel_reporting_root"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_report_daily_flash"
+              name="Daily Resort Flash Report"
+              parent="menu_hotel_reporting_executive"
+              action="action_hotel_daily_flash_server"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_report_reservations_bi"
+              name="Reservation &amp; Revenue Analytics"
+              parent="menu_hotel_reporting_executive"
+              action="action_hotel_reservation_report"
+              sequence="20"/>
+
+    <!-- 4.2 Front Office Daily Operational Lists -->
+    <menuitem id="menu_hotel_reporting_frontoffice"
+              name="Front Office Daily Lists"
+              parent="menu_hotel_reporting_root"
+              sequence="20"/>
+
+    <menuitem id="menu_hotel_report_breakfast_sheet"
+              name="Daily Breakfast List &amp; Covers"
+              parent="menu_hotel_reporting_frontoffice"
+              action="action_hotel_breakfast_service"
+              sequence="5"/>
+
+    <menuitem id="menu_hotel_report_arrivals_today"
+              name="Today's Expected Arrivals"
+              parent="menu_hotel_reporting_frontoffice"
+              action="action_hotel_arrivals_today"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_report_departures_today"
+              name="Today's Departures (Due Out)"
+              parent="menu_hotel_reporting_frontoffice"
+              action="action_hotel_departures_today"
+              sequence="20"/>
+
+    <menuitem id="menu_hotel_report_in_house"
+              name="Current In-House Guests"
+              parent="menu_hotel_reporting_frontoffice"
+              action="action_hotel_in_house_guests"
+              sequence="30"/>
+
+    <menuitem id="menu_hotel_report_vip_register"
+              name="VIP Guest Register"
+              parent="menu_hotel_reporting_frontoffice"
+              action="action_hotel_vip_guests"
+              sequence="35"/>
+
+    <menuitem id="menu_hotel_report_room_matrix"
+              name="Room Status &amp; Occupancy Matrix"
+              parent="menu_hotel_reporting_frontoffice"
+              action="action_hotel_room_status_matrix"
+              sequence="40"/>
+
+    <menuitem id="menu_hotel_report_cashier_shift"
+              name="Daily Cashier &amp; Shift Payments"
+              parent="menu_hotel_reporting_frontoffice"
+              action="action_hotel_cashier_payments"
+              sequence="45"/>
+
+    <menuitem id="menu_hotel_report_guest_ledger"
+              name="Guest Ledger (Outstanding Balances)"
+              parent="menu_hotel_reporting_frontoffice"
+              action="action_hotel_guest_ledger_report"
+              sequence="50"/>
+
+    <!-- 4.3 Operations & Housekeeping -->
+    <menuitem id="menu_hotel_reporting_housekeeping"
+              name="Housekeeping &amp; Ops"
+              parent="menu_hotel_reporting_root"
+              sequence="30"/>
+
+    <menuitem id="menu_hotel_report_hk_productivity"
+              name="Housekeeping Productivity"
+              parent="menu_hotel_reporting_housekeeping"
+              action="action_hotel_hk_performance"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_report_hk_room_sheet"
+              name="Morning Room Status Sheet"
+              parent="menu_hotel_reporting_housekeeping"
+              action="action_hotel_room_status_sheet"
+              sequence="20"/>
+
+    <!-- 4.4 Restaurant & Food & Beverage -->
+    <menuitem id="menu_hotel_reporting_fnb"
+              name="Food &amp; Beverage"
+              parent="menu_hotel_reporting_root"
+              sequence="40"/>
+
+    <menuitem id="menu_hotel_report_fnb_breakfast"
+              name="Daily Breakfast List &amp; Covers"
+              parent="menu_hotel_reporting_fnb"
+              action="action_hotel_breakfast_service"
+              sequence="5"/>
+
+    <menuitem id="menu_hotel_report_pos_orders"
+              name="Restaurant &amp; F&amp;B Outlet Sales"
+              parent="menu_hotel_reporting_fnb"
+              action="action_hotel_pos_restaurant_orders"
+              sequence="10"/>
+
+    <!-- 4.5 Stores & Inventory -->
+    <menuitem id="menu_hotel_reporting_inventory"
+              name="Inventory &amp; Stores"
+              parent="menu_hotel_reporting_root"
+              sequence="50"/>
+
+    <menuitem id="menu_hotel_report_resort_stock"
+              name="Resort Stock &amp; Inventory"
+              parent="menu_hotel_reporting_inventory"
+              action="action_hotel_stock_inventory"
+              sequence="10"/>
+
+    <!-- 4.6 Engineering & Maintenance -->
+    <menuitem id="menu_hotel_reporting_maintenance"
+              name="Engineering &amp; Maintenance"
+              parent="menu_hotel_reporting_root"
+              sequence="60"/>
+
+    <menuitem id="menu_hotel_report_maintenance_orders"
+              name="Room &amp; Asset Maintenance"
+              parent="menu_hotel_reporting_maintenance"
+              action="action_hotel_maintenance_orders"
+              sequence="10"/>
+
+    <!-- 4.7 Finance & Department Revenue -->
+    <menuitem id="menu_hotel_reporting_finance"
+              name="Finance &amp; Revenue"
+              parent="menu_hotel_reporting_root"
+              sequence="70"/>
+
+    <menuitem id="menu_hotel_report_finance_cashier"
+              name="Daily Cashier &amp; Payment Collections"
+              parent="menu_hotel_reporting_finance"
+              action="action_hotel_cashier_payments"
+              sequence="5"/>
+
+    <menuitem id="menu_hotel_report_department_revenue"
+              name="Department Revenue Breakdown"
+              parent="menu_hotel_reporting_finance"
+              action="action_hotel_folio_line_analytics"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_report_finance_guest_ledger"
+              name="Guest Ledger Balances"
+              parent="menu_hotel_reporting_finance"
+              action="action_hotel_guest_ledger_report"
+              sequence="20"/>
+
+</odoo>

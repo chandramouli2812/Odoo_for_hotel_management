@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================== -->
+    <!-- DEDICATED ROOT MENU: POLICE & GOVERNMENT COMPLIANCE             -->
+    <!-- Restricted to Compliance, Security and Management Groups       -->
+    <!-- ============================================================== -->
+    <menuitem id="menu_resort_compliance_root"
+              name="Police &amp; Compliance"
+              sequence="45"
+              web_icon="resort_compliance,static/description/icon.png"
+              groups="resort_compliance.group_compliance_user,resort_compliance.group_security_officer"/>
+
+    <!-- 1. Guest Police Submissions -->
+    <menuitem id="menu_compliance_guest_section"
+              name="Guest Police Reporting"
+              parent="menu_resort_compliance_root"
+              sequence="10"
+              groups="resort_compliance.group_compliance_user"/>
+
+    <menuitem id="menu_compliance_guest_reports_all"
+              name="Guest Police Reports"
+              parent="menu_compliance_guest_section"
+              action="action_compliance_guest_reports_all"
+              sequence="10"/>
+
+    <menuitem id="menu_compliance_guest_reports_today"
+              name="Today's Police Intimations"
+              parent="menu_compliance_guest_section"
+              action="action_compliance_guest_reports_today"
+              sequence="20"/>
+
+    <menuitem id="menu_compliance_guest_reports_pending"
+              name="Pending Submissions"
+              parent="menu_compliance_guest_section"
+              action="action_compliance_guest_reports_pending"
+              sequence="30"/>
+
+    <menuitem id="menu_compliance_guest_reports_long_stay"
+              name="Long-Stay Guests (&gt;14 Days)"
+              parent="menu_compliance_guest_section"
+              action="action_compliance_guest_reports_long_stay"
+              sequence="40"/>
+
+    <!-- 2. Foreign Nationals & FRRO (Form C) -->
+    <menuitem id="menu_compliance_foreign_section"
+              name="Foreign Nationals &amp; FRRO"
+              parent="menu_resort_compliance_root"
+              sequence="20"
+              groups="resort_compliance.group_compliance_user"/>
+
+    <menuitem id="menu_compliance_foreign_all"
+              name="Foreign Guest Register (Form C)"
+              parent="menu_compliance_foreign_section"
+              action="action_compliance_foreign_guest_all"
+              sequence="10"/>
+
+    <menuitem id="menu_compliance_foreign_pending"
+              name="Pending Form C Submissions"
+              parent="menu_compliance_foreign_section"
+              action="action_compliance_foreign_guest_pending"
+              sequence="20"/>
+
+    <menuitem id="menu_compliance_foreign_expiring"
+              name="Expiring Visa Tracker"
+              parent="menu_compliance_foreign_section"
+              action="action_compliance_foreign_guest_expiring_visa"
+              sequence="30"/>
+
+    <!-- 3. Incident Register & FIR Tracker -->
+    <menuitem id="menu_compliance_incident_section"
+              name="Incidents &amp; Police Cases"
+              parent="menu_resort_compliance_root"
+              sequence="30"
+              groups="resort_compliance.group_compliance_user,resort_compliance.group_security_officer"/>
+
+    <menuitem id="menu_compliance_incident_all"
+              name="Incident Register"
+              parent="menu_compliance_incident_section"
+              action="action_compliance_incident_all"
+              sequence="10"/>
+
+    <menuitem id="menu_compliance_incident_fir"
+              name="Active Police Cases &amp; FIRs"
+              parent="menu_compliance_incident_section"
+              action="action_compliance_incident_fir"
+              sequence="20"/>
+
+    <menuitem id="menu_compliance_incident_thefts"
+              name="Thefts &amp; Property Losses"
+              parent="menu_compliance_incident_section"
+              action="action_compliance_incident_thefts"
+              sequence="30"/>
+
+    <menuitem id="menu_compliance_incident_emergency"
+              name="Accidents &amp; Emergencies"
+              parent="menu_compliance_incident_section"
+              action="action_compliance_incident_emergency"
+              sequence="40"/>
+
+    <!-- 4. Police Official Visits -->
+    <menuitem id="menu_compliance_police_visit_section"
+              name="Police Visits &amp; Inquiries"
+              parent="menu_resort_compliance_root"
+              sequence="40"
+              groups="resort_compliance.group_compliance_user,resort_compliance.group_security_officer"/>
+
+    <menuitem id="menu_compliance_police_visit_all"
+              name="Police Visit Register"
+              parent="menu_compliance_police_visit_section"
+              action="action_compliance_police_visit_all"
+              sequence="10"/>
+
+    <!-- 5. Resort Security & Gate Logs -->
+    <menuitem id="menu_compliance_security_section"
+              name="Resort Security &amp; Gate Logs"
+              parent="menu_resort_compliance_root"
+              sequence="50"
+              groups="resort_compliance.group_security_officer"/>
+
+    <menuitem id="menu_compliance_security_visitors"
+              name="Visitor Register (Non-Resident)"
+              parent="menu_compliance_security_section"
+              action="action_compliance_security_log_visitors"
+              sequence="10"/>
+
+    <menuitem id="menu_compliance_security_vehicles"
+              name="Vehicle Entry / Exit Register"
+              parent="menu_compliance_security_section"
+              action="action_compliance_security_log_vehicles"
+              sequence="20"/>
+
+    <menuitem id="menu_compliance_security_all"
+              name="All Security &amp; Patrol Logs"
+              parent="menu_compliance_security_section"
+              action="action_compliance_security_log_all"
+              sequence="30"/>
+
+    <!-- ============================================================== -->
+    <!-- NESTED IN RESORT MANAGEMENT REPORTING MODULE                   -->
+    <!-- ============================================================== -->
+    <menuitem id="menu_hotel_reporting_compliance"
+              name="Police &amp; Compliance"
+              parent="mouli_hotels.menu_hotel_reporting_root"
+              sequence="80"
+              groups="resort_compliance.group_compliance_user,resort_compliance.group_compliance_manager"/>
+
+    <menuitem id="menu_rep_comp_guest_intimations"
+              name="Guest Police Intimations"
+              parent="menu_hotel_reporting_compliance"
+              action="action_compliance_guest_reports_all"
+              sequence="10"/>
+
+    <menuitem id="menu_rep_comp_foreign_form_c"
+              name="Foreign National Form C Register"
+              parent="menu_hotel_reporting_compliance"
+              action="action_compliance_foreign_guest_all"
+              sequence="20"/>
+
+    <menuitem id="menu_rep_comp_incidents_fir"
+              name="Incident &amp; FIR Case Tracker"
+              parent="menu_hotel_reporting_compliance"
+              action="action_compliance_incident_all"
+              sequence="30"/>
+
+    <menuitem id="menu_rep_comp_police_visits"
+              name="Police Visit Register"
+              parent="menu_hotel_reporting_compliance"
+              action="action_compliance_police_visit_all"
+              sequence="40"/>
+
+    <menuitem id="menu_rep_comp_security_visitors"
+              name="Security &amp; Visitor Logs"
+              parent="menu_hotel_reporting_compliance"
+              action="action_compliance_security_log_all"
+              sequence="50"/>
+</odoo>

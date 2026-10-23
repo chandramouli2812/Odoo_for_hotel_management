@@ -1,0 +1,4 @@
+id,name,code,phone,email,website,street,city,state,country
+prop_ghlr,"Grand Horizon Luxury Resort & Spa",GHLR,"+1 305-555-0199",reservations@grandhorizonresort.com,https://www.grandhorizonresort.com,"77 Ocean Drive","Miami Beach",Florida,"United States"
+prop_rphs,"The Royal Palms Hotel & Suites",RPHS,"+44 20 7946 0912",stay@royalpalmshotel.com,https://www.royalpalmshotel.com,"10 Kensington High Street","London",London,"United Kingdom"
+prop_mmhr,"Mouli Mountain Heritage Retreat",MMHR,"+91 80 4123 4567",concierge@mouliretreat.com,https://www.mouliretreat.com,"Valley View Road","Manali",Himachal Pradesh,"India"
