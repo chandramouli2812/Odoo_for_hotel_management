@@ -1,0 +1,10 @@
+.git
+.gitignore
+*.log
+odoo.log
+odoo.conf
+__pycache__
+*.pyc
+*.pyo
+.vscode
+.idea
