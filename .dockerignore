@@ -8,3 +8,15 @@ __pycache__
 *.pyo
 .vscode
 .idea
+
+# Core Odoo repository directories (excluded to keep Docker build context lightweight)
+odoo/
+addons/
+debian/
+doc/
+setup/
+skills/
+.github/
+odoo-bin
+*.sqlite
+*.db

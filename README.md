@@ -38,7 +38,7 @@ An enterprise-ready **Hotel & Resort Property Management System (PMS)** built on
 
 ### Option 1: Docker Compose (Recommended for Cloud VPS / Production)
 
-The repository includes a ready-to-use `docker-compose.yml` for instant deployment on AWS, DigitalOcean, Linode, Hetzner, or any Linux server with Docker installed:
+The repository includes a ready-to-use `docker-compose.yml` configured for **Odoo 20.0** and **PostgreSQL 16** for instant deployment on AWS, DigitalOcean, Linode, Hetzner, or any Linux server with Docker installed:
 
 1. **Clone the repository on your server:**
    ```bash

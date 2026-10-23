@@ -1,20 +1,24 @@
-
 [options]
 
-; PostgreSQL settings
+; PostgreSQL settings (Odoo 20.0 requires PostgreSQL >= 16)
 db_host = db
 db_port = 5432
 db_user = odoo
 db_password = odoo_secure_password
-db_name = hotel_management
+; Uncomment db_name after creating the database via the web manager
+; db_name = hotel_management
 
-; Standard Odoo addons and custom hotel modules
+; Standard Odoo 20.0 addons and custom hotel modules
 addons_path = /usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons
 
 ; Server settings
 http_port = 8069
+gevent_port = 8072
 proxy_mode = True
-list_db = False
+
+; Set list_db = True initially to create your database from the web interface,
+; then set list_db = False in production for security.
+list_db = True
 admin_passwd = REPLACE_WITH_A_STRONG_MASTER_PASSWORD
 
 ; Performance settings
